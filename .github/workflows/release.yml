@@ -280,10 +280,9 @@ jobs:
 
   # -------------------------------------------------------------------------
   # Release job: waits for both platform builds, downloads their artifacts,
-  # and publishes everything to the GitHub Release for the tag. Also uploads
-  # the generated latest.json (updater manifest) from whichever platform
-  # produced it (Tauri writes it into the bundle dir of each platform; they're
-  # identical, so we take either).
+  # ASSEMBLES the updater manifest (latest.json) from the per-installer .sig
+  # files (Tauri does not emit it — see the Generate step), and publishes the
+  # installers + their sigs + latest.json to the GitHub Release for the tag.
   # -------------------------------------------------------------------------
   release:
     name: publish release
@@ -305,24 +304,56 @@ jobs:
           path: release-artifacts
           merge-multiple: true   # flatten bundle-windows/* and bundle-linux/* into one dir
 
-      - name: Collect latest.json (updater manifest)
+      - name: Generate latest.json (updater manifest)
         id: manifest
         shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
         run: |
-          # Tauri emits latest.json into the bundle dir. Find it and stage it at
-          # the release root so the updater endpoint
-          # (/releases/latest/download/latest.json) resolves.
+          # `cargo tauri build` does NOT emit latest.json — createUpdaterArtifacts
+          # only produces the per-installer *.sig signatures. The manifest that
+          # tauri-plugin-updater consumes has to be assembled here, exactly like
+          # the local build-gui publisher (build-gui/src-tauri/src/publisher.rs):
+          # platform keys `<os>-x86_64`, `signature` = the CONTENT of the .sig
+          # file, `url` = the release asset's download URL.
           set -euo pipefail
-          manifest=$(find release-artifacts -name 'latest.json' -print -quit || true)
-          if [ -n "$manifest" ]; then
-            cp "$manifest" release-artifacts/latest.json
-            echo "found=true" >> "$GITHUB_OUTPUT"
-            echo "Staged latest.json:"
-            cat release-artifacts/latest.json
+          cd release-artifacts
+          version="${TAG#v}"
+          repo="basement-interactive/Ruxer"
+          base="https://github.com/$repo/releases/download/$TAG"
+
+          msi=$(ls *_x64_en-US.msi 2>/dev/null | head -1 || true)
+          app=$(ls *_amd64.AppImage 2>/dev/null | head -1 || true)
+
+          platforms='{}'
+          if [ -n "$msi" ] && [ -f "$msi.sig" ]; then
+            sig=$(cat "$msi.sig")
+            platforms=$(jq -n --argjson p "$platforms" --arg s "$sig" --arg u "$base/$msi" \
+              '$p + {"windows-x86_64": {signature: $s, url: $u}}')
           else
-            echo "WARNING: no latest.json found in bundle output; updater manifest will be missing."
-            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "WARNING: Windows MSI or its .sig missing — updater won't offer Windows"
           fi
+          if [ -n "$app" ] && [ -f "$app.sig" ]; then
+            sig=$(cat "$app.sig")
+            platforms=$(jq -n --argjson p "$platforms" --arg s "$sig" --arg u "$base/$app" \
+              '$p + {"linux-x86_64": {signature: $s, url: $u}}')
+          else
+            echo "WARNING: Linux AppImage or its .sig missing — updater won't offer Linux"
+          fi
+
+          # pub_date: no `date` interpolation into the JSON body beyond RFC3339.
+          jq -n \
+            --arg v "$version" \
+            --arg notes "Ruxer $version" \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --argjson platforms "$platforms" \
+            '{version: $v, notes: $notes, pub_date: $date, platforms: $platforms}' \
+            > latest.json
+
+          echo "=== generated latest.json ==="
+          cat latest.json
+          # Fail if neither platform made it in — a manifest with no platforms is useless.
+          [ "$(jq '.platforms | length' latest.json)" -ge 1 ] || { echo "FATAL: latest.json has no platforms"; exit 1; }
 
       - name: List release artifacts
         shell: bash
