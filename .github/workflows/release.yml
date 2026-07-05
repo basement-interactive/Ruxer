@@ -33,11 +33,15 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  # sccache config — mirrors the local .cargo/config.toml setup. The
-  # rustc-wrapper is set per-job below (after sccache is installed), not here,
-  # because cargo would otherwise try to invoke a missing sccache during the
-  # toolchain setup step.
   RUST_BACKTRACE: 1
+  # OVERRIDE the committed .cargo/config.toml, which sets
+  # `rustc-wrapper = "sccache"` for local dev. sccache is NOT installed in CI
+  # (removed — it failed the build at cache-server startup; see the Rust-caching
+  # note in the build job). Without this override every cargo command in CI
+  # would try to exec a missing `sccache` and die. An empty
+  # CARGO_BUILD_RUSTC_WRAPPER takes precedence over the config file's value and
+  # makes cargo invoke rustc directly. Swatinem/rust-cache handles caching.
+  CARGO_BUILD_RUSTC_WRAPPER: ""
 
 jobs:
   build:
@@ -97,28 +101,17 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Install sccache
-        uses: mozilla-actions/sccache-action@v0.0.7
-
-      - name: Configure Rust caching
-        shell: bash
-        run: |
-          echo "RUSTC_WRAPPER=sccache" >> "$GITHUB_ENV"
-          echo "SCCACHE_GHA_ENABLED=true" >> "$GITHUB_ENV"
-          # GHA cache backend for sccache — survives across runs, no manual management.
-          # The local-config port conflict (SCCACHE_SERVER_PORT=4227) doesn't
-          # apply in CI; sccache's GHA integration uses its own transport.
-          #
-          # CRITICAL: don't let a transient GHA-cache-backend outage FAIL the
-          # build. With RUSTC_WRAPPER=sccache set globally, EVERY cargo compile
-          # (incl. `cargo install tauri-cli` and the heavy webrtc-sys build) goes
-          # through sccache — and by default sccache HARD-FAILS the compile if it
-          # can't reach its cache storage ("Server startup failed: cache storage
-          # failed to read ... Our services aren't available right now"). This
-          # flag makes sccache fall back to a direct (uncached) compile on a
-          # storage I/O error instead of aborting, so a blip in GitHub's cache
-          # service can't break a release.
-          echo "SCCACHE_IGNORE_SERVER_IO_ERROR=1" >> "$GITHUB_ENV"
+      # NOTE: sccache is DELIBERATELY NOT USED in CI. It was removed after it
+      # repeatedly failed the whole build at SERVER STARTUP ("Server startup
+      # failed: cache storage failed to read ... Our services aren't available
+      # right now", GHA artifact-cache returning HTTP 400) — a failure that
+      # SCCACHE_IGNORE_SERVER_IO_ERROR does NOT cover (that flag only tolerates
+      # I/O errors DURING compilation, not startup). With RUSTC_WRAPPER=sccache
+      # set globally, that startup failure killed EVERY cargo invocation incl.
+      # `cargo install tauri-cli`. `Swatinem/rust-cache` (below) already caches
+      # ~/.cargo + target/ across runs, so the compile-caching need is covered
+      # without sccache's fragile always-on cache-service dependency. Locally,
+      # sccache is still used via .cargo/config.toml — that's unaffected.
 
       - name: Cache tauri-cli install
         # tauri-cli is ~50 crates to compile; cache the installed binary so we
@@ -227,11 +220,6 @@ jobs:
           path: ${{ matrix.artifact_glob }}
           if-no-files-found: error
           retention-days: 14
-
-      - name: Print sccache stats
-        if: always()
-        shell: bash
-        run: sccache --show-stats || true
 
   # -------------------------------------------------------------------------
   # Release job: waits for both platform builds, downloads their artifacts,
