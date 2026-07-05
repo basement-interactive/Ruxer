@@ -616,6 +616,7 @@ pub fn run() {
             pin_message,
             unpin_message,
             add_reaction,
+            reaction_users,
             remove_own_reaction,
             remove_reaction_for,
             open_dm,
@@ -2239,6 +2240,32 @@ async fn add_reaction(
         None => ReactionTarget::Unicode(emoji),
     };
     c.reactions().add(&channel_id, &message_id, &target)
+        .await
+        .map_err(Into::into)
+}
+
+/// List the users who reacted to a message with a specific emoji (paginated).
+/// Backs the reaction hover-tooltip + reactions modal in the custom UI.
+#[tauri::command]
+async fn reaction_users(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    message_id: Snowflake,
+    emoji: String,
+    custom_emoji_id: Option<Snowflake>,
+    limit: Option<i32>,
+    after: Option<Snowflake>,
+) -> CmdResult<Vec<fluxer::models::User>> {
+    let c = client(&state).await?;
+    let target = match custom_emoji_id {
+        Some(id) => ReactionTarget::Custom {
+            name: emoji.clone(),
+            id,
+        },
+        None => ReactionTarget::Unicode(emoji),
+    };
+    c.reactions()
+        .users(&channel_id, &message_id, &target, limit, after.as_ref())
         .await
         .map_err(Into::into)
 }

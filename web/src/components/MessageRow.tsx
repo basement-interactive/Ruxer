@@ -201,18 +201,61 @@ const ReactionChip = observer(function ReactionChip({
   count: number;
   mine: boolean;
 }) {
+  const [hover, setHover] = useState(false);
+  const [users, setUsers] = useState<string[] | null>(null);
+
+  // Lazily fetch the reactors the first time the chip is hovered.
+  useEffect(() => {
+    if (!hover || users !== null) return;
+    let cancelled = false;
+    api
+      .reactionUsers(message.channel_id, message.id, emoji, customEmojiId, 8)
+      .then((list) => {
+        if (!cancelled) setUsers(list.map((u) => u.global_name ?? u.username));
+      })
+      .catch(() => {
+        if (!cancelled) setUsers([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hover, users, message.channel_id, message.id, emoji, customEmojiId]);
+
   return (
     <button
       className={`reaction-chip ${mine ? "mine" : ""}`}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       onClick={() =>
         messages.toggleReaction(message.channel_id, message.id, emoji, customEmojiId, mine)
       }
     >
       <EmojiDisplay emoji={emoji} customId={customEmojiId} animated={false} size={16} />
       <span>{count}</span>
+      {hover && (
+        <span className="reaction-tooltip">
+          {users === null
+            ? "…"
+            : users.length === 0
+              ? "No one yet"
+              : reactorSummary(users, count)}
+        </span>
+      )}
     </button>
   );
 });
+
+/// Human-readable "A, B and 3 others reacted" summary for the tooltip.
+function reactorSummary(names: string[], total: number): string {
+  const shown = names.slice(0, 3);
+  const remaining = total - shown.length;
+  let who: string;
+  if (shown.length === 1) who = shown[0];
+  else if (remaining <= 0 && shown.length === 2) who = `${shown[0]} and ${shown[1]}`;
+  else who = shown.join(", ");
+  if (remaining > 0) who += ` and ${remaining} other${remaining === 1 ? "" : "s"}`;
+  return `${who} reacted`;
+}
 
 // A small inline emoji display (unicode char or custom emoji image).
 function EmojiDisplay({

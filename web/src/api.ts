@@ -444,6 +444,24 @@ export const api = {
       emoji,
       customEmojiId,
     }),
+  // Users who reacted with a specific emoji (for the reaction hover tooltip +
+  // reactions modal). Paginated via `after`.
+  reactionUsers: (
+    channelId: Snowflake,
+    messageId: Snowflake,
+    emoji: string,
+    customEmojiId?: Snowflake,
+    limit?: number,
+    after?: Snowflake,
+  ) =>
+    call<User[]>("reaction_users", {
+      channelId,
+      messageId,
+      emoji,
+      customEmojiId,
+      limit,
+      after,
+    }),
   removeOwnReaction: (
     channelId: Snowflake,
     messageId: Snowflake,
