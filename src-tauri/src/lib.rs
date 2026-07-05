@@ -1495,6 +1495,7 @@ async fn send_message(
     reply_to: Option<Snowflake>,
     attachments: Option<Vec<AttachmentInput>>,
     sticker_ids: Option<Vec<Snowflake>>,
+    nonce: Option<String>,
 ) -> CmdResult<fluxer::models::Message> {
     let c = client(&state).await?;
     let mut create = fluxer::api::messages::CreateMessage::content(content);
@@ -1503,6 +1504,12 @@ async fn send_message(
     }
     if let Some(ref ids) = sticker_ids {
         create.sticker_ids = ids.clone();
+    }
+    // Client-supplied nonce for optimistic-send reconciliation: the server
+    // echoes it back on the message (and on the gateway MESSAGE_CREATE), so the
+    // frontend can match the confirmed message to its pending placeholder.
+    if let Some(n) = nonce {
+        create.nonce = Some(n);
     }
 
     // Read each pending attachment's bytes and build a PendingAttachment vec.

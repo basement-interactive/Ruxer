@@ -673,16 +673,105 @@ export class MessagesStore {
     attachments?: AttachmentInput[],
     stickerIds?: Snowflake[],
   ) {
-    const msg = await api.sendMessage(channelId, content, replyTo, attachments, stickerIds);
-    // The gateway will echo MESSAGE_CREATE; but we also insert optimistically.
+    // Optimistic send: insert a pending placeholder IMMEDIATELY so the message
+    // appears the instant the user hits Enter, then reconcile it against the
+    // server's confirmed message. The nonce round-trips (send_message → server
+    // → REST response AND the gateway MESSAGE_CREATE echo) so whichever arrives
+    // first can replace the placeholder without double-inserting.
+    const nonce = crypto.randomUUID();
+    const nowIso = new Date().toISOString();
+    const author = (session.me as unknown as User) ?? ({ id: session.meId ?? "", username: "" } as User);
+    const pending: Message = normalizeMessage({
+      id: `pending-${nonce}`,
+      channel_id: channelId,
+      author,
+      type: 0,
+      content,
+      timestamp: nowIso,
+      mentions: [],
+      mention_roles: [],
+      reactions: [],
+      attachments: [],
+      embeds: [],
+      nonce,
+      message_reference: replyTo
+        ? ({ message_id: replyTo, channel_id: channelId } as unknown as Message["message_reference"])
+        : undefined,
+      _state: "sending",
+      _retry: { content, replyTo, stickerIds },
+    } as Message);
+
     runInAction(() => {
       const list = this.byChannel.get(channelId) ?? [];
-      if (!list.some((m) => m.id === msg.id)) {
-        list.push(msg);
-        this.byChannel.set(channelId, [...list]);
-      }
+      list.push(pending);
+      this.byChannel.set(channelId, [...list]);
     });
-    return msg;
+
+    try {
+      const msg = await api.sendMessage(channelId, content, replyTo, attachments, stickerIds, nonce);
+      // Reconcile: replace the pending placeholder (matched by nonce) with the
+      // confirmed message. If the gateway already reconciled it, this is a
+      // no-op de-dup by id.
+      runInAction(() => {
+        this.reconcilePending(channelId, nonce, normalizeMessage(msg));
+      });
+      return msg;
+    } catch (e) {
+      // Mark the placeholder FAILED so the row shows a retry affordance.
+      runInAction(() => {
+        const list = this.byChannel.get(channelId);
+        if (list) {
+          const i = list.findIndex((m) => m.nonce === nonce);
+          if (i >= 0) {
+            list[i] = { ...list[i], _state: "failed" };
+            this.byChannel.set(channelId, [...list]);
+          }
+        }
+      });
+      throw e;
+    }
+  }
+
+  /// Replace a pending optimistic message (by nonce) with the confirmed server
+  /// message, or drop the placeholder if the confirmed message is already
+  /// present (gateway echo raced ahead). Idempotent.
+  @action reconcilePending(channelId: Snowflake, nonce: string, confirmed: Message) {
+    const list = this.byChannel.get(channelId);
+    if (!list) return;
+    const pendingIdx = list.findIndex((m) => m.nonce === nonce && m._state);
+    const realIdx = list.findIndex((m) => m.id === confirmed.id && !m._state);
+    if (pendingIdx >= 0) {
+      if (realIdx >= 0 && realIdx !== pendingIdx) {
+        // Real message already inserted (gateway) — remove the placeholder.
+        list.splice(pendingIdx, 1);
+      } else {
+        list[pendingIdx] = confirmed;
+      }
+      this.byChannel.set(channelId, [...list]);
+    } else if (realIdx < 0) {
+      list.push(confirmed);
+      this.byChannel.set(channelId, [...list]);
+    }
+  }
+
+  /// Retry a failed optimistic message: drop the failed placeholder and re-send
+  /// with its retained arguments.
+  async retry(channelId: Snowflake, failedNonce: string) {
+    const list = this.byChannel.get(channelId);
+    const failed = list?.find((m) => m.nonce === failedNonce && m._state === "failed");
+    if (!failed?._retry) return;
+    const { content, replyTo, stickerIds } = failed._retry;
+    runInAction(() => {
+      if (list) this.byChannel.set(channelId, list.filter((m) => m.nonce !== failedNonce));
+    });
+    await this.send(channelId, content, replyTo, undefined, stickerIds);
+  }
+
+  /// Drop a pending/failed optimistic message without sending (user chose to
+  /// discard the unsent message).
+  @action dropPending(channelId: Snowflake, nonce: string) {
+    const list = this.byChannel.get(channelId);
+    if (list) this.byChannel.set(channelId, list.filter((m) => m.nonce !== nonce));
   }
 
   /// Acknowledge that the user has read up to `messageId` in `channelId`.
@@ -839,6 +928,19 @@ export class MessagesStore {
     const m = normalizeMessage(msg);
     const cid = m.channel_id;
     const list = this.byChannel.get(cid) ?? [];
+    // Optimistic reconciliation: if this echo carries a nonce that matches a
+    // pending placeholder we inserted locally, swap the placeholder for the
+    // confirmed message (instead of appending a duplicate).
+    if (m.nonce) {
+      const pendingIdx = list.findIndex((x) => x.nonce === m.nonce && x._state);
+      if (pendingIdx >= 0) {
+        list[pendingIdx] = m;
+        this.byChannel.set(cid, [...list]);
+        this.typingByChannel.delete(cid);
+        if (ui.selectedChannelId === cid) messages.ack(cid, m.id);
+        return;
+      }
+    }
     if (!list.some((x) => x.id === m.id)) {
       list.push(m);
       this.byChannel.set(cid, [...list]);

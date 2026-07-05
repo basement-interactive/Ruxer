@@ -316,6 +316,17 @@ export interface Message {
   message_snapshots?: MessageSnapshot[];
   message_reference?: MessageReference | null;
   nonce?: string | null;
+  /// Client-only optimistic-send state. Absent on confirmed (server) messages.
+  /// "sending" = awaiting the server ack; "failed" = the send errored and can
+  /// be retried. Reconciled by nonce when the real MESSAGE_CREATE arrives.
+  _state?: "sending" | "failed";
+  /// Original send arguments, retained on a failed optimistic message so the
+  /// user can retry without re-typing.
+  _retry?: {
+    content: string;
+    replyTo?: Snowflake;
+    stickerIds?: Snowflake[];
+  };
 }
 
 export interface Relationship {

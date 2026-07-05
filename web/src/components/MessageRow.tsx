@@ -32,18 +32,26 @@ export const MessageRow = observer(function MessageRow({
   const time = formatTimestamp(message.timestamp);
   const [hover, setHover] = useState(false);
 
+  // Optimistic-send state: dim while sending, show a retry footer on failure.
+  const sending = message._state === "sending";
+  const failed = message._state === "failed";
+
   return (
     <div
-      className="message-row"
+      className={
+        "message-row" + (sending ? " message-sending" : "") + (failed ? " message-failed" : "")
+      }
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onContextMenu={(e) => {
         e.preventDefault();
+        // No context menu on unsent (pending/failed) messages.
+        if (sending || failed) return;
         openContextMenu(message, e.clientX, e.clientY);
       }}
     >
-      {/* Hover toolbar */}
-      {hover && (
+      {/* Hover toolbar — hidden on unsent (pending/failed) messages. */}
+      {hover && !sending && !failed && (
         <div className="message-toolbar">
           <ToolbarBtn title="Add Reaction" onClick={() => ui.openReactionPicker(message.channel_id, message.id)}>
             <EmojiIcon />
@@ -140,6 +148,27 @@ export const MessageRow = observer(function MessageRow({
             title="Add Reaction"
           >
             <EmojiIcon />
+          </button>
+        </div>
+      )}
+
+      {/* Failed-send footer: retry or delete the unsent message. */}
+      {failed && (
+        <div className="message-failed-footer">
+          <span>Failed to send message.</span>
+          <button
+            className="message-failed-retry"
+            onClick={() => message.nonce && messages.retry(message.channel_id, message.nonce)}
+          >
+            Retry
+          </button>
+          <button
+            className="message-failed-delete"
+            onClick={() =>
+              message.nonce && messages.dropPending(message.channel_id, message.nonce)
+            }
+          >
+            Delete
           </button>
         </div>
       )}

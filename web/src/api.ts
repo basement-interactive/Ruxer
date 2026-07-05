@@ -331,6 +331,7 @@ export const api = {
     replyTo?: Snowflake,
     attachments?: AttachmentInput[],
     stickerIds?: Snowflake[],
+    nonce?: string,
   ) =>
     call<Message>("send_message", {
       channelId,
@@ -338,6 +339,7 @@ export const api = {
       replyTo,
       attachments,
       stickerIds,
+      nonce,
     }),
   editMessage: (channelId: Snowflake, messageId: Snowflake, content: string) =>
     call<Message>("edit_message", { channelId, messageId, content }),

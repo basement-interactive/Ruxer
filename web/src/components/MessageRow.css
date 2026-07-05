@@ -396,3 +396,31 @@
 .message-row > .reply-ref {
   margin-left: 3.5rem;
 }
+
+/* Optimistic-send states (custom UI parity with reference). */
+.message-row.message-sending {
+  opacity: 0.6;
+}
+.message-row.message-failed .message-body {
+  color: var(--status-dnd, #f23f42);
+}
+.message-failed-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 56px;
+  padding: 2px 0;
+  font-size: 0.8125rem;
+  color: var(--status-dnd, #f23f42);
+}
+.message-failed-footer button {
+  border: 0;
+  background: none;
+  color: var(--text-link, #00a8fc);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.8125rem;
+}
+.message-failed-footer button:hover {
+  text-decoration: underline;
+}
