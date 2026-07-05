@@ -151,6 +151,14 @@ jobs:
           # Key on the lockfile + target + runner OS. A Cargo.lock change misses
           # the cache (correct — deps changed); everything else hits.
           save-if: ${{ github.ref_type == 'tag' || github.event_name == 'workflow_dispatch' }}
+          # Save target/ even when the job FAILS. Without this, rust-cache only
+          # saves on success — so during iteration every failed run recompiles
+          # webrtc-sys + the whole ~800-crate graph from scratch (~17 min). With
+          # it, each run's compiled artifacts persist, so the NEXT run resumes
+          # from where the last one got to instead of cold-starting. This is the
+          # single biggest lever on the "builds take forever" complaint until we
+          # land a first fully-green run.
+          cache-on-failure: true
 
       # ---------------------------------------------------------------------
       # Native build dependencies per platform.
@@ -174,17 +182,30 @@ jobs:
           # every run is a few seconds and always resolves current versions.
           set -euo pipefail
           sudo apt-get update
+          # The full set of system libs the workspace's -sys crates pkg-config
+          # (enumerated from Cargo.lock so we don't discover them one failed
+          # build at a time):
+          #   libwebkit2gtk-4.1-dev  → gtk/gdk/glib/pango/atk/soup3/webkit2gtk-sys (Tauri webview)
+          #   libayatana-appindicator3-dev → libappindicator-sys (tray)
+          #   librsvg2-dev           → Tauri icon handling
+          #   libpipewire-0.3-dev    → libspa-sys + pipewire-sys (voice-native audio; pulls libspa-0.2)
+          #   libasound2-dev         → alsa-sys (voice-native ALSA audio)
+          #   libdbus-1-dev          → libdbus-sys (notifications / deep-link)
+          #   libwayland-dev         → wayland-sys / gdkwayland-sys
+          #   libx11-dev libxext-dev → x11 / gdkx11-sys
+          #   clang + mold           → .cargo/config.toml fast linker
+          #   nasm                   → mozjpeg-sys (camera feature)
+          #   cmake + build-essential → webrtc-sys C++ build
           sudo apt-get install -y --no-install-recommends \
             libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev \
-            patchelf clang mold nasm cmake build-essential curl wget file \
-            pkg-config libpipewire-0.3-dev
-          # libpipewire-0.3-dev provides libpipewire-0.3.pc (+ pulls libspa-0.2):
-          # voice-native's Linux audio path depends on libspa-sys, whose build.rs
-          # pkg-config's `libpipewire-0.3` and hard-panics if the .pc is absent.
-          # Fail loudly HERE if a linker/dep didn't land, rather than 10 min into
-          # the build with a cryptic clang / pkg-config error.
+            libpipewire-0.3-dev libasound2-dev libdbus-1-dev libwayland-dev \
+            libx11-dev libxext-dev \
+            patchelf clang mold nasm cmake build-essential curl wget file pkg-config
+          # Assert the fast linker + the two audio deps that panic at build-time
+          # if absent, so a missing dep fails HERE, not 10 min into the compile.
           mold --version
           pkg-config --exists libpipewire-0.3 && echo "libpipewire-0.3 OK"
+          pkg-config --exists alsa && echo "alsa OK"
 
       - name: Install Windows build deps (LLVM for lld-link, NASM, cmake)
         if: matrix.os == 'windows'
