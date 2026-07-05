@@ -1912,6 +1912,53 @@ class ReadStateStore {
 
 export const readState = new ReadStateStore();
 
+/// Per-channel message drafts. The composer's unsent text is persisted per
+/// channel so switching channels (or restarting the app) doesn't lose what the
+/// user was typing — reference-parity with the reference client's
+/// MessagingDrafts. Backed by localStorage so drafts survive a restart.
+const DRAFTS_KEY = "ruxer.drafts.v1";
+class DraftsStore {
+  byChannel = new Map<Snowflake, string>();
+
+  constructor() {
+    makeAutoObservable(this);
+    try {
+      const raw = localStorage.getItem(DRAFTS_KEY);
+      if (raw) {
+        const obj = JSON.parse(raw) as Record<string, string>;
+        for (const [k, v] of Object.entries(obj)) this.byChannel.set(k, v);
+      }
+    } catch {
+      /* corrupt/blocked storage — start empty */
+    }
+  }
+
+  get(channelId: Snowflake): string {
+    return this.byChannel.get(channelId) ?? "";
+  }
+
+  set(channelId: Snowflake, text: string) {
+    if (text) this.byChannel.set(channelId, text);
+    else this.byChannel.delete(channelId);
+    this.persist();
+  }
+
+  clear(channelId: Snowflake) {
+    this.byChannel.delete(channelId);
+    this.persist();
+  }
+
+  private persist() {
+    try {
+      localStorage.setItem(DRAFTS_KEY, JSON.stringify(Object.fromEntries(this.byChannel)));
+    } catch {
+      /* best effort */
+    }
+  }
+}
+
+export const drafts = new DraftsStore();
+
 // ---------------------------------------------------------------------------
 // UI store (navigation + popups)
 // ---------------------------------------------------------------------------

@@ -8,7 +8,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { messages, ui, guilds, dms, relationships, session, resolveUserName } from "../stores";
+import { messages, ui, guilds, dms, relationships, session, resolveUserName, drafts } from "../stores";
 import type { Emoji, Snowflake, User } from "../types";
 import { EmojiPicker } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
@@ -24,10 +24,22 @@ export const Composer = observer(function Composer({
 }: {
   channelId: Snowflake;
 }) {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(() => drafts.get(channelId));
   const [attachments, setAttachments] = useState<string[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [gifPickerOpen, setGifPickerOpen] = useState(false);
+
+  // Per-channel drafts: restore the saved draft when the channel changes, and
+  // persist the current text as we type so switching channels never loses it.
+  useEffect(() => {
+    setText(drafts.get(channelId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channelId]);
+  useEffect(() => {
+    // Don't persist while editing an existing message (that text isn't a draft).
+    if (!ui.editingMessageId) drafts.set(channelId, text);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text, channelId]);
 
   // Slowmode countdown: tracks the remaining seconds before the user can send.
   const channel = ui.currentChannel;
