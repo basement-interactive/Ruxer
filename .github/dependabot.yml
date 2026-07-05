@@ -1,0 +1,51 @@
+# Dependabot configuration.
+#
+# Scope: only OUR OWN manifests. The bulk of this repo's dependency surface is
+# `reference/fluxer/**` — a VENDORED CLONE of the upstream Fluxer web client
+# (the shipped frontend). We do not manage its dependency versions (bumping them
+# ad-hoc would diverge from upstream and break the 1:1-parity build), so its
+# lockfiles are deliberately NOT listed here — no update PRs are opened for them.
+# The vulnerability ALERTS Dependabot raises for those vendored lockfiles are
+# triaged/dismissed separately as "vendored upstream, not our dependency."
+#
+# Ecosystems we DO own and want kept current + patched:
+#   - the Cargo workspace at the repo root (the Tauri app + core + voice-native)
+#   - the standalone build-gui Cargo workspace
+#   - the unshipped legacy web/ reimplementation (npm) — kept patched so it stops
+#     generating dev-server CVE alerts even though it doesn't ship
+version: 2
+updates:
+  # Root Cargo workspace (fluxer-desktop, fluxer core, voice-native, native-vendor/*)
+  - package-ecosystem: cargo
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # One grouped PR for routine patch/minor bumps instead of a flood.
+      cargo-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # Standalone build-gui Cargo workspace (separate lockfile).
+  - package-ecosystem: cargo
+    directory: "/build-gui"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      build-gui-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # Unshipped legacy web/ reimplementation (npm). Kept patched so its dev-server
+  # deps (vite/esbuild) don't accrue CVE alerts.
+  - package-ecosystem: npm
+    directory: "/web"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  # Keep the Actions workflow (release.yml) actions pinned to patched versions.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
