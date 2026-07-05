@@ -54,11 +54,13 @@ jobs:
           - os: windows
             runner: windows-latest
             target: x86_64-pc-windows-msvc
-            artifact_glob: src-tauri/target/release/bundle/msi/*.msi*
+            # target/ is at the WORKSPACE ROOT (this is a cargo workspace), not
+            # under src-tauri/. tauri writes the bundle to <root>/target/release/bundle.
+            artifact_glob: target/release/bundle/msi/*.msi*
           - os: linux
             runner: ubuntu-22.04   # NOT ubuntu-latest: tauri's webkit2gtk is pinned and 24.04's glibc breaks AppImage portability
             target: x86_64-unknown-linux-gnu
-            artifact_glob: src-tauri/target/release/bundle/appimage/*.AppImage*
+            artifact_glob: target/release/bundle/appimage/*.AppImage*
 
     steps:
       - name: Checkout
@@ -174,10 +176,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev \
-            patchelf clang mold nasm cmake build-essential curl wget file
-          # Fail loudly HERE if mold didn't land, rather than 10 min into the
-          # build at link time with a cryptic clang error.
+            patchelf clang mold nasm cmake build-essential curl wget file \
+            pkg-config libpipewire-0.3-dev
+          # libpipewire-0.3-dev provides libpipewire-0.3.pc (+ pulls libspa-0.2):
+          # voice-native's Linux audio path depends on libspa-sys, whose build.rs
+          # pkg-config's `libpipewire-0.3` and hard-panics if the .pc is absent.
+          # Fail loudly HERE if a linker/dep didn't land, rather than 10 min into
+          # the build with a cryptic clang / pkg-config error.
           mold --version
+          pkg-config --exists libpipewire-0.3 && echo "libpipewire-0.3 OK"
 
       - name: Install Windows build deps (LLVM for lld-link, NASM, cmake)
         if: matrix.os == 'windows'
