@@ -59,10 +59,11 @@ jobs:
       matrix:
         include:
           - os: windows
-            # WarpBuild cloud runner (16 vCPU, Windows Server 2022). Standard
-            # Warp label — requires the WarpBuild GitHub app installed on the
-            # repo (billing). Faster infra + WarpCache backend vs windows-latest.
-            runner: warp-windows-2022-x64-16x
+            # WarpBuild cloud runner (16 vCPU, Windows). Uses the documented
+            # current label (windows-latest, not a pinned 2022 image which may
+            # not be provisioned on every plan). Requires the WarpBuild GitHub
+            # app on the repo. Faster infra + WarpCache backend vs windows-latest.
+            runner: warp-windows-latest-x64-16x
             target: x86_64-pc-windows-msvc
             # target/ is at the WORKSPACE ROOT (this is a cargo workspace), not
             # under src-tauri/. tauri writes the bundle to <root>/target/release/bundle.
