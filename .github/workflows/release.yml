@@ -155,15 +155,29 @@ jobs:
       # ---------------------------------------------------------------------
       - name: Install Linux build deps
         if: matrix.os == 'linux'
-        uses: awalsh128/cache-apt-pkgs-action@v1
-        with:
+        shell: bash
+        run: |
           # Tauri Linux prerequisites (webkit2gtk-4.1, appindicator, etc.) plus
           # our extra needs: clang + mold (the .cargo/config.toml fast linker
           # setup), nasm (mozjpeg-sys via the camera feature), cmake
           # (webrtc-sys's C++ build), librsvg2 (Tauri icon handling on Linux).
-          packages: libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf clang mold nasm cmake build-essential curl wget file
-          version: 1.0
-          execute_install_scripts: true
+          #
+          # We install with plain apt-get, NOT awalsh128/cache-apt-pkgs-action:
+          # that action PINS exact package versions and resolves them against a
+          # cached index, which 404s the moment a mirror rotates a point-release
+          # (`libnghttp2-dev_1.43.0-1ubuntu0.3 404 Not Found`). When its install
+          # aborts it does so SILENTLY — mold never lands, and the build only
+          # fails 10 min later at the first link with `clang: error: invalid
+          # linker name in argument '-fuse-ld=mold'`. A fresh `apt-get update`
+          # every run is a few seconds and always resolves current versions.
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev \
+            patchelf clang mold nasm cmake build-essential curl wget file
+          # Fail loudly HERE if mold didn't land, rather than 10 min into the
+          # build at link time with a cryptic clang error.
+          mold --version
 
       - name: Install Windows build deps (LLVM for lld-link, NASM, cmake)
         if: matrix.os == 'windows'
