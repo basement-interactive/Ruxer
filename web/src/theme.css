@@ -72,6 +72,48 @@
   --shadow-popout: 0 8px 16px rgba(0, 0, 0, 0.24);
   --shadow-elevation-low: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05),
     0 2px 0 rgba(4, 4, 5, 0.05);
+
+  /* Markdown / message-content tokens (block markdown parity — headings, code
+     blocks, tables, alerts, mentions). Values ported from the reference client's
+     generated color-system.css (dark theme). */
+  --saturation-factor: 1;
+  --font-mono: var(--font-code);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --transition-fast: 100ms ease;
+  --link-decoration: none;
+
+  --text-primary: var(--text-normal);
+  --text-primary-muted: var(--text-muted);
+  --text-tertiary: var(--text-faint);
+  --text-chat: var(--text-normal);
+  --text-chat-muted: var(--text-muted);
+  --text-link: #00a8fc;
+  --text-selection: rgba(88, 101, 242, 0.35);
+
+  --interactive-muted: #4e5058;
+  --markup-mention-fill: rgba(88, 101, 242, 0.3);
+  --markup-mention-text: #c9cdfb;
+  --markup-strikethrough-color: currentColor;
+
+  /* Code */
+  --bg-code: rgba(0, 0, 0, 0.25);
+  --bg-code-block: #1e1f22;
+  --code-block-border: rgba(255, 255, 255, 0.08);
+  --text-code: #dbdee1;
+  --code-muted: #949ba4;
+
+  /* Tables */
+  --bg-table-header: #1e1f22;
+  --bg-table-row-odd: #313338;
+  --bg-table-row-even: #2b2d31;
+
+  /* GitHub-style alert callouts */
+  --alert-note-color: hsl(198, calc(92% * var(--saturation-factor)), 70%);
+  --alert-tip-color: hsl(152, calc(72% * var(--saturation-factor)), 45%);
+  --alert-important-color: hsl(278, calc(85% * var(--saturation-factor)), 65%);
+  --alert-warning-color: hsl(45, calc(93% * var(--saturation-factor)), 55%);
+  --alert-caution-color: hsl(359, calc(75% * var(--saturation-factor)), 60%);
 }
 
 /* Light theme: applied via `<html data-theme="light">`. Defaults to dark. */
@@ -93,6 +135,26 @@
   --text-faint: #8c8fa1;
   --text-bright: #1e1e2e;
   --header-primary: #1e1e2e;
+
+  /* Markdown token overrides for light theme (ported from the reference's
+     .theme-light color-system). */
+  --text-link: #0068b3;
+  --interactive-muted: #c7cbd6;
+  --bg-code: rgba(0, 0, 0, 0.06);
+  --bg-code-block: #eff1f5;
+  --code-block-border: rgba(0, 0, 0, 0.1);
+  --text-code: #4c4f69;
+  --code-muted: #6c6f85;
+  --bg-table-header: #dce0e8;
+  --bg-table-row-odd: #ffffff;
+  --bg-table-row-even: #eff1f5;
+  --markup-mention-fill: rgba(88, 101, 242, 0.18);
+  --markup-mention-text: #3a44b8;
+  --alert-note-color: hsl(198, calc(92% * var(--saturation-factor)), 45%);
+  --alert-tip-color: hsl(150, calc(80% * var(--saturation-factor)), 35%);
+  --alert-important-color: hsl(278, calc(70% * var(--saturation-factor)), 50%);
+  --alert-warning-color: hsl(40, calc(90% * var(--saturation-factor)), 42%);
+  --alert-caution-color: hsl(359, calc(68% * var(--saturation-factor)), 48%);
   --header-secondary: #6c6f85;
   --interactive-normal: #4c4f69;
   --interactive-hover: #1e1e2e;

@@ -73,14 +73,35 @@
   -webkit-box-decoration-break: clone; /* :195 */
 }
 
-/* --- Blockquote (Markup.module.css — blockquote styles) --- */
-.blockquote {
-  display: block;
-  margin: 0.25rem 0; /* (from the blockquote gap, MessageLayoutSpec.ts:125) */
-  padding: 0 0 0.75rem; /* left padding for the quote indent */
-  border-left: 0.125rem solid var(--background-modifier-accent); /* spine width, MessageLayoutSpec.ts:135 */
-  border-radius: 0 0 0 0.375rem; /* spine radius, MessageLayoutSpec.ts:136 */
-  color: var(--text-primary-muted);
+/* --- Blockquote (Markup.module.css .blockquoteContainer/.blockquoteDivider/.blockquoteContent) --- */
+.blockquote-container {
+  display: flex;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  width: 100%;
+}
+.blockquote-divider {
+  width: 0.25rem;
+  border-radius: 0.25rem;
+  background-color: var(--interactive-muted);
+  flex-shrink: 0;
+  margin-right: 0.75rem;
+}
+.blockquote-content {
+  padding: 0.25rem 0;
+  width: 100%;
+  color: var(--text-chat-muted);
+  margin: 0;
+  border: none;
+  background: none;
+}
+/* Nested blockquotes soften the divider (Markup.module.css). */
+.blockquote-content .blockquote-container {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+.blockquote-content .blockquote-divider {
+  opacity: 0.7;
 }
 
 /* --- Mention (Markup.module.css + Message.module.css:8-12) --- */
@@ -118,4 +139,260 @@
   background: none;
   border-radius: 0;
   padding: 0;
+}
+
+/* ==========================================================================
+ * Block-level markdown — ported 1:1 from Markup.module.css (headings, subtext,
+ * lists, fenced code blocks, tables, alerts). Class names are kebab-cased
+ * versions of the reference CSS-module names; values are verbatim.
+ * ========================================================================== */
+
+/* --- Headings (Markup.module.css h1–h6) --- */
+.md-heading {
+  margin: 1.25rem 0 0.75rem;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--text-primary);
+  scroll-margin-top: 1.25rem;
+}
+.content-rendered > .md-heading:first-child {
+  margin-top: 0.25rem;
+}
+.md-h1 {
+  font-size: 1.375em;
+  letter-spacing: 0;
+}
+.md-h2 {
+  font-size: 1.25em;
+  letter-spacing: 0;
+}
+.md-h3 {
+  font-size: 1.125em;
+  letter-spacing: 0;
+}
+@media (max-width: 768px) {
+  .md-h1 { font-size: 1.25em; }
+  .md-h2 { font-size: 1.125em; }
+  .md-h3 { font-size: 1.0625em; }
+}
+
+/* --- Subtext (Markup.module.css small:not(.inlineFormat)) --- */
+.md-subtext {
+  display: block;
+  color: var(--text-chat-muted);
+  font-size: 0.8125em;
+  line-height: 1.375;
+}
+
+/* --- Lists (Markup.module.css ul/ol/li) --- */
+.md-list {
+  margin-block: 0.25rem 0;
+  margin-inline: 1.25rem 0;
+  padding: 0;
+  list-style-position: outside;
+}
+ol.md-list {
+  list-style-type: decimal;
+  margin-inline-start: calc(0.65em + var(--totalCharacters, 1) * 0.6em);
+}
+ul.md-list {
+  list-style-type: disc;
+}
+.md-list-item {
+  margin-bottom: 0.25rem;
+}
+.md-list-item:last-child {
+  margin-bottom: 0;
+}
+.md-list-item > .md-list {
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+ul.md-list ul.md-list {
+  list-style-type: circle;
+}
+ul.md-list ul.md-list ul.md-list {
+  list-style-type: square;
+}
+ol.md-list ol.md-list {
+  list-style-type: lower-alpha;
+}
+ol.md-list ol.md-list ol.md-list {
+  list-style-type: lower-roman;
+}
+/* List items wrap paragraph text in a <span>; keep it inline so markers align. */
+.md-list-item > span {
+  display: inline;
+}
+
+/* --- Fenced code block (Markup.module.css .codeContainer/.hljs, pre) --- */
+.code-container {
+  position: relative;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-code-block);
+  overflow-x: auto;
+  max-width: 50vw;
+  box-sizing: border-box;
+  border: 0.0625rem solid var(--code-block-border);
+  padding: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+.code-container:last-child {
+  margin-bottom: 0;
+}
+@media (max-width: 768px) {
+  .code-container {
+    max-width: 100%;
+  }
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--code-muted, var(--text-tertiary));
+  margin-bottom: 0.5rem;
+  user-select: none;
+}
+.code-block {
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  line-height: 1.333333;
+  white-space: pre-wrap;
+  border: 0;
+  background-color: transparent;
+  margin: 0;
+  overflow-x: auto;
+  padding: 0;
+}
+.code-block .hljs {
+  display: block;
+  text-size-adjust: none;
+  background: transparent;
+  color: var(--text-code);
+  overflow-x: auto;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: inherit;
+}
+/* Lightweight syntax highlight tokens (dependency-free). */
+.hljs .hl-keyword { color: var(--alert-important-color); font-weight: 500; }
+.hljs .hl-string { color: var(--alert-tip-color); }
+.hljs .hl-comment { color: var(--text-tertiary); font-style: italic; }
+.hljs .hl-number { color: var(--alert-warning-color); }
+
+/* --- Tables (Markup.module.css .tableContainer/.table/...) --- */
+.table-container {
+  margin: 0 0 0.75rem 0;
+  overflow-x: auto;
+  display: block;
+  inline-size: fit-content;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+.table-container:last-child {
+  margin-bottom: 0;
+}
+.md-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0;
+  width: max-content;
+  min-width: 0;
+  font-size: 0.875em;
+  border: 0.0625rem solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.table-header {
+  background: var(--bg-table-header);
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 0.0625rem solid var(--border-color);
+  padding: 0.5rem 0.75rem;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-inline-size: 5rem;
+  text-align: left;
+}
+.table-cell {
+  border-bottom: 0.0625rem solid var(--border-color);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  background: var(--bg-table-row-odd);
+  vertical-align: middle;
+  line-height: 1.4;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-inline-size: 5rem;
+  hyphens: none;
+}
+.md-table tbody tr:last-child .table-cell {
+  border-bottom: none;
+}
+.md-table tbody tr:nth-child(odd) .table-cell {
+  background: var(--bg-table-row-odd);
+}
+.md-table tbody tr:nth-child(even) .table-cell {
+  background: var(--bg-table-row-even);
+}
+.align-left { text-align: left; }
+.align-center { text-align: center; }
+.align-right { text-align: right; }
+
+/* --- Alerts (Markup.module.css .alert/.alertTitle/.alertIcon/.alertContent) --- */
+.alert {
+  position: relative;
+  padding: 0.375rem 0.75rem 0.375rem 1rem;
+  margin-top: 0.25rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+}
+.alert::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0.25rem;
+  border-radius: 0.25rem;
+  background-color: currentColor;
+}
+.alert-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.25rem;
+  vertical-align: text-bottom;
+}
+.alert-title {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 0.9375em;
+}
+.alert-content {
+  margin-top: 0.25rem;
+  color: var(--text-chat);
+}
+.alert-content > :first-child {
+  margin-top: 0;
+}
+.alert-content > :last-child {
+  margin-bottom: 0;
+}
+.alert-note { color: var(--alert-note-color); }
+.alert-tip { color: var(--alert-tip-color); }
+.alert-important { color: var(--alert-important-color); }
+.alert-warning { color: var(--alert-warning-color); }
+.alert-caution { color: var(--alert-caution-color); }
+@media (max-width: 768px) {
+  .alert {
+    padding: 0.375rem 0.5rem 0.375rem calc(0.5rem + 0.1875rem);
+  }
 }
