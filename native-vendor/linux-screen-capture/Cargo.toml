@@ -23,5 +23,11 @@ async-io = "2.6.0"
 dcv-color-primitives = "1.0"
 futures-lite = "2.6.1"
 libc = "0.2"
-pipewire = { version = "0.10.0", features = ["v0_3_33"] }
+# v0_3_65, NOT v0_3_33: pipewire-rs 0.10's libspa lib.rs unconditionally calls
+# spa_meta_region_is_valid / reads spa_video_info_raw.flags, symbols that
+# libspa-sys only emits under the v0_3_65+ feature. Building with v0_3_33 fails
+# with `cannot find function spa_meta_region_is_valid in crate spa_sys`. The CI
+# runner (and any modern distro) has libpipewire >= 0.3.65, so requesting the
+# higher API surface is safe.
+pipewire = { version = "0.10.0", features = ["v0_3_65"] }
 zbus = "5.16.0"
