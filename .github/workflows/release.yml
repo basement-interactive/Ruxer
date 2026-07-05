@@ -181,6 +181,14 @@ jobs:
           # linker name in argument '-fuse-ld=mold'`. A fresh `apt-get update`
           # every run is a few seconds and always resolves current versions.
           set -euo pipefail
+          # pipewire-rs 0.10 (libspa/libspa-sys 0.10) ships pre-generated
+          # bindings that reference libspa API added AFTER 0.3.48 — the pipewire
+          # ubuntu-22.04 ships. Building against 0.3.48 headers fails with
+          # `cannot find function spa_meta_region_is_valid` / `spa_video_info_raw
+          # has no field flags`. The PipeWire upstream PPA backports current
+          # pipewire (0.3.6x+) to 22.04 WITHOUT touching glibc, so the AppImage
+          # stays portable (the whole reason we pin ubuntu-22.04, not 24.04).
+          sudo add-apt-repository -y ppa:pipewire-debian/pipewire-upstream
           sudo apt-get update
           # The full set of system libs the workspace's -sys crates pkg-config
           # (enumerated from Cargo.lock so we don't discover them one failed
@@ -204,8 +212,15 @@ jobs:
           # Assert the fast linker + the two audio deps that panic at build-time
           # if absent, so a missing dep fails HERE, not 10 min into the compile.
           mold --version
-          pkg-config --exists libpipewire-0.3 && echo "libpipewire-0.3 OK"
           pkg-config --exists alsa && echo "alsa OK"
+          # pipewire-rs 0.10 needs libpipewire >= 0.3.65. Assert it here so a PPA
+          # that silently failed to upgrade fails at install, not 10 min into the
+          # compile with the spa_meta_region_is_valid binding error.
+          pw_ver=$(pkg-config --modversion libpipewire-0.3)
+          echo "libpipewire-0.3 = $pw_ver"
+          pkg-config --atleast-version=0.3.65 libpipewire-0.3 || {
+            echo "FATAL: libpipewire-0.3 $pw_ver < 0.3.65 (pipewire-rs 0.10 needs newer); PPA didn't take"; exit 1;
+          }
 
       - name: Install Windows build deps (LLVM for lld-link, NASM, cmake)
         if: matrix.os == 'windows'
