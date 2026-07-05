@@ -59,20 +59,25 @@ jobs:
       matrix:
         include:
           - os: windows
-            # WarpBuild cloud runner (16 vCPU, Windows). Uses the documented
-            # current label (windows-latest, not a pinned 2022 image which may
-            # not be provisioned on every plan). Requires the WarpBuild GitHub
-            # app on the repo. Faster infra + WarpCache backend vs windows-latest.
-            runner: warp-windows-latest-x64-16x
+            # WarpBuild cloud runner (16 vCPU, Windows), targeted via the runner
+            # GROUP `Fast` + the size label. Warp runners are members of a runner
+            # group — GitHub only routes the job to Warp when runs-on names that
+            # group, so a bare label (no group) queues forever with no runner.
+            runner:
+              group: Fast
+              labels: warp-windows-latest-x64-16x
             target: x86_64-pc-windows-msvc
             # target/ is at the WORKSPACE ROOT (this is a cargo workspace), not
             # under src-tauri/. tauri writes the bundle to <root>/target/release/bundle.
             artifact_glob: target/release/bundle/msi/*.msi*
           - os: linux
-            # WarpBuild cloud runner (16 vCPU, Ubuntu 22.04). Still 22.04, NOT a
-            # newer image: tauri's webkit2gtk is pinned and 24.04's glibc breaks
-            # AppImage portability — the Warp image matches GitHub's 22.04 tooling.
-            runner: warp-ubuntu-2204-x64-16x
+            # WarpBuild cloud runner (16 vCPU, Ubuntu 22.04) via group `Fast`.
+            # Still 22.04, NOT newer: tauri's webkit2gtk is pinned and 24.04's
+            # glibc breaks AppImage portability — the Warp image matches GitHub's
+            # 22.04 tooling.
+            runner:
+              group: Fast
+              labels: warp-ubuntu-2204-x64-16x
             target: x86_64-unknown-linux-gnu
             artifact_glob: target/release/bundle/appimage/*.AppImage*
 
