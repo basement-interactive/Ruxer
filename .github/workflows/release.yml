@@ -71,7 +71,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         # The reference frontend (reference/fluxer/fluxer_app) is committed
         # directly into this repo — it's our editable shipped-UI source, not a
         # submodule — so a plain checkout has everything the frontend build needs.
@@ -299,7 +299,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download all bundle artifacts
         uses: actions/download-artifact@v4
