@@ -1,25 +1,25 @@
 # Release pipeline for Fluxer Desktop (Tauri).
 #
 # Triggered by pushing a `v*` tag (e.g. `v0.3.2`). Builds the Windows MSI and
-# the Linux AppImage IN PARALLEL on two 16-vCPU WarpBuild cloud runners, signs
-# both with the updater key, and publishes them — plus the updater manifest
+# the Linux AppImage IN PARALLEL on WarpBuild cloud runners, signs both with
+# the updater key, and publishes them — plus the updater manifest
 # (latest.json) — to a GitHub Release for that tag.
 #
 # Why this exists: the local hand-build (Windows natively + Linux in WSL on the
 # same machine) ran the two platforms serially with shared CPU/disk contention,
 # taking 5-10 minutes. This workflow moves both off your machine entirely and
-# runs them concurrently on WarpBuild's fast 16-core runners, with WarpCache
-# persisting the compiled crate graph across runs. See CHANGES.md (Part B) for
-# the full rationale, the secrets you must set up, and expected timings.
+# runs them concurrently on WarpBuild's runners, with WarpCache persisting the
+# compiled crate graph across runs. See CHANGES.md (Part B) for the full
+# rationale, the secrets you must set up, and expected timings.
 #
-# INFRA (WarpBuild): the build matrix runs on `warp-{windows-2022,ubuntu-2204}
-# -x64-16x` and caches via `WarpBuilds/cache@v1` (drop-in actions/cache, works
-# ONLY on Warp runners). Requires the WarpBuild GitHub app installed on this
-# repo (app.warpbuild.com) — without it, build jobs queue forever with no
-# runner to pick them up. The `release` publish job stays on GitHub-hosted
-# ubuntu-latest (just `gh release`, no compile, no Warp minutes burned).
-#
-# First-run (cold cache) per platform: ~10-15 min on 16x. Warm runs: ~3-6 min.
+# INFRA (WarpBuild): the build matrix runs on `warp-{windows-latest,ubuntu-2204}
+# -x64-4x` and caches via `WarpBuilds/cache@v1` (drop-in actions/cache, works
+# ONLY on Warp runners). Jobs are routed to Warp by the warp-* LABEL; Warp
+# provisions an ephemeral runner into the dashboard's Default GitHub Runner
+# Group (Fast). Requires the WarpBuild app installed + that default group set.
+# The `release` publish job stays on GitHub-hosted ubuntu-latest (just `gh
+# release`, no compile, no Warp minutes burned). Bump the -4x labels to -8x/
+# -16x for faster compiles once credit budget allows.
 
 name: release
 
@@ -59,25 +59,20 @@ jobs:
       matrix:
         include:
           - os: windows
-            # WarpBuild cloud runner (16 vCPU, Windows), targeted via the runner
-            # GROUP `Fast` + the size label. Warp runners are members of a runner
-            # group — GitHub only routes the job to Warp when runs-on names that
-            # group, so a bare label (no group) queues forever with no runner.
-            runner:
-              group: Fast
-              labels: warp-windows-latest-x64-16x
+            # WarpBuild cloud runner (16 vCPU, Windows). Routed by LABEL alone —
+            # WarpBuild intercepts jobs whose runs-on is a warp-* label and
+            # provisions an ephemeral runner registered into the dashboard's
+            # "Default GitHub Runner Group" (Fast). No `group:` in runs-on: the
+            # group is where Warp's runners live, not a routing key here.
+            runner: warp-windows-latest-x64-4x
             target: x86_64-pc-windows-msvc
             # target/ is at the WORKSPACE ROOT (this is a cargo workspace), not
             # under src-tauri/. tauri writes the bundle to <root>/target/release/bundle.
             artifact_glob: target/release/bundle/msi/*.msi*
           - os: linux
-            # WarpBuild cloud runner (16 vCPU, Ubuntu 22.04) via group `Fast`.
-            # Still 22.04, NOT newer: tauri's webkit2gtk is pinned and 24.04's
-            # glibc breaks AppImage portability — the Warp image matches GitHub's
-            # 22.04 tooling.
-            runner:
-              group: Fast
-              labels: warp-ubuntu-2204-x64-16x
+            # WarpBuild cloud runner (16 vCPU, Ubuntu 22.04). 22.04 pinned: tauri's
+            # webkit2gtk is pinned and 24.04's glibc breaks AppImage portability.
+            runner: warp-ubuntu-2204-x64-4x
             target: x86_64-unknown-linux-gnu
             artifact_glob: target/release/bundle/appimage/*.AppImage*
 
