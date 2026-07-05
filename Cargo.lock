@@ -1847,7 +1847,7 @@ dependencies = [
 
 [[package]]
 name = "fluxer-desktop"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "axum",
  "base64 0.22.1",
