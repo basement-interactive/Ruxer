@@ -13,6 +13,7 @@ import { session, toasts, preloadIdentityMedia } from "./stores";
 import { api } from "./api";
 import { LoginView } from "./views/LoginView";
 import { AppLayout } from "./layout/AppLayout";
+import { TitleBar } from "./layout/TitleBar";
 
 export const App = observer(function App() {
   // `restoring` is true while we check the keychain for a saved session. We
@@ -58,13 +59,22 @@ export const App = observer(function App() {
     }
   }, [session.isLoggedIn]);
 
-  if (restoring && !session.isLoggedIn) {
-    return <LoadingScreen />;
-  }
-  if (!session.isLoggedIn) {
-    return <LoginView />;
-  }
-  return <AppLayout />;
+  const content =
+    restoring && !session.isLoggedIn ? (
+      <LoadingScreen />
+    ) : !session.isLoggedIn ? (
+      <LoginView />
+    ) : (
+      <AppLayout />
+    );
+  // The frameless window draws its own titlebar at the very top; the app content
+  // sits below it, offset by --native-titlebar-height.
+  return (
+    <>
+      <TitleBar />
+      <div className="app-below-titlebar">{content}</div>
+    </>
+  );
 });
 
 function LoadingScreen() {

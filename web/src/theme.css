@@ -128,6 +128,18 @@ body,
   unicode-bidi: plaintext;
 }
 
+/* The frameless window's custom titlebar (TitleBar.tsx) is fixed at the top;
+   everything else lives below it, so offset the content wrapper by the
+   titlebar height and let it fill the rest of the window. */
+.app-below-titlebar {
+  position: absolute;
+  top: var(--native-titlebar-height, 2rem);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
 button {
   font-family: inherit;
   cursor: pointer;

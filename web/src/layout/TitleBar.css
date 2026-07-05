@@ -1,0 +1,77 @@
+/* Custom frameless-window titlebar. Fixed strip at the very top; the whole app
+   below is offset by --native-titlebar-height (see AppLayout.css / LoginView). */
+
+.titlebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--native-titlebar-height, 2rem);
+  display: flex;
+  align-items: center;
+  padding-left: var(--sp-3, 12px);
+  gap: var(--sp-2, 8px);
+  background: var(--bg-panel, var(--background-secondary));
+  z-index: var(--z-index-titlebar, 100000);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2, 8px);
+  opacity: 0.85;
+}
+
+.titlebar-wordmark {
+  font-family: var(--font-display, var(--font-sans));
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-muted, var(--text-primary-muted));
+}
+
+.titlebar-spacer {
+  flex: 1 1 auto;
+  height: 100%;
+}
+
+.titlebar-controls {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.titlebar-btn {
+  appearance: none;
+  box-sizing: border-box;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted, var(--text-secondary));
+  width: 2.75rem;
+  height: 100%;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.titlebar-btn:hover {
+  background: var(--bg-modifier-hover, rgba(255, 255, 255, 0.06));
+  color: var(--text-normal, var(--text-primary));
+}
+
+.titlebar-btn:active {
+  background: var(--bg-modifier-selected, rgba(255, 255, 255, 0.1));
+}
+
+.titlebar-btn-close:hover {
+  background: #e81123;
+  color: #fff;
+}
+
+.titlebar-btn-close:active {
+  background: #b50d1a;
+}
