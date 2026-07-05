@@ -51,16 +51,9 @@ export const Composer = observer(function Composer({
     return () => clearTimeout(timer);
   }, [slowmodeRemaining]);
 
-  // Edit mode: when ui.editingMessageId is set, prefill from the message.
-  const editingId = ui.editingMessageId;
-  useEffect(() => {
-    if (editingId) {
-      const list = messages.getMessages(channelId);
-      const m = list.find((x) => x.id === editingId);
-      if (m) setText(m.content);
-      inputRef.current?.focus();
-    }
-  }, [editingId, channelId]);
+  // Editing is now handled INLINE in the message row (EditingMessageInput),
+  // not by hijacking this composer — reference-parity. The composer stays a
+  // pure new-message input.
 
   // Reply target: when set, the composer shows a preview above the input and
   // sends with message_reference. Cleared on send or Escape.
@@ -116,18 +109,13 @@ export const Composer = observer(function Composer({
     const resolved = resolveShortcodesInText(text.trim(), guilds.allCustomEmoji);
     const content = resolved;
     if (!content && attachments.length === 0) return;
-    if (editingId) {
-      await messages.edit(channelId, editingId, content);
-      ui.editingMessageId = null;
-    } else {
-      const replyTo = ui.replyTarget?.messageId;
-      // B.6: send text + attachments in one multipart request. The Tauri
-      // backend reads each file's bytes and builds the multipart body; we just
-      // pass the paths (plus an optional spoiler flag, defaulting to false).
-      const inputs = attachments.map((path) => ({ path, spoiler: false }));
-      await messages.send(channelId, content, replyTo, inputs);
-      ui.clearReplyTarget();
-    }
+    const replyTo = ui.replyTarget?.messageId;
+    // B.6: send text + attachments in one multipart request. The Tauri backend
+    // reads each file's bytes and builds the multipart body; we just pass the
+    // paths (plus an optional spoiler flag, defaulting to false).
+    const inputs = attachments.map((path) => ({ path, spoiler: false }));
+    await messages.send(channelId, content, replyTo, inputs);
+    ui.clearReplyTarget();
     setAttachments([]);
     setText("");
     // Start the slowmode countdown if the channel has a rate limit.
@@ -167,9 +155,8 @@ export const Composer = observer(function Composer({
       e.preventDefault();
       send();
     }
-    if (e.key === "Escape" && editingId) {
-      ui.editingMessageId = null;
-      setText("");
+    if (e.key === "Escape" && ui.replyTarget) {
+      ui.clearReplyTarget();
       return;
     }
     if (e.key === "Escape" && ui.replyTarget) {
@@ -340,21 +327,10 @@ export const Composer = observer(function Composer({
             value={text}
             onChange={onInputChange}
             onKeyDown={onKeyDown}
-            placeholder={editingId ? "Edit message…" : `Message ${channelLabel()}`}
+            placeholder={`Message ${channelLabel()}`}
           />
         </div>
         <div className="composer-actions">
-          {editingId && (
-            <button
-              className="composer-cancel"
-              onClick={() => {
-                ui.editingMessageId = null;
-                setText("");
-              }}
-            >
-              Cancel
-            </button>
-          )}
           <button
             className="composer-emoji-btn"
             onClick={() => { setGifPickerOpen((v) => !v); ui.toggleEmojiPicker(false); }}

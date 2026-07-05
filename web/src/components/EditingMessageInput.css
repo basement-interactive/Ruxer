@@ -1,0 +1,38 @@
+/* Inline message edit box (replaces the message body while editing). */
+.editing-message {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+.editing-message-input {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  min-height: 2.25rem;
+  max-height: 400px;
+  padding: 8px 10px;
+  border-radius: var(--r-lg, 8px);
+  border: 0;
+  background: var(--bg-textarea, var(--bg-panel, #383a40));
+  color: var(--text-normal, #dbdee1);
+  font-family: var(--font-primary, inherit);
+  font-size: var(--font-size-md, 1rem);
+  line-height: 1.375rem;
+  outline: none;
+}
+.editing-message-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted, #949ba4);
+}
+.editing-message-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--text-link, #00a8fc);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+.editing-message-link:hover {
+  text-decoration: underline;
+}

@@ -9,6 +9,7 @@ import type { ContextMenuItem } from "../stores";
 import type { Message, MessageSnapshot } from "../types";
 import { Avatar } from "./Avatar";
 import { ContentRenderer } from "./ContentRenderer";
+import { EditingMessageInput } from "./EditingMessageInput";
 import { EmbedList } from "./EmbedList";
 import { AudioPlayer } from "./AudioPlayer";
 import { formatTimestamp } from "../utils";
@@ -35,6 +36,9 @@ export const MessageRow = observer(function MessageRow({
   // Optimistic-send state: dim while sending, show a retry footer on failure.
   const sending = message._state === "sending";
   const failed = message._state === "failed";
+  // Inline edit: when this message is being edited, its body is replaced by an
+  // in-place textarea (reference-parity — not the bottom composer).
+  const editing = ui.editingMessageId === message.id;
 
   return (
     <div
@@ -75,7 +79,11 @@ export const MessageRow = observer(function MessageRow({
           <div className="message-grouped">
             <span className="message-hover-time">{time}</span>
             <div className="message-body">
-              <ContentRenderer content={message.content} messageId={message.id} />
+              {editing ? (
+                <EditingMessageInput message={message} />
+              ) : (
+                <ContentRenderer content={message.content} messageId={message.id} />
+              )}
             </div>
           </div>
         ) : (
@@ -102,7 +110,11 @@ export const MessageRow = observer(function MessageRow({
                 )}
               </div>
               <div className="message-body">
-                <ContentRenderer content={message.content} messageId={message.id} />
+                {editing ? (
+                  <EditingMessageInput message={message} />
+                ) : (
+                  <ContentRenderer content={message.content} messageId={message.id} />
+                )}
               </div>
             </div>
           </div>
