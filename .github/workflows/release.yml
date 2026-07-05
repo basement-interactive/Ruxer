@@ -1,18 +1,25 @@
 # Release pipeline for Fluxer Desktop (Tauri).
 #
 # Triggered by pushing a `v*` tag (e.g. `v0.3.2`). Builds the Windows MSI and
-# the Linux AppImage IN PARALLEL on two separate GitHub-hosted runners, signs
+# the Linux AppImage IN PARALLEL on two 16-vCPU WarpBuild cloud runners, signs
 # both with the updater key, and publishes them — plus the updater manifest
 # (latest.json) — to a GitHub Release for that tag.
 #
 # Why this exists: the local hand-build (Windows natively + Linux in WSL on the
 # same machine) ran the two platforms serially with shared CPU/disk contention,
 # taking 5-10 minutes. This workflow moves both off your machine entirely and
-# runs them concurrently, with persistent caching so warm builds are ~3-6 min
-# wall-clock (the slower of the two jobs). See CHANGES.md (Part B) for the full
-# rationale, the secrets you must set up, and expected timings.
+# runs them concurrently on WarpBuild's fast 16-core runners, with WarpCache
+# persisting the compiled crate graph across runs. See CHANGES.md (Part B) for
+# the full rationale, the secrets you must set up, and expected timings.
 #
-# First-run (cold cache) per platform: ~15-25 min. Subsequent runs: ~3-6 min.
+# INFRA (WarpBuild): the build matrix runs on `warp-{windows-2022,ubuntu-2204}
+# -x64-16x` and caches via `WarpBuilds/cache@v1` (drop-in actions/cache, works
+# ONLY on Warp runners). Requires the WarpBuild GitHub app installed on this
+# repo (app.warpbuild.com) — without it, build jobs queue forever with no
+# runner to pick them up. The `release` publish job stays on GitHub-hosted
+# ubuntu-latest (just `gh release`, no compile, no Warp minutes burned).
+#
+# First-run (cold cache) per platform: ~10-15 min on 16x. Warm runs: ~3-6 min.
 
 name: release
 
@@ -40,7 +47,7 @@ env:
   # note in the build job). Without this override every cargo command in CI
   # would try to exec a missing `sccache` and die. An empty
   # CARGO_BUILD_RUSTC_WRAPPER takes precedence over the config file's value and
-  # makes cargo invoke rustc directly. Swatinem/rust-cache handles caching.
+  # makes cargo invoke rustc directly. WarpCache handles compile caching.
   CARGO_BUILD_RUSTC_WRAPPER: ""
 
 jobs:
@@ -52,13 +59,19 @@ jobs:
       matrix:
         include:
           - os: windows
-            runner: windows-latest
+            # WarpBuild cloud runner (16 vCPU, Windows Server 2022). Standard
+            # Warp label — requires the WarpBuild GitHub app installed on the
+            # repo (billing). Faster infra + WarpCache backend vs windows-latest.
+            runner: warp-windows-2022-x64-16x
             target: x86_64-pc-windows-msvc
             # target/ is at the WORKSPACE ROOT (this is a cargo workspace), not
             # under src-tauri/. tauri writes the bundle to <root>/target/release/bundle.
             artifact_glob: target/release/bundle/msi/*.msi*
           - os: linux
-            runner: ubuntu-22.04   # NOT ubuntu-latest: tauri's webkit2gtk is pinned and 24.04's glibc breaks AppImage portability
+            # WarpBuild cloud runner (16 vCPU, Ubuntu 22.04). Still 22.04, NOT a
+            # newer image: tauri's webkit2gtk is pinned and 24.04's glibc breaks
+            # AppImage portability — the Warp image matches GitHub's 22.04 tooling.
+            runner: warp-ubuntu-2204-x64-16x
             target: x86_64-unknown-linux-gnu
             artifact_glob: target/release/bundle/appimage/*.AppImage*
 
@@ -110,17 +123,23 @@ jobs:
       # SCCACHE_IGNORE_SERVER_IO_ERROR does NOT cover (that flag only tolerates
       # I/O errors DURING compilation, not startup). With RUSTC_WRAPPER=sccache
       # set globally, that startup failure killed EVERY cargo invocation incl.
-      # `cargo install tauri-cli`. `Swatinem/rust-cache` (below) already caches
-      # ~/.cargo + target/ across runs, so the compile-caching need is covered
-      # without sccache's fragile always-on cache-service dependency. Locally,
-      # sccache is still used via .cargo/config.toml — that's unaffected.
+      # `cargo install tauri-cli`. WarpCache (below) caches ~/.cargo + target/
+      # across runs, so the compile-caching need is covered without sccache's
+      # fragile always-on cache-service dependency. Locally, sccache is still
+      # used via .cargo/config.toml — that's unaffected.
+      #
+      # CACHING: all three caches use WarpBuilds/cache@v1 (a drop-in, feature-
+      # parity replacement for actions/cache with unlimited per-repo cache and
+      # no eviction). It ONLY works on WarpBuild runners — which is exactly what
+      # the build matrix now uses — so the GitHub-hosted `release` publish job
+      # below deliberately keeps no WarpCache steps.
 
       - name: Cache tauri-cli install
         # tauri-cli is ~50 crates to compile; cache the installed binary so we
         # only pay that cost when the pinned version changes. Keyed on the OS +
         # the version string below.
         id: cache-tauri-cli
-        uses: actions/cache@v4
+        uses: WarpBuilds/cache@v1
         with:
           path: |
             ~/.cargo/bin/cargo-tauri
@@ -144,21 +163,30 @@ jobs:
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
           cargo tauri --version
 
-      - name: Cache Cargo target dir
-        uses: Swatinem/rust-cache@v2
+      - name: Cache Cargo registry + target dir (WarpCache)
+        uses: WarpBuilds/cache@v1
         with:
-          workspaces: .
-          # Key on the lockfile + target + runner OS. A Cargo.lock change misses
-          # the cache (correct — deps changed); everything else hits.
-          save-if: ${{ github.ref_type == 'tag' || github.event_name == 'workflow_dispatch' }}
-          # Save target/ even when the job FAILS. Without this, rust-cache only
-          # saves on success — so during iteration every failed run recompiles
-          # webrtc-sys + the whole ~800-crate graph from scratch (~17 min). With
-          # it, each run's compiled artifacts persist, so the NEXT run resumes
-          # from where the last one got to instead of cold-starting. This is the
-          # single biggest lever on the "builds take forever" complaint until we
-          # land a first fully-green run.
-          cache-on-failure: true
+          # Raw-path cache (WarpCache is a drop-in actions/cache, not the
+          # Rust-aware Swatinem/rust-cache) so we list the cargo dirs + the
+          # workspace target/ explicitly:
+          #   ~/.cargo/registry/index+cache → downloaded crate metadata + .crate files
+          #   ~/.cargo/git                  → git deps (the vendored rust-sdks patch)
+          #   target/                       → the compiled ~800-crate graph incl. webrtc-sys
+          # (~/.cargo/registry/src is intentionally omitted — cargo recreates it
+          # from the .crate files faster than restoring it.)
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git
+            target
+          # Key on lockfile + runner OS. A Cargo.lock change misses (correct —
+          # deps changed) and restore-keys then falls back to the newest prior
+          # cache for the same OS, so only the changed crates rebuild. WarpCache
+          # saves on job completion regardless of success/failure, so a failed
+          # run still persists its target/ — no cold recompile next run.
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ runner.os }}-
 
       # ---------------------------------------------------------------------
       # Native build dependencies per platform.
@@ -236,8 +264,8 @@ jobs:
       # fetches via webrtc_sys_build::download_webrtc(). Keyed on the git rev
       # (in Cargo.toml [patch] section) so it invalidates when we move revs.
       # ---------------------------------------------------------------------
-      - name: Cache libwebrtc download
-        uses: actions/cache@v4
+      - name: Cache libwebrtc download (WarpCache)
+        uses: WarpBuilds/cache@v1
         with:
           path: |
             ~/.cache/webrtc
@@ -253,8 +281,8 @@ jobs:
       #     it. CI produces the standard non-NVENC build, same as a release
       #     without an NVIDIA encoder box. NVENC users self-build locally.
       #   - We don't pass --target because the runner's default host target IS
-      #     the target we want (no cross-compile), which lets rust-cache and
-      #     sccache key correctly.
+      #     the target we want (no cross-compile), which keeps target/ paths
+      #     stable so the WarpCache key hits across runs.
       #   - tauri.conf.json already declares both bundle targets, but `cargo
       #     tauri build` only builds the ones valid for the host platform, so
       #     Windows produces just the MSI and Linux produces just the AppImage.
