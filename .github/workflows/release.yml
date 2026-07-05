@@ -108,6 +108,17 @@ jobs:
           # GHA cache backend for sccache — survives across runs, no manual management.
           # The local-config port conflict (SCCACHE_SERVER_PORT=4227) doesn't
           # apply in CI; sccache's GHA integration uses its own transport.
+          #
+          # CRITICAL: don't let a transient GHA-cache-backend outage FAIL the
+          # build. With RUSTC_WRAPPER=sccache set globally, EVERY cargo compile
+          # (incl. `cargo install tauri-cli` and the heavy webrtc-sys build) goes
+          # through sccache — and by default sccache HARD-FAILS the compile if it
+          # can't reach its cache storage ("Server startup failed: cache storage
+          # failed to read ... Our services aren't available right now"). This
+          # flag makes sccache fall back to a direct (uncached) compile on a
+          # storage I/O error instead of aborting, so a blip in GitHub's cache
+          # service can't break a release.
+          echo "SCCACHE_IGNORE_SERVER_IO_ERROR=1" >> "$GITHUB_ENV"
 
       - name: Cache tauri-cli install
         # tauri-cli is ~50 crates to compile; cache the installed binary so we
