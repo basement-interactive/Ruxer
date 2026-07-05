@@ -1,0 +1,27 @@
+{
+  "exports": {
+    ".": {
+      "default": "./libfluxcore.js",
+      "types": "./libfluxcore.d.ts"
+    },
+    "./libfluxcore_bg.wasm": "./libfluxcore_bg.wasm"
+  },
+  "files": [
+    "libfluxcore.js",
+    "libfluxcore.d.ts",
+    "libfluxcore_bindgen.js",
+    "libfluxcore_bindgen.d.ts",
+    "libfluxcore_bg.wasm",
+    "libfluxcore_bg.wasm.d.ts",
+    "README.md"
+  ],
+  "license": "AGPL-3.0-or-later",
+  "main": "libfluxcore.js",
+  "module": "libfluxcore.js",
+  "name": "libfluxcore",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "types": "libfluxcore.d.ts",
+  "version": "0.0.0"
+}

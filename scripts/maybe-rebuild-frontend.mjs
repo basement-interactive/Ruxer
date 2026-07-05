@@ -136,6 +136,37 @@ function run(label, cmd, args, cwd) {
   }
 }
 
+// CODEGEN before rspack. The reference client's own `build` script runs a chain
+// of generators first — they emit files that are GITIGNORED in the upstream repo
+// (SVGMasks.tsx, i18n messages.mjs, ThemeVariableManifest.ts, generated CSS +
+// css-type .d.ts, config schemas). A bare `rspack build` fails with "Cannot find
+// module '@app/features/ui/components/SVGMasks'" etc. on a clean checkout
+// (e.g. CI) because those files don't exist yet. Run the same lightweight
+// generators the reference build does (all pure tsx/node — no Rust), then rspack.
+// NOTE: `wasm:codegen` is deliberately OMITTED — it compiles a wasm32 crate via
+// wasm-bindgen (needs the Rust wasm target + a network download of the CLI). Its
+// output (fluxer_app/pkgs/libfluxcore, ~214 KB) is small and stable, so it's
+// committed to the repo instead of rebuilt every CI run.
+const CODEGEN_STEPS = [
+  'generate:colors',
+  'generate:message-layout',
+  'generate:theme-variables',
+  'generate:masks',
+  'generate:css-types',
+];
+for (const step of CODEGEN_STEPS) {
+  run(`codegen ${step}`, PKG_MGR, ['run', step], APP_DIR);
+}
+
+// i18n compile: the reference's `lingui:compile` script passes `--strict`, which
+// FAILS the whole build if ANY locale has a missing translation. This client
+// ships partial translations (newly-added UI strings aren't translated into all
+// ~40 locales yet), and lingui's normal behaviour for a missing translation is
+// to fall back to the source (English) string — which is exactly what we want in
+// a build. So run `lingui compile` WITHOUT `--strict`: still emits every
+// locale's messages.mjs, just doesn't treat untranslated strings as fatal.
+run('codegen lingui compile (non-strict)', PKG_MGR, ['exec', 'lingui', 'compile'], APP_DIR);
+
 // rspack binary path mirrors AGENTS.md (avoid relying on a global rspack).
 const RSPACK = join(APP_DIR, 'node_modules', '.bin', process.platform === 'win32' ? 'rspack.cmd' : 'rspack');
 const RSPACK_BIN = existsSync(RSPACK)
