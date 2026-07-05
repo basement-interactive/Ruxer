@@ -25,7 +25,7 @@ export const MemberList = observer(function MemberList() {
   const allMembers = guilds.membersByGuild.get(guild.id) ?? [];
   if (allMembers.length === 0) {
     return (
-      <aside className="member-list">
+      <aside className="member-list" data-flx="app.member-list">
         <div className="member-list-empty muted">Loading members…</div>
       </aside>
     );
@@ -55,7 +55,7 @@ export const MemberList = observer(function MemberList() {
   };
 
   return (
-    <aside className="member-list">
+    <aside className="member-list" data-flx="app.member-list">
       <div className="member-list-scroll" ref={scrollRef} onScroll={onScroll}>
         {groups.map((g) => (
           <MemberGroup

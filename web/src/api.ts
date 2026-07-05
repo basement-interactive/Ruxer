@@ -265,6 +265,10 @@ export const api = {
     call<void>("delete_guild_sticker", { guildId, stickerId }),
   premiumState: () => call<PremiumState>("premium_state"),
   saveTheme: (css: string) => call<unknown>("save_theme", { css }),
+  // UI editor advanced mode: run a sandboxed LuaU layout script in the Rust
+  // sandbox (src-tauri/src/ui_editor.rs). Returns the array of presentation ops
+  // the script emitted; throws (ApiError) on a script/syntax/budget error.
+  uiEditorRunLua: (script: string) => call<unknown[]>("ui_editor_run_lua", { script }),
   reportMessage: (channelId: Snowflake, messageId: Snowflake, category: string) =>
     call<void>("report_message", { channelId, messageId, category }),
   reportUser: (userId: Snowflake, category: string, guildId?: Snowflake) =>

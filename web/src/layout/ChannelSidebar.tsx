@@ -11,7 +11,7 @@ import "./ChannelSidebar.css";
 
 export const ChannelSidebar = observer(function ChannelSidebar() {
   return (
-    <aside className="channel-sidebar">
+    <aside className="channel-sidebar" data-flx="app.channel-sidebar">
       <div className="channel-sidebar-content">
         {ui.side === "guild" && ui.currentGuild ? (
           <ChannelList guild={ui.currentGuild} />

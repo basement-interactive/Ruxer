@@ -113,10 +113,14 @@ export const AppLayout = observer(function AppLayout() {
             : "Connecting…"}
         </div>
       )}
-      <div className="app-layout-row">
+      {/* data-flx anchors: stable breadcrumb ids the in-app UI editor targets
+          to reorder / resize / hide / recolor layout regions without touching
+          component source. Keep these paths stable — saved user layouts key on
+          them. */}
+      <div className="app-layout-row" data-flx="app.layout-row">
         <GuildsRail />
         <ChannelSidebar />
-        <div className="app-main">
+        <div className="app-main" data-flx="app.main-content">
           <MainContent />
         </div>
         {ui.rightPane === "members" && ui.currentGuild && <MemberList />}

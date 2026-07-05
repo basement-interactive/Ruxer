@@ -35,7 +35,7 @@ export const UserArea = observer(function UserArea() {
     voice.pendingChannelId != null || voice.connectionState === "connected";
   const micOn = inVoice && voice.localParticipant?.micEnabled !== false;
   return (
-    <div className="user-area">
+    <div className="user-area" data-flx="app.user-area">
       {inVoice && <VoiceConnectionStrip />}
       <div className="user-area-row">
       <button

@@ -16,7 +16,7 @@ let dragSourceIndex: number | null = null;
 
 export const GuildsRail = observer(function GuildsRail() {
   return (
-    <nav className="guild-rail" aria-label="Servers">
+    <nav className="guild-rail" aria-label="Servers" data-flx="app.guild-rail">
       <div className="guild-rail-top">
         <RailButton
           label="Direct Messages"

@@ -14,6 +14,7 @@ import { api } from "./api";
 import { LoginView } from "./views/LoginView";
 import { AppLayout } from "./layout/AppLayout";
 import { TitleBar } from "./layout/TitleBar";
+import { UiEditorGate } from "./editor/UiEditorGate";
 
 export const App = observer(function App() {
   // `restoring` is true while we check the keychain for a saved session. We
@@ -73,6 +74,7 @@ export const App = observer(function App() {
     <>
       <TitleBar />
       <div className="app-below-titlebar">{content}</div>
+      <UiEditorGate />
     </>
   );
 });
