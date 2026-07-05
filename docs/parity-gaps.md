@@ -26,10 +26,10 @@ native (voice/screen/media) via `invoke`.
 ## Wave 1 — messaging (27%) — daily-driver core
 
 High priority:
-- [ ] Optimistic send — insert immediately SENDING → SENT/FAILED, failed footer + retry, send queue. ref: features/messaging/state/MessageQueue.tsx, hooks/useMessageSubmission.tsx
-- [ ] Full markdown — headings, lists, tables, alerts, fenced code + syntax highlight, masked links, subtext (ref uses WASM parser). ref: features/messaging/components/markdown/renderers/*
-- [ ] Inline message editing — edit in place (EditingMessageInput replaces row). ref: features/channel/components/EditingMessageInput.tsx
-- [ ] Per-channel drafts — persist unsent text per channel, restore on switch. ref: features/messaging/state/MessagingDrafts.ts
+- [x] Optimistic send — SENDING → SENT/FAILED, failed footer + retry, nonce reconcile. DONE
+- [x] Full markdown — headings, lists, tables, alerts, fenced code + tokenizer, masked links, subtext (hand-written, no WASM). DONE
+- [x] Inline message editing — EditingMessageInput replaces the row in place. DONE
+- [x] Per-channel drafts — DraftsStore (localStorage), restore on switch, clear on send. DONE
 - [ ] Forward message — action + ForwardModal (picker, comment, multi-target). ref: features/messaging/components/modals/ForwardModal.tsx
 - [ ] Reaction users list — hover tooltip + reactions modal (per-emoji tabs). ref: features/messaging/components/popouts/ReactionTooltip.tsx
 
