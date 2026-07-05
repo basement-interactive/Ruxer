@@ -82,24 +82,22 @@ jobs:
       # changed (most Rust-only releases). web/dist is committed-as-built in
       # some workflows, but here we always run the checker — it self-skips.
       # ---------------------------------------------------------------------
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.29.3   # matches reference/fluxer/fluxer_app/package.json packageManager
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22   # local dev uses 22.x (see maybe-rebuild-frontend.mjs verified on 22.14.0)
-          cache: pnpm
-          cache-dependency-path: reference/fluxer/fluxer_app/pnpm-lock.yaml
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
 
-      - name: Install frontend deps
-        working-directory: reference/fluxer/fluxer_app
-        run: pnpm install --frozen-lockfile
+      - name: Install frontend deps (custom UI)
+        working-directory: web
+        run: npm ci
 
-      - name: Build frontend (skipped if unchanged)
-        run: node scripts/maybe-rebuild-frontend.mjs
+      # The frontend is the CUSTOM UI in web/ (Vite). `cargo tauri build` runs
+      # `beforeBuildCommand` (npm --prefix ../web run build) to produce web/dist,
+      # so we only need deps installed here. (The old reference-client rspack
+      # build via scripts/maybe-rebuild-frontend.mjs is retired — the shipped
+      # frontend is no longer the vendored reference client.)
 
       # ---------------------------------------------------------------------
       # Rust toolchain + caching. Order matters: toolchain before any cargo
