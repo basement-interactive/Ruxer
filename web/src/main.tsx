@@ -4,6 +4,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { observer } from "mobx-react-lite";
 import { App } from "./App";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { session, startGatewayListener, startLogListener } from "./stores";
 // The Fluxer-accurate design tokens (ported 1:1 from the real client source).
 // Imported before theme.css so the canonical Fluxer variables are available;
@@ -26,7 +27,11 @@ const Root = observer(function Root() {
     }
   }, [session.isLoggedIn]);
 
-  return <App />;
+  return (
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
 });
 
 const root = createRoot(document.getElementById("root")!);

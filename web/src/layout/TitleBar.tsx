@@ -6,29 +6,52 @@
 // Windows-style controls with a red close hover).
 
 import { useEffect, useState } from "react";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import type { Window } from "@tauri-apps/api/window";
 import "./TitleBar.css";
+
+// Resolve the Tauri window lazily and defensively: `getCurrentWindow()` throws
+// outside a Tauri webview (e.g. a plain-browser vite preview) and may not be
+// ready at first paint. Returning null there lets the titlebar still render;
+// the controls simply no-op. Never let this crash the whole app.
+async function tauriWindow(): Promise<Window | null> {
+  try {
+    if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+      return null;
+    }
+    const mod = await import("@tauri-apps/api/window");
+    return mod.getCurrentWindow();
+  } catch {
+    return null;
+  }
+}
 
 export function TitleBar() {
   const [maximized, setMaximized] = useState(false);
 
   useEffect(() => {
-    const win = getCurrentWindow();
     let unlisten: (() => void) | undefined;
-    // Track maximize state so the middle button shows the right glyph.
-    win.isMaximized().then(setMaximized).catch(() => {});
-    win
-      .onResized(() => {
-        win.isMaximized().then(setMaximized).catch(() => {});
-      })
-      .then((fn) => {
-        unlisten = fn;
-      })
-      .catch(() => {});
-    return () => unlisten?.();
+    let disposed = false;
+    (async () => {
+      const win = await tauriWindow();
+      if (!win || disposed) return;
+      win.isMaximized().then(setMaximized).catch(() => {});
+      const fn = await win
+        .onResized(() => {
+          win.isMaximized().then(setMaximized).catch(() => {});
+        })
+        .catch(() => undefined);
+      if (disposed) fn?.();
+      else unlisten = fn ?? undefined;
+    })();
+    return () => {
+      disposed = true;
+      unlisten?.();
+    };
   }, []);
 
-  const win = getCurrentWindow();
+  const ctl = (fn: (w: Window) => Promise<unknown>) => () => {
+    tauriWindow().then((w) => (w ? fn(w) : undefined)).catch(() => {});
+  };
 
   return (
     <div className="titlebar" data-tauri-drag-region data-flx="app.titlebar">
@@ -40,7 +63,7 @@ export function TitleBar() {
         <button
           className="titlebar-btn"
           aria-label="Minimize"
-          onClick={() => win.minimize().catch(() => {})}
+          onClick={ctl((w) => w.minimize())}
         >
           <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
             <rect x="2" y="5.5" width="8" height="1" fill="currentColor" />
@@ -49,7 +72,7 @@ export function TitleBar() {
         <button
           className="titlebar-btn"
           aria-label={maximized ? "Restore" : "Maximize"}
-          onClick={() => win.toggleMaximize().catch(() => {})}
+          onClick={ctl((w) => w.toggleMaximize())}
         >
           {maximized ? (
             <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
@@ -65,7 +88,7 @@ export function TitleBar() {
         <button
           className="titlebar-btn titlebar-btn-close"
           aria-label="Close"
-          onClick={() => win.close().catch(() => {})}
+          onClick={ctl((w) => w.close())}
         >
           <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
             <path d="M2.5 2.5L9.5 9.5M9.5 2.5L2.5 9.5" stroke="currentColor" strokeWidth="1.1" />
