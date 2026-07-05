@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import {createNamedStringLiteralUnion, withOpenApiType} from '@fluxer/schema/src/primitives/SchemaPrimitives';
+
+export const LocaleSchema = withOpenApiType(
+	createNamedStringLiteralUnion(
+		[
+			['ar', 'AR', 'Arabic'],
+			['bg', 'BG', 'Bulgarian'],
+			['cs', 'CS', 'Czech'],
+			['da', 'DA', 'Danish'],
+			['de', 'DE', 'German'],
+			['el', 'EL', 'Greek'],
+			['en-GB', 'EN_GB', 'English (United Kingdom)'],
+			['en-US', 'EN_US', 'English (United States)'],
+			['es-ES', 'ES_ES', 'Spanish (Spain)'],
+			['es-419', 'ES_419', 'Spanish (Latin America)'],
+			['fi', 'FI', 'Finnish'],
+			['fr', 'FR', 'French'],
+			['he', 'HE', 'Hebrew'],
+			['hi', 'HI', 'Hindi'],
+			['hr', 'HR', 'Croatian'],
+			['hu', 'HU', 'Hungarian'],
+			['id', 'ID', 'Indonesian'],
+			['it', 'IT', 'Italian'],
+			['ja', 'JA', 'Japanese'],
+			['ko', 'KO', 'Korean'],
+			['lt', 'LT', 'Lithuanian'],
+			['nl', 'NL', 'Dutch'],
+			['no', 'NO', 'Norwegian'],
+			['pl', 'PL', 'Polish'],
+			['pt-BR', 'PT_BR', 'Portuguese (Brazil)'],
+			['ro', 'RO', 'Romanian'],
+			['ru', 'RU', 'Russian'],
+			['sv-SE', 'SV_SE', 'Swedish'],
+			['th', 'TH', 'Thai'],
+			['tr', 'TR', 'Turkish'],
+			['uk', 'UK', 'Ukrainian'],
+			['vi', 'VI', 'Vietnamese'],
+			['zh-CN', 'ZH_CN', 'Chinese (Simplified)'],
+			['zh-TW', 'ZH_TW', 'Chinese (Traditional)'],
+		] as const,
+		'The locale code for the user interface language',
+	),
+	'Locale',
+);

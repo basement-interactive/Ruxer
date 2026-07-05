@@ -1,0 +1,46 @@
+{
+	"name": "participants and tracks projection",
+	"events": [
+		{
+			"type": "room.participantJoined",
+			"participant": {"sid": "PA_alice", "identity": "alice", "name": "Alice"}
+		},
+		{
+			"type": "room.trackPublished",
+			"track": {
+				"participantIdentity": "alice",
+				"participantSid": "PA_alice",
+				"trackSid": "TR_camera",
+				"trackName": "camera",
+				"kind": "video",
+				"source": "camera",
+				"muted": false
+			}
+		},
+		{"type": "room.trackMuted", "trackSid": "TR_camera"},
+		{
+			"type": "room.trackPublished",
+			"track": {
+				"participantIdentity": "alice",
+				"participantSid": "PA_alice",
+				"trackSid": "TR_mic",
+				"trackName": "microphone",
+				"kind": "audio",
+				"source": "microphone",
+				"muted": false
+			}
+		},
+		{"type": "room.trackUnpublished", "trackSid": "TR_mic"},
+		{
+			"type": "room.participantJoined",
+			"participant": {"sid": "PA_bob", "identity": "bob", "name": "Bob"}
+		},
+		{"type": "room.participantLeft", "participantIdentity": "alice", "participantSid": "PA_alice"}
+	],
+	"expected": {
+		"participants": [{"sid": "PA_bob", "identity": "bob", "name": "Bob"}],
+		"tracks": [],
+		"inboundVideoTracks": [],
+		"commands": []
+	}
+}

@@ -1,0 +1,80 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.root {
+	position: relative;
+	width: 100%;
+	height: 6rem;
+	background: var(--background-tertiary);
+	border-radius: 0.5rem;
+	overflow: hidden;
+	user-select: none;
+	touch-action: none;
+}
+
+.canvas {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.selection {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	background: color-mix(in srgb, var(--text-primary) 12%, transparent);
+	border-left: 0.125rem solid var(--text-secondary);
+	border-right: 0.125rem solid var(--text-secondary);
+	cursor: grab;
+	pointer-events: auto;
+}
+
+.selectionDragging {
+	cursor: grabbing;
+}
+
+.handle {
+	position: absolute;
+	top: -0.125rem;
+	bottom: -0.125rem;
+	width: 0.875rem;
+	margin-left: -0.4375rem;
+	background: var(--text-secondary);
+	border-radius: 0.25rem;
+	cursor: ew-resize;
+	touch-action: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-primary);
+	font-size: 0.625rem;
+	font-weight: 700;
+	letter-spacing: 0.0625rem;
+	line-height: 1;
+}
+
+.handle::after {
+	content: '';
+	width: 0.125rem;
+	height: 1.75rem;
+	background: var(--background-tertiary);
+	opacity: 0.85;
+	border-radius: 0.0625rem;
+}
+
+.handleStart {
+	--audio-waveform-handle-edge: start;
+}
+
+.handleEnd {
+	--audio-waveform-handle-edge: end;
+}
+
+.playhead {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 0.125rem;
+	margin-left: -0.0625rem;
+	background: var(--text-primary);
+	pointer-events: none;
+}

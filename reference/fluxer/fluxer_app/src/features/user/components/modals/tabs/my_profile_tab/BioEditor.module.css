@@ -1,0 +1,27 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.emojiButton {
+	display: flex;
+	height: 2rem;
+	width: 2rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.25rem;
+	transition: color 0.15s ease;
+	color: var(--text-tertiary);
+	cursor: pointer;
+}
+
+.emojiButton:hover {
+	color: var(--text-primary);
+}
+
+.emojiButtonActive {
+	color: var(--text-primary);
+}
+
+.description {
+	margin-top: 0.5rem;
+	font-size: 0.875rem;
+	color: var(--text-primary-muted);
+}

@@ -1,0 +1,43 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.popout {
+	--popout-shadow: rgb(0 0 0 / 0.24);
+
+	pointer-events: auto;
+	transition: none;
+	-webkit-app-region: no-drag;
+	filter: drop-shadow(0 0.5rem 1rem var(--popout-shadow));
+}
+
+.popoutStableText {
+	filter: none;
+	box-shadow: 0 0.5rem 1rem var(--popout-shadow);
+}
+
+:global(.theme-light) .popout {
+	--popout-shadow: rgb(0 0 0 / 0.14);
+}
+
+.popouts {
+	background: none;
+	inset: 0;
+	pointer-events: none;
+	position: fixed;
+	z-index: var(--z-index-popout);
+}
+
+:global(html.platform-native:not(.platform-macos)) .popouts {
+	top: var(--native-titlebar-height);
+}
+
+.backdrop {
+	position: absolute;
+	inset: 0;
+	background: transparent;
+	pointer-events: auto;
+	z-index: -1;
+}
+
+.triggerWrapper {
+	display: inline-flex;
+}

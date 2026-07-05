@@ -1,0 +1,43 @@
+name: Documentation
+description: Report a docs issue or suggest a docs improvement.
+type: Task
+labels:
+  - docs
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues before filing.
+        Report security issues at https://fluxer.app/security.
+        Keep AI-generated text out of bug reports, except for direct translation if English is not your native language.
+  - type: textarea
+    id: issue
+    attributes:
+      label: What needs fixing?
+      description: Describe the missing, incorrect, or unclear documentation.
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: Link the page, file, or heading if you can.
+      placeholder: https://...
+    validations:
+      required: false
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested change
+      description: Add proposed wording or a short outline if useful.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: I wrote this report in my own words, except for direct translation if needed.
+          required: true

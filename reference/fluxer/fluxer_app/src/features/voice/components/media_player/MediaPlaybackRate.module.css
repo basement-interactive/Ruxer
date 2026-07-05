@@ -1,0 +1,70 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--text-secondary);
+	cursor: pointer;
+	transition:
+		color 150ms ease,
+		background-color 150ms ease;
+	outline: none;
+	border-radius: var(--radius-sm, 0.25rem);
+	font-size: 0.75rem;
+	font-weight: 600;
+	font-family: var(--font-mono, monospace);
+	font-variant-numeric: tabular-nums;
+	width: 2.75rem;
+	height: 1.5rem;
+	flex-shrink: 0;
+}
+
+.button:hover {
+	color: var(--text-primary);
+	background-color: var(--background-modifier-hover);
+}
+
+.button:active {
+	background-color: var(--background-modifier-selected);
+}
+
+.small {
+	font-size: 0.6875rem;
+	width: 2.375rem;
+	height: 1.375rem;
+}
+
+.medium {
+	font-size: 0.75rem;
+	width: 2.75rem;
+	height: 1.5rem;
+}
+
+.large {
+	font-size: 0.875rem;
+	width: 3.25rem;
+	height: 1.75rem;
+}
+
+.active {
+	color: var(--brand-primary-light);
+}
+
+.label {
+	display: block;
+	white-space: nowrap;
+	line-height: 1;
+	padding-inline: 0.125rem;
+}
+
+.button[data-rate-length='5'] .label {
+	font-size: 0.8em;
+}
+
+:global(.theme-light) .active {
+	color: var(--brand-primary);
+}

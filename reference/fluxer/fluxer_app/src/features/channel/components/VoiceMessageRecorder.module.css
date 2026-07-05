@@ -1,0 +1,168 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.voiceButtonWrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.holdTooltip {
+	background-color: var(--brand-primary);
+	color: var(--text-on-brand-primary);
+	font-size: 0.75rem;
+	font-weight: 600;
+	padding: 0.375rem 0.625rem;
+	border-radius: 62.4375rem;
+	white-space: nowrap;
+	box-shadow: 0 0.375rem 0.875rem rgba(0, 0, 0, 0.2);
+	pointer-events: none;
+	z-index: 2001;
+}
+
+.recordingOverlay {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 2000;
+	background-color: var(--brand-primary);
+	padding-bottom: env(safe-area-inset-bottom, 0);
+	box-shadow: 0 -0.5rem 1.25rem rgba(0, 0, 0, 0.25);
+	box-sizing: border-box;
+}
+
+.overlayInner {
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.recordingControls {
+	position: relative;
+	overflow: visible;
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+.recordingBar {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	gap: 0.625rem;
+	background-color: color-mix(in srgb, #000 85%, var(--brand-primary) 15%);
+	color: #fff;
+	border-radius: 62.4375rem;
+	padding: 0.625rem 0.75rem;
+	height: 2.25rem;
+}
+
+.recordingDot {
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: 50%;
+	background-color: var(--accent-danger, #ef4444);
+	box-shadow: 0 0 0 0.125rem color-mix(in srgb, var(--accent-danger, #ef4444) 40%, transparent);
+	flex-shrink: 0;
+}
+
+.timer {
+	font-variant-numeric: tabular-nums;
+	font-size: 0.875rem;
+	font-weight: 600;
+	flex-shrink: 0;
+}
+
+.waveform {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.1875rem;
+	flex: 1;
+	height: 1.5rem;
+	overflow: hidden;
+}
+
+.waveformBar {
+	flex: 0 0 0.1875rem;
+	width: 0.1875rem;
+	min-height: 0.375rem;
+	background-color: #fff;
+	border-radius: 62.4375rem;
+	opacity: 0.85;
+}
+
+.iconButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 50%;
+	border: none;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.iconButton svg {
+	width: 1.25rem;
+	height: 1.25rem;
+}
+
+.iconButton:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.trashButton {
+	background-color: color-mix(in srgb, #000 85%, var(--brand-primary) 15%);
+	color: #fff;
+}
+
+.sendButton {
+	background-color: #fff;
+	color: #000;
+}
+
+.lockIndicatorWrapper {
+	position: relative;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	height: 2.25rem;
+}
+
+.lockIndicator {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.125rem;
+	padding: 0.375rem 0.375rem 0.25rem;
+	border-radius: 0.75rem;
+	background-color: #000;
+	color: #fff;
+	box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.25);
+	pointer-events: none;
+	z-index: 2001;
+}
+
+.lockIndicatorLocked {
+	background-color: #fff;
+	color: var(--accent-success, #16a34a);
+}
+
+.lockIndicatorIcon {
+	width: 1.125rem;
+	height: 1.125rem;
+}
+
+.lockIndicatorCaret {
+	width: 1rem;
+	height: 1rem;
+	margin-top: -0.125rem;
+}

@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+version: v2
+inputs:
+  - directory: .
+plugins:
+  - local: ../node_modules/.bin/protoc-gen-es
+    out: ../src/gen
+    opt:
+      - target=ts
+      - import_extension=none
+clean: true

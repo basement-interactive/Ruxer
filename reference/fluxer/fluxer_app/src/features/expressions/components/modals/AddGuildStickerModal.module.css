@@ -1,0 +1,27 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.formContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.errorModalContent {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.errorModalMessage {
+	margin: 0;
+}
+
+.errorModalFileName {
+	overflow-wrap: anywhere;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 0.375rem;
+	background: var(--background-modifier-accent);
+	padding: 0.625rem 0.75rem;
+	color: var(--text-primary);
+	font-weight: 600;
+}

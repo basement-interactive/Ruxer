@@ -1,0 +1,62 @@
+{
+	"name": "push to talk and push to mute gate microphone enabled state",
+	"events": [
+		{"type": "connection.connectRequested", "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "connection.connectSucceeded", "operationId": 1},
+		{"type": "microphone.publishRequested", "options": {"deviceId": "mic-a"}},
+		{"type": "microphone.publishSucceeded", "operationId": 2},
+		{"type": "audioControls.changed", "controls": {"mode": "pushToTalk", "pushToTalkActive": false}},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 3},
+		{"type": "audioControls.changed", "controls": {"pushToTalkActive": true}},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 4},
+		{
+			"type": "audioControls.changed",
+			"controls": {"mode": "pushToMute", "pushToTalkActive": false, "pushToMuteActive": true}
+		},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 5},
+		{"type": "audioControls.changed", "controls": {"pushToMuteActive": false}},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 6}
+	],
+	"expectedCommands": [
+		{"type": "connection.connect", "operationId": 1, "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "microphone.publish", "operationId": 2, "options": {"deviceId": "mic-a"}},
+		{"type": "microphone.setEnabled", "operationId": 3, "enabled": false},
+		{"type": "microphone.setEnabled", "operationId": 4, "enabled": true},
+		{"type": "microphone.setEnabled", "operationId": 5, "enabled": false},
+		{"type": "microphone.setEnabled", "operationId": 6, "enabled": true}
+	],
+	"checkpoints": [
+		{
+			"afterEvent": 5,
+			"microphoneStatus": "published",
+			"microphoneEnabled": false,
+			"localSpeakingOverride": false,
+			"audioMode": "pushToTalk"
+		},
+		{
+			"afterEvent": 7,
+			"microphoneStatus": "published",
+			"microphoneEnabled": true,
+			"localSpeakingOverride": true,
+			"audioMode": "pushToTalk"
+		},
+		{
+			"afterEvent": 9,
+			"microphoneStatus": "published",
+			"microphoneEnabled": false,
+			"localSpeakingOverride": false,
+			"audioMode": "pushToMute"
+		}
+	],
+	"expectedSnapshot": {
+		"nextOperationId": 7,
+		"connectionStatus": "connected",
+		"microphoneStatus": "published",
+		"microphoneEnabled": true,
+		"localSpeakingOverride": null,
+		"audioMode": "pushToMute",
+		"publishedDeviceId": "mic-a",
+		"desiredDeviceId": "mic-a",
+		"lastFailureCode": null
+	}
+}

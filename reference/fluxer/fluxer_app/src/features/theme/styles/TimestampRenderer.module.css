@@ -1,0 +1,15 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.tooltipContainer {
+	display: flex;
+	flex-direction: column;
+}
+
+.tooltipFullDateTime {
+	font-weight: 600;
+}
+
+.tooltipRelativeTime {
+	color: #d1d5db;
+	font-size: 0.875rem;
+}

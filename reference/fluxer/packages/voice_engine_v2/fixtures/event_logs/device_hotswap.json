@@ -1,0 +1,61 @@
+{
+	"name": "audio input selection and hotplug republish microphone when connected",
+	"events": [
+		{"type": "connection.connectRequested", "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "connection.connectSucceeded", "operationId": 1},
+		{"type": "microphone.publishRequested", "options": {"deviceId": "mic-a"}},
+		{"type": "microphone.publishSucceeded", "operationId": 2},
+		{"type": "devices.selectAudioInputRequested", "deviceId": "mic-b"},
+		{"type": "command.succeeded", "operationId": 3, "commandType": "devices.selectAudioInput"},
+		{"type": "microphone.publishSucceeded", "operationId": 4},
+		{
+			"type": "devices.changed",
+			"operationId": null,
+			"reason": "hotplug",
+			"devices": {
+				"audioInputs": [
+					{"deviceId": "mic-b", "label": "Desk mic", "isDefault": false},
+					{"deviceId": "mic-c", "label": "Headset mic", "isDefault": true}
+				],
+				"audioOutputs": [],
+				"cameras": [],
+				"selectedAudioInputId": "mic-c",
+				"selectedAudioOutputId": null,
+				"selectedCameraId": null
+			}
+		},
+		{"type": "microphone.publishSucceeded", "operationId": 5}
+	],
+	"expectedCommands": [
+		{"type": "connection.connect", "operationId": 1, "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "microphone.publish", "operationId": 2, "options": {"deviceId": "mic-a"}},
+		{"type": "devices.selectAudioInput", "operationId": 3, "deviceId": "mic-b"},
+		{"type": "microphone.publish", "operationId": 4, "options": {"deviceId": "mic-b"}},
+		{"type": "microphone.publish", "operationId": 5, "options": {"deviceId": "mic-c"}}
+	],
+	"checkpoints": [
+		{
+			"afterEvent": 5,
+			"microphoneStatus": "publishing",
+			"desiredDeviceId": "mic-b",
+			"selectedAudioInputId": "mic-b"
+		},
+		{
+			"afterEvent": 8,
+			"microphoneStatus": "publishing",
+			"desiredDeviceId": "mic-c",
+			"selectedAudioInputId": "mic-c"
+		}
+	],
+	"expectedSnapshot": {
+		"nextOperationId": 6,
+		"connectionStatus": "connected",
+		"microphoneStatus": "published",
+		"microphoneEnabled": true,
+		"localSpeakingOverride": null,
+		"publishedDeviceId": "mic-c",
+		"desiredDeviceId": "mic-c",
+		"selectedAudioInputId": "mic-c",
+		"lastFailureCode": null
+	}
+}

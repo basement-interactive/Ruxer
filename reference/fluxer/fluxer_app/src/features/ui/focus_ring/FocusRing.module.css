@@ -1,0 +1,22 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.focusRing {
+	position: absolute;
+	display: block;
+	pointer-events: none;
+
+	background: none;
+	margin: 0;
+	padding: 0;
+	border-radius: var(--focus-ring-radius, 0.25rem);
+	outline: 0.125rem solid transparent;
+	outline-offset: 0.125rem;
+	box-shadow: 0 0 0 0.25rem var(--focus-ring-color, var(--focus-primary));
+}
+
+@media (forced-colors: active) {
+	.focusRing {
+		box-shadow: none;
+		outline-color: Highlight;
+	}
+}

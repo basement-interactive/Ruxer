@@ -1,0 +1,72 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"include": ["files", "exports", "types", "dependencies", "unlisted", "binaries", "catalog"],
+	"ignoreDependencies": [
+		"@bufbuild/protoc-gen-es",
+		"@tailwindcss/cli",
+		"@types/events",
+		"events",
+		"fflate",
+		"gifenc",
+		"gifuct-js",
+		"tailwindcss",
+		"upng-js"
+	],
+	"ignoreFiles": [
+		"fluxer_admin/src/styles/app.css",
+		"fluxer_admin/static/htmx.min.js",
+		"fluxer_marketing/src/styles/app.css",
+		"fluxer_marketing/static/htmx.min.js"
+	],
+	"ignoreIssues": {
+		"fluxer_app/scripts/build/Config.tsx": ["exports"],
+		"fluxer_app/scripts/build/rspack/static-files.mjs": ["exports"],
+		"fluxer_app/src/index.tsx": ["unlisted"],
+		"fluxer_desktop/native/mac-app-audio/index.test.mjs": ["unlisted"],
+		"fluxer_desktop/src/common/DesktopConfig.ts": ["types"],
+		"fluxer_desktop/src/common/Types.ts": ["types"],
+		"fluxer_desktop/src/main/Autostart.ts": ["exports"],
+		"fluxer_desktop/src/main/LinuxDesktopEntry.ts": ["exports"],
+		"fluxer_desktop/src/main/NotificationState.ts": ["exports", "types"],
+		"fluxer_desktop/src/main/WindowsVulkanGameCaptureLayer.ts": ["exports"],
+		"pnpm-workspace.yaml": ["catalog"]
+	},
+	"workspaces": {
+		".": {
+			"project": ["scripts/**/*.mjs"]
+		},
+		"fluxer_api": {
+			"entry": ["src/api/test/fake-ncmec/Bin.ts"]
+		},
+		"fluxer_app": {
+			"entry": ["lingui.config.js", "scripts/build-sw.mjs", "scripts/Generate*.ts"],
+			"ignoreDependencies": ["@lingui/swc-plugin"]
+		},
+		"fluxer_desktop": {
+			"entry": [
+				"src/main/Bootstrap.ts",
+				"src/main/index.ts",
+				"src/preload/index.ts",
+				"src/main/**/*.test.{ts,mjs}",
+				"native/*/index.{js,d.ts}",
+				"native/*/loader-diagnostics.cjs",
+				"native/*/*.test.mjs",
+				"native/*/test/**/*.mjs",
+				"native/*/vm_tests/*.mjs",
+				"native/*/scripts/**/*.mjs"
+			],
+			"project": ["src/**/*.{ts,tsx,mjs,js}", "scripts/**/*.mjs", "native/**/*.{js,mjs,cjs,d.ts}"],
+			"ignoreDependencies": ["electron-builder"]
+		},
+		"packages/openapi": {
+			"entry": ["src/GenerateOpenAPISpec.ts"],
+			"project": ["src/**/*.ts"]
+		},
+		"packages/schema": {
+			"project": ["src/**/*.ts", "!src/gen/**"]
+		},
+		"packages/voice_engine_v2": {
+			"entry": ["src/**/*.bench.ts"]
+		}
+	}
+}

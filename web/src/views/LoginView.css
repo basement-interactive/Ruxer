@@ -1,0 +1,169 @@
+.login-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg-main);
+  padding: var(--sp-8);
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-panel);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6);
+  box-shadow: var(--shadow-popout);
+}
+
+.login-brand {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-bright);
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.login-sub {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: var(--sp-2);
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.login-label {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.login-input {
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-input);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--text-normal);
+  outline: none;
+}
+.login-input:focus {
+  border-color: var(--brand);
+}
+
+.login-radios {
+  display: flex;
+  gap: var(--sp-4);
+}
+
+.login-radio {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--font-size-md);
+  color: var(--text-normal);
+  cursor: pointer;
+}
+
+.login-advanced {
+  color: var(--text-muted);
+}
+.login-advanced summary {
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: var(--sp-1) 0;
+}
+.login-advanced[open] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding-top: var(--sp-2);
+}
+
+.login-error {
+  color: var(--red);
+  font-size: var(--font-size-sm);
+  padding: var(--sp-2) var(--sp-3);
+  background: rgba(242, 63, 67, 0.1);
+  border-radius: var(--r-sm);
+}
+
+.login-submit {
+  margin-top: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+  font-size: var(--font-size-md);
+  border-radius: var(--r-sm);
+  transition: background 0.1s;
+}
+.login-submit:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+.login-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tabs (E.23) — switch between Password and Token login. */
+.login-tabs {
+  display: flex;
+  gap: var(--sp-1);
+  background: var(--bg-input);
+  border-radius: var(--r-sm);
+  padding: 2px;
+}
+.login-tab {
+  flex: 1;
+  padding: var(--sp-1) var(--sp-2);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border-radius: calc(var(--r-sm) - 1px);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+.login-tab:hover {
+  color: var(--text-normal);
+}
+.login-tab.active {
+  background: var(--bg-panel);
+  color: var(--text-bright);
+}
+
+/* MFA challenge sub-view (E.23). */
+.login-mfa-hint {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: 0 var(--sp-2);
+}
+.login-mfa-actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+.login-back {
+  padding: var(--sp-2) var(--sp-3);
+  background: transparent;
+  color: var(--text-normal);
+  font-weight: 600;
+  border: 1px solid var(--border-normal, rgba(255, 255, 255, 0.08));
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.login-back:hover {
+  background: var(--bg-input);
+}

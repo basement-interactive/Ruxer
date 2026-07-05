@@ -1,0 +1,142 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.accordion {
+	display: flex;
+	flex-direction: column;
+	padding-top: var(--spacing-6);
+	padding-bottom: var(--spacing-6);
+	border-top: 0.0625rem solid var(--background-modifier-accent);
+}
+
+.accordion:first-child {
+	padding-top: 0;
+	border-top: none;
+}
+
+.headerRow {
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0;
+	width: 100%;
+	cursor: pointer;
+}
+
+.headerClickTarget {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+}
+
+.titleButton,
+.descriptionButton,
+.caretButton {
+	padding: 0;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	text-align: left;
+}
+
+.headerContent {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	min-width: 0;
+	flex: 1;
+	flex-direction: column;
+	gap: 0;
+	pointer-events: none;
+}
+
+.titleRow {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	gap: var(--spacing-2);
+}
+
+.titleButton {
+	display: flex;
+	box-sizing: border-box;
+	min-width: 0;
+	align-items: center;
+	flex: 0 1 auto;
+	pointer-events: auto;
+}
+
+.headerAction {
+	display: flex;
+	align-items: center;
+	flex: 0 0 auto;
+	min-height: 1.5rem;
+	pointer-events: auto;
+}
+
+.descriptionButton {
+	display: flex;
+	box-sizing: border-box;
+	min-width: 0;
+	width: 100%;
+	align-self: stretch;
+	max-width: 100%;
+	padding-top: 0.125rem;
+	text-align: left;
+	pointer-events: auto;
+}
+
+.compactTitle {
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.25rem;
+	color: var(--text-primary);
+}
+
+.compactDescription {
+	font-size: 0.8125rem;
+	line-height: 1.25rem;
+	color: var(--text-secondary);
+}
+
+.caretButton {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 1.75rem;
+	height: 1.75rem;
+	margin-top: -0.125rem;
+	border-radius: 0.25rem;
+}
+
+.caretButton:hover {
+	background: var(--background-modifier-hover);
+}
+
+.caret {
+	flex-shrink: 0;
+	color: var(--text-secondary);
+	transition: transform 0.2s ease;
+}
+
+.caretExpanded {
+	transform: rotate(180deg);
+}
+
+.contentWrapper {
+	overflow: hidden;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-4);
+	padding-top: var(--spacing-4);
+}

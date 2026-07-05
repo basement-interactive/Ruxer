@@ -1,0 +1,175 @@
+[
+	{
+		"name": "successful operation",
+		"result": {"ok": true},
+		"requestedEnabled": true,
+		"expected": "none"
+	},
+	{
+		"name": "disabled microphone not connected",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "not-connected",
+				"message": "Native voice engine is not connected"
+			}
+		},
+		"requestedEnabled": false,
+		"expected": "none"
+	},
+	{
+		"name": "unsupported microphone capture",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "unsupported-capability",
+				"capability": "microphoneCapture",
+				"message": "Native voice engine addon does not support device microphone capture"
+			}
+		},
+		"requestedEnabled": true,
+		"expected": "crash"
+	},
+	{
+		"name": "invalid args",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "invalid-args",
+				"message": "Invalid voice-engine publish-microphone args"
+			}
+		},
+		"requestedEnabled": true,
+		"expected": "crash"
+	},
+	{
+		"name": "modern not connected",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "not-connected",
+				"capability": "microphoneCapture",
+				"message": "Native voice engine is not connected"
+			}
+		},
+		"requestedEnabled": true,
+		"expected": "defer"
+	},
+	{
+		"name": "legacy not connected",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "native-error",
+				"capability": "microphoneCapture",
+				"message": "not connected"
+			}
+		},
+		"requestedEnabled": true,
+		"expected": "defer"
+	},
+	{
+		"name": "device unavailable",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "native-error",
+				"capability": "microphoneCapture",
+				"message": "device unavailable"
+			}
+		},
+		"requestedEnabled": true,
+		"expected": "mute"
+	},
+	{
+		"name": "timeout failure defers without muting",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "timeout",
+				"message": "Voice engine v2 microphone enable timed out"
+			}
+		},
+		"requestedEnabled": true,
+		"expected": "defer"
+	},
+	{
+		"name": "cancelled failure defers without muting",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "cancelled",
+				"message": "Voice engine v2 microphone enable cancelled"
+			}
+		},
+		"requestedEnabled": true,
+		"expected": "defer"
+	},
+	{
+		"name": "livekit transport failure defers without muting",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "liveKitError",
+				"message": "could not establish pc connection"
+			}
+		},
+		"requestedEnabled": true,
+		"expected": "defer"
+	},
+	{
+		"name": "opaque failure during reconnect defers without muting",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "native-error",
+				"capability": "microphoneCapture",
+				"message": "engine resume in progress"
+			}
+		},
+		"requestedEnabled": true,
+		"context": {"reconnecting": true},
+		"expected": "defer"
+	},
+	{
+		"name": "opaque failure while stable still mutes",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "native-error",
+				"capability": "microphoneCapture",
+				"message": "engine resume in progress"
+			}
+		},
+		"requestedEnabled": true,
+		"context": {"reconnecting": false},
+		"expected": "mute"
+	},
+	{
+		"name": "invalid args during reconnect still crashes",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "invalid-args",
+				"message": "Invalid voice-engine publish-microphone args"
+			}
+		},
+		"requestedEnabled": true,
+		"context": {"reconnecting": true},
+		"expected": "crash"
+	},
+	{
+		"name": "disable failure during reconnect stays none",
+		"result": {
+			"ok": false,
+			"error": {
+				"code": "native-error",
+				"capability": "microphoneCapture",
+				"message": "engine resume in progress"
+			}
+		},
+		"requestedEnabled": false,
+		"context": {"reconnecting": true},
+		"expected": "none"
+	}
+]

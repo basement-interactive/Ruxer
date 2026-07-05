@@ -1,0 +1,67 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.content p {
+	margin: 0;
+}
+
+.guildList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.guildItem {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	border-radius: 0.375rem;
+	border: 0.0625rem solid var(--background-header-secondary);
+	background-color: var(--background-secondary);
+	padding: 0.75rem;
+}
+
+.guildIcon {
+	font-size: 1rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	--guild-icon-size: 2.5rem;
+}
+
+.guildInfo {
+	flex: 1;
+}
+
+.guildName {
+	font-weight: 500;
+	color: var(--text-primary);
+}
+
+.remainingCount {
+	text-align: center;
+	font-size: inherit;
+	color: inherit;
+}
+
+.helpText {
+	color: inherit;
+}
+
+.footer {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	width: 100%;
+	gap: 0.5rem;
+}
+
+.footer > * {
+	flex: 1;
+	min-width: fit-content;
+}

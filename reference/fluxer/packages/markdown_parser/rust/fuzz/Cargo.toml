@@ -1,0 +1,22 @@
+[package]
+name = "fluxer_markdown_parser_fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+fluxer_markdown_parser = { path = ".." }
+libfuzzer-sys = "0.4"
+serde_json = "1.0"
+
+[[bin]]
+name = "markdown_parser"
+path = "fuzz_targets/markdown_parser.rs"
+test = false
+doc = false
+bench = false

@@ -1,0 +1,97 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.headerIcon {
+	height: 1rem;
+	width: 1rem;
+	color: var(--text-primary-muted);
+}
+
+.caretIcon {
+	height: 0.75rem;
+	width: 0.75rem;
+	flex-shrink: 0;
+	color: var(--text-primary-muted);
+	transition: transform 0.2s;
+}
+
+.stickerGrid {
+	display: grid;
+	gap: var(--spacing-2);
+	padding: 0 0 0.5rem;
+}
+
+.stickerButton {
+	position: relative;
+	display: flex;
+	aspect-ratio: 1;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	transition:
+		border-radius 0.2s,
+		background-color 0.2s,
+		box-shadow 0.2s,
+		opacity 0.2s;
+	cursor: pointer;
+	border: none;
+	background: transparent;
+	padding: 0;
+	border-radius: 0.5rem;
+}
+
+.stickerButton:hover,
+.stickerButton.selected {
+	border-radius: 1rem;
+	background-color: var(--background-header-secondary);
+	box-shadow: 0 0 0 0.0625rem var(--background-modifier-hover);
+}
+
+.stickerImage {
+	height: 100%;
+	width: 100%;
+	border-radius: 0.25rem;
+	object-fit: contain;
+}
+
+.gifBadge {
+	position: absolute;
+	top: 0.25rem;
+	left: 0.25rem;
+	border-radius: 0.25rem;
+	background-color: rgba(0, 0, 0, 0.6);
+	padding: 0.25rem 0.125rem;
+	font-weight: 600;
+	color: white;
+	font-size: 0.75rem;
+	line-height: 1;
+}
+
+.starIconFilled {
+	height: 1rem;
+	width: 1rem;
+}
+
+.starIcon {
+	height: 1rem;
+	width: 1rem;
+}
+
+.clipboardIcon {
+	height: 1rem;
+	width: 1rem;
+}
+
+.guildIconSmall {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	--guild-icon-size: 1rem;
+}
+
+.categoryTitle {
+	font-size: 0.875rem;
+	font-weight: bold;
+	color: var(--text-primary-muted);
+	line-height: 1.2;
+	max-height: 1.05rem;
+}

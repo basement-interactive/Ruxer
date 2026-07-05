@@ -1,0 +1,25 @@
+.dm-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--sp-8);
+}
+.dm-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  text-align: center;
+  max-width: 420px;
+}
+.dm-empty-card h1 {
+  margin: var(--sp-4) 0 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--header-primary);
+}
+.dm-empty-card p {
+  margin: 0;
+  color: var(--header-secondary);
+}

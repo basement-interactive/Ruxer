@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+version: v2
+modules:
+  - path: .
+    name: buf.build/fluxer/preferences
+lint:
+  use:
+    - STANDARD
+  except:
+
+
+
+    - ENUM_VALUE_PREFIX
+    - ENUM_ZERO_VALUE_SUFFIX
+breaking:
+  use:
+    - FILE

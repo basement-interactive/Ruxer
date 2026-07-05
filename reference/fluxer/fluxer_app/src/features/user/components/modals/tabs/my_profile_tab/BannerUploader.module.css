@@ -1,0 +1,40 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.label {
+	margin-bottom: 0.5rem;
+	font-weight: 500;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.buttonGroup {
+	margin-bottom: 0.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.buttonGroupAfterMode {
+	margin-top: 0.75rem;
+}
+
+@media (min-width: 640px) {
+	.buttonGroup {
+		flex-direction: row;
+	}
+}
+
+.description {
+	font-size: 0.875rem;
+	color: var(--text-primary-muted);
+}
+
+.helperSpacing {
+	margin-top: 0.75rem;
+}
+
+.errorMessage {
+	margin-top: 0.5rem;
+	font-size: 0.875rem;
+	color: var(--status-danger);
+}

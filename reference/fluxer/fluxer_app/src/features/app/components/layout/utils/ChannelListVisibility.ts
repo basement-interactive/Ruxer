@@ -1,0 +1,31 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+export interface HiddenMutedChannelVisibilityInput {
+	isMuted: boolean;
+	isSelected: boolean;
+	isConnected: boolean;
+	hasVisibleUnread: boolean;
+}
+
+export function shouldShowChannelWhenHidingMutedChannels({
+	isMuted,
+	isSelected,
+	isConnected,
+	hasVisibleUnread,
+}: HiddenMutedChannelVisibilityInput): boolean {
+	return isSelected || isConnected || !isMuted || hasVisibleUnread;
+}
+
+export interface CollapsedCategoryChannelVisibilityInput {
+	isCategoryMuted: boolean;
+	isSelected: boolean;
+	hasVisibleUnread: boolean;
+}
+
+export function shouldShowChannelInCollapsedCategory({
+	isCategoryMuted,
+	isSelected,
+	hasVisibleUnread,
+}: CollapsedCategoryChannelVisibilityInput): boolean {
+	return isSelected || (!isCategoryMuted && hasVisibleUnread);
+}

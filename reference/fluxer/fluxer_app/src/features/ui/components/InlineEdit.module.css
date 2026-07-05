@@ -1,0 +1,89 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: inline-flex;
+	flex-direction: column;
+	gap: 0.125rem;
+	min-width: 0;
+}
+
+.inlineTextBase {
+	font-size: inherit;
+	line-height: inherit;
+	font-family: inherit;
+	font-weight: inherit;
+	letter-spacing: inherit;
+	color: inherit;
+	white-space: pre;
+}
+
+.idleButton {
+	cursor: pointer;
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	text-align: left;
+	min-width: 0;
+	outline: none;
+}
+
+.idleButton:active {
+	background: none;
+}
+
+.wrapper {
+	display: inline-flex;
+	align-items: center;
+	min-width: 0;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.25rem;
+	box-sizing: border-box;
+	border: 0.0625rem solid transparent;
+	background-color: transparent;
+	transition: background-color 0.1s ease;
+	max-width: 100%;
+	width: 100%;
+}
+
+.idleButton:hover .wrapper {
+	background-color: var(--background-secondary);
+}
+
+.placeholder .wrapper {
+	color: var(--text-tertiary);
+}
+
+.container:has(.editable) .wrapper {
+	background-color: var(--background-tertiary);
+}
+
+.affix {
+	display: inline-block;
+	flex-shrink: 0;
+}
+
+.text {
+	display: inline-block;
+	min-width: 0;
+	flex-shrink: 1;
+}
+
+.editable {
+	padding: 0;
+	margin: 0;
+	outline: none;
+	border: none;
+	background: none;
+}
+
+.editable:empty:before {
+	content: attr(data-placeholder);
+	color: var(--text-tertiary);
+	pointer-events: none;
+}
+
+.error {
+	font-size: 0.75rem;
+	color: var(--status-danger);
+}

@@ -1,0 +1,78 @@
+[
+	{
+		"name": "mirror toggle updates in place",
+		"input": {
+			"published": {"deviceId": "camera-1", "width": 1280, "height": 720, "mirror": false},
+			"desired": null,
+			"update": {"mirror": true}
+		},
+		"expectedAction": "updateEncoding",
+		"expectedReason": "effectsOrEncodingChanged",
+		"expectedMirror": true
+	},
+	{
+		"name": "background mode and blur strength update in place",
+		"input": {
+			"published": {"deviceId": "camera-1", "width": 1280, "height": 720, "backgroundMode": "none"},
+			"desired": null,
+			"update": {"backgroundMode": "blur", "backgroundBlurStrength": 70}
+		},
+		"expectedAction": "updateEncoding",
+		"expectedReason": "effectsOrEncodingChanged",
+		"expectedBackgroundMode": "blur"
+	},
+	{
+		"name": "resolution and frame rate update in place",
+		"input": {
+			"published": {"deviceId": "camera-1", "width": 1280, "height": 720, "frameRate": 30},
+			"desired": null,
+			"update": {"width": 1920, "height": 1080, "frameRate": 60}
+		},
+		"expectedAction": "updateEncoding",
+		"expectedReason": "effectsOrEncodingChanged",
+		"expectedWidth": 1920,
+		"expectedFrameRate": 60
+	},
+	{
+		"name": "device change republishes",
+		"input": {
+			"published": {"deviceId": "camera-1", "width": 1280, "height": 720},
+			"desired": null,
+			"update": {"deviceId": "camera-2"}
+		},
+		"expectedAction": "republish",
+		"expectedReason": "deviceChanged"
+	},
+	{
+		"name": "codec change republishes",
+		"input": {
+			"published": {"deviceId": "camera-1", "width": 1280, "height": 720, "codec": "vp8"},
+			"desired": null,
+			"update": {"codec": "vp9"}
+		},
+		"expectedAction": "republish",
+		"expectedReason": "codecChanged",
+		"expectedCodec": "vp9"
+	},
+	{
+		"name": "identical options is a no-op",
+		"input": {
+			"published": {"deviceId": "camera-1", "width": 1280, "height": 720, "mirror": true},
+			"desired": null,
+			"update": {"width": 1280, "height": 720, "mirror": true}
+		},
+		"expectedAction": "noop",
+		"expectedReason": "unchanged"
+	},
+	{
+		"name": "missing published camera rejects",
+		"input": {
+			"published": null,
+			"desired": null,
+			"update": {"mirror": true}
+		},
+		"expectedAction": "reject",
+		"expectedReason": "missingPublishedCamera",
+		"expectedErrorCode": "invalidArgument"
+	}
+]

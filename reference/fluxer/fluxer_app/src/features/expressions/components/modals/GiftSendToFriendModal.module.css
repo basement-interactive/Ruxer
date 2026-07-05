@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.description {
+	margin: var(--spacing-3) 0 0;
+	font-size: 0.875rem;
+	line-height: 1.4;
+	color: var(--text-secondary);
+}
+
+.sendButton {
+	flex-shrink: 0;
+}
+
+.giftCodeText {
+	font-size: 0.75rem;
+	color: var(--text-tertiary);
+	margin: 0;
+	line-height: 1.4;
+	word-break: break-all;
+}
+
+.giftCode {
+	font-family: var(--font-mono);
+	color: var(--text-primary);
+}

@@ -1,0 +1,114 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.imagePreviewHandler {
+	display: block;
+	height: 100%;
+	width: 100%;
+	appearance: none;
+	border: 0;
+	background: transparent;
+	padding: 0;
+	text-align: left;
+	cursor: pointer;
+	border-radius: var(--media-border-radius, 0);
+	overflow: hidden;
+}
+
+.blurContainer {
+	display: flex;
+	flex-direction: column;
+}
+
+.blurContent {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	cursor: default;
+	overflow: hidden;
+	border-radius: var(--media-border-radius, 0);
+	border: none;
+	background: var(--background-primary);
+	padding: 0;
+}
+
+.blurInnerContainer {
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+
+.thumbHashPlaceholder {
+	position: absolute;
+	inset: 0;
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+}
+
+.mediaContainer {
+	display: grid;
+	max-width: 100%;
+	cursor: pointer;
+	border-radius: var(--media-border-radius, 0);
+	border: none;
+	background: transparent;
+	padding: 0;
+}
+
+.videoWrapper {
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	min-height: 0.0625rem;
+	min-width: 0;
+	aspect-ratio: var(--embed-aspect-ratio, auto);
+}
+
+.videoElement {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 100%;
+	max-width: 100%;
+	border-radius: var(--media-border-radius, 0);
+	transition: opacity 80ms ease-out;
+	object-fit: contain;
+	pointer-events: none;
+}
+
+.videoOpacityHidden {
+	opacity: 0;
+}
+
+.videoOpacityVisible {
+	opacity: 1;
+}
+.gifFreezeFrame {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	display: block;
+	border-radius: var(--media-border-radius, 0);
+	object-fit: contain;
+	pointer-events: none;
+	opacity: 0;
+}
+
+.gifFreezeFrame[data-frozen='true'] {
+	opacity: 1;
+}
+
+.klipyWatermark {
+	position: absolute;
+	bottom: 0.5rem;
+	left: 0.5rem;
+	z-index: 5;
+	pointer-events: none;
+	opacity: 0;
+}
+
+.klipyWatermark svg {
+	height: 0.75rem;
+	width: auto;
+}

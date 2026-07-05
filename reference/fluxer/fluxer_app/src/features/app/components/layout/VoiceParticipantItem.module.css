@@ -1,0 +1,99 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.participantRow {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	border-radius: 0.375rem;
+	padding: 0.25rem 0.5rem;
+	width: 100%;
+	transition-property: color, background-color;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 150ms;
+	color: var(--text-primary-muted);
+	cursor: pointer;
+}
+
+.participantRowSpeaking {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.participantRow:not(.participantRowDragging):hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.participantRowDragging {
+	opacity: 0.5;
+}
+
+.participantRowCurrentConnection {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.participantRowPopoutOpen {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.participantRowContextMenuActive {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.participantRow[data-popout-open] {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.deviceIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.deviceIconSpeaking {
+	color: rgb(34 197 94);
+}
+
+.deviceIconCurrent {
+	color: var(--text-primary);
+}
+
+.iconContainer {
+	height: 1.25rem;
+	width: 1.25rem;
+}
+
+.participantName {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+	max-height: 1.25rem;
+}
+
+.participantNameSpeaking {
+	color: var(--text-primary);
+}
+
+.participantNameCurrent {
+	color: var(--text-primary);
+}
+
+.iconsContainer {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.flexShrinkZero {
+	flex-shrink: 0;
+}

@@ -1,0 +1,74 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.bannerContent {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.bannerTextContainer {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.bannerText {
+	font-weight: 500;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+}
+
+.bannerTextFlash {
+	color: white;
+}
+
+.bannerTextNormal {
+	color: var(--text-primary);
+}
+
+.bannerActions {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	-webkit-app-region: no-drag;
+}
+
+.titleContent {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.titleWrapper {
+	display: flex;
+	flex: 1 1 0;
+	min-width: 0;
+	align-items: center;
+	gap: 0.5rem;
+	margin-right: 1rem;
+}
+
+.title {
+	margin: 0;
+	font-weight: 600;
+	font-size: 1.125rem;
+	line-height: 1.5rem;
+	color: var(--text-primary);
+	flex: 0 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.icon {
+	height: 1rem;
+	width: 1rem;
+}
+
+.headerTransition {
+	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+	transition-duration: 200ms;
+}

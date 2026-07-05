@@ -1,0 +1,60 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import {useMaybeMessageViewContext} from '@app/features/channel/components/MessageViewContext';
+import {PreloadableUserPopout} from '@app/features/channel/components/PreloadableUserPopout';
+import type {Message} from '@app/features/messaging/models/MessagingMessage';
+import {Avatar} from '@app/features/ui/components/Avatar';
+import FocusRing from '@app/features/ui/focus_ring/FocusRing';
+import type {User} from '@app/features/user/models/User';
+import {observer} from 'mobx-react-lite';
+import {useCallback} from 'react';
+
+export const MessageAvatar = observer(
+	({
+		user,
+		message,
+		guildId,
+		size,
+		className,
+		isHovering,
+	}: {
+		user: User;
+		message: Message;
+		guildId?: string;
+		size: 16 | 24 | 32 | 40 | 48 | 80 | 120;
+		className: string;
+		isHovering: boolean;
+		isPreview: boolean;
+	}) => {
+		const onPopoutToggle = useMaybeMessageViewContext()?.onPopoutToggle;
+		const handlePopoutOpen = useCallback(() => onPopoutToggle?.(true), [onPopoutToggle]);
+		const handlePopoutClose = useCallback(() => onPopoutToggle?.(false), [onPopoutToggle]);
+		return (
+			<PreloadableUserPopout
+				user={user}
+				isWebhook={message.webhookId != null}
+				webhookId={message.webhookId ?? undefined}
+				guildId={guildId}
+				channelId={message.channelId}
+				message={message}
+				enableLongPressActions={false}
+				onPopoutOpen={handlePopoutOpen}
+				onPopoutClose={handlePopoutClose}
+				data-flx="channel.message-avatar.preloadable-user-popout"
+			>
+				<FocusRing data-flx="channel.message-avatar.focus-ring">
+					<Avatar
+						user={user}
+						size={size}
+						className={className}
+						forceAnimate={isHovering}
+						guildId={guildId}
+						data-user-id={user.id}
+						data-guild-id={guildId}
+						data-flx="channel.message-avatar.avatar"
+					/>
+				</FocusRing>
+			</PreloadableUserPopout>
+		);
+	},
+);

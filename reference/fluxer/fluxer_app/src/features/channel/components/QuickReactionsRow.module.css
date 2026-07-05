@@ -1,0 +1,30 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.25rem 0.375rem 0.375rem;
+}
+
+.button {
+	composes: item fluidItem from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+	--action-toolbar-item-border-width: 0;
+	--action-toolbar-item-radius: 0.5rem;
+	--action-toolbar-item-background: var(--background-modifier-hover);
+	flex: 1;
+	aspect-ratio: 1;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.button:hover,
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.button:is([data-highlighted], [data-hovered], [data-focused], [data-focus-visible]) {
+	background-color: var(--background-modifier-selected);
+}
+
+.emojiImg {
+	width: 1.5rem;
+	height: 1.5rem;
+	object-fit: contain;
+}

@@ -1,0 +1,13 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.modals {
+	background: none;
+	inset: 0;
+	pointer-events: none;
+	position: fixed;
+	z-index: var(--z-index-modal);
+}
+
+:global(html.platform-native:not(.platform-macos)) .modals {
+	top: var(--native-titlebar-height);
+}

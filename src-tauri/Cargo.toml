@@ -1,0 +1,110 @@
+[package]
+name = "fluxer-desktop"
+version = "0.3.1"
+edition = "2021"
+description = "Fluxer desktop client — Tauri backend."
+license = "MIT"
+
+[lib]
+name = "fluxer_desktop_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# `devtools` enables the inspector in RELEASE builds too (F12 / the
+# desktop_toggle_devtools command) — without the feature it's debug-only.
+tauri = { version = "2", features = ["protocol-asset", "tray-icon", "devtools"] }
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-window-state = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-deep-link = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-updater = "2"
+fluxer = { path = "../core" }
+fluxer-capture-codec = { path = "../capture-codec" }
+fluxer-voice-native = { path = "../voice-native", features = ["camera"] }
+livekit = "0.7"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "multipart", "gzip", "brotli", "stream"] }
+dotenvy = "0.15"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "registry"] }
+base64 = "0.22"
+md-5 = "0.10"
+dirs = "5"
+keyring = { version = "3", optional = true }
+axum = { version = "0.7", features = ["ws"] }
+tokio-tungstenite = { version = "0.24", features = ["rustls-tls-webpki-roots"] }
+futures-util = "0.3"
+http = "1"
+bytes = "1"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+jpeg-encoder = { version = "0.7", features = ["simd"] }
+# Native UI-sound playback. The webview path (HTML5 <audio> → WebAudio) is
+# unreliable on Linux/WebKitGTK ("The operation is not supported" even with the
+# gstreamer vorbis plugins bundled — plugin-path/sink wiring varies per machine),
+# so on Linux we decode+play the notification sounds in-process via the OS audio
+# stack instead (same reason the native voice engine exists). Vorbis-only decode
+# keeps the dep small; symphonia backend avoids extra system libs beyond cpal.
+rodio = { version = "0.19", default-features = false, features = ["symphonia-vorbis"] }
+# LuaU runtime for the UI editor's advanced mode. `luau` is Roblox's Lua 5.1
+# dialect, chosen for its built-in sandboxing primitives. We run user scripts
+# with NO standard-library access to fs/os/io/require — only a curated `ui`
+# table that records presentation ops (set token / move region / etc). The
+# script never touches the process; it returns a batch of ops the webview
+# applies. `vendored` builds Luau from source so there's no system Lua dep.
+mlua = { version = "0.10", features = ["luau", "vendored"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+# Same exact version wry pins (see Cargo.lock) so the `with_webview` inner
+# handle and our SettingsExt calls talk about the same types. Used to switch
+# ON WebKitGTK's WebRTC + media-stream support (off by default — voice calls
+# silently do nothing without it) and to shrink WebKit's cache model.
+webkit2gtk = { version = "=2.0.2", features = ["v2_38"] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_Storage_Xps",
+    "Foundation",
+    "Graphics",
+    "Graphics_Capture",
+    "Graphics_DirectX",
+    "Graphics_DirectX_Direct3D11",
+    "Win32_Graphics_Direct3D",
+    "Win32_Graphics_Direct3D11",
+    "Win32_Graphics_Dxgi",
+    "Win32_Graphics_Dxgi_Common",
+    "Win32_System_Com",
+    "Win32_System_Com_StructuredStorage",
+    "Win32_System_WinRT_Direct3D11",
+    "Win32_System_WinRT_Graphics_Capture",
+    "Win32_System_Threading",
+    "Win32_System_Variant",
+    "Win32_Security",
+    "Win32_Media_Audio",
+    "Win32_Media_KernelStreaming",
+    "Win32_Media_Multimedia",
+] }
+# Direct dep so #[implement]'s ::windows_core::* expansion resolves (the macro
+# is re-exported by `windows` but generates paths to this crate by name).
+windows-core = "0.61"
+# Direct dep (same version tauri 2.11 pulls, so no duplicate) for the WebView2
+# ScreenCaptureStarting event handler that suppresses the native "share your
+# screen?" permission dialog in lib.rs. Provides the ICoreWebView2_20 interface
+# + ScreenCaptureStartingEventHandler callback wrapper.
+webview2-com = "0.38"
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+secure-storage = ["dep:keyring"]

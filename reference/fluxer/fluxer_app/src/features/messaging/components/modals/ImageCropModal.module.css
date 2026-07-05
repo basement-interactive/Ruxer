@@ -1,0 +1,194 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding-bottom: 1rem;
+}
+
+.description {
+	color: var(--text-primary-muted);
+	font-size: 0.875rem;
+	margin-bottom: 1rem;
+}
+
+.cropperContainer {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 21.875rem;
+	width: 100%;
+	overflow: hidden;
+	border-radius: var(--radius-sm);
+	background-color: var(--background-primary);
+}
+
+@media screen and (max-height: 800px) {
+	.cropperContainer {
+		height: 12.5rem;
+	}
+}
+
+.image {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate3d(0, 0, 0) rotate(0deg);
+	transform-origin: center center;
+	user-select: none;
+	-webkit-user-select: none;
+	cursor: pointer;
+}
+
+.image:active {
+	cursor: grabbing;
+}
+
+.overlayRect {
+	pointer-events: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 0.25rem;
+	border: 0.3125rem solid hsl(0, 0%, 100%);
+	box-sizing: border-box;
+	box-shadow: 0 0 0 624.9375rem rgba(47, 49, 54, 0.6);
+}
+
+.roundOverlay {
+	pointer-events: none;
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.roundMask {
+	border-radius: 50%;
+	width: min(100%, 100%);
+	aspect-ratio: 1 / 1;
+	border: 0.3125rem solid hsl(0, 0%, 100%);
+	box-sizing: border-box;
+	box-shadow: 0 0 0 624.9375rem rgba(47, 49, 54, 0.6);
+}
+
+.controlsContainer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: nowrap;
+	gap: 1.5rem;
+	padding: 1rem 1.5rem;
+}
+
+.sliderGroup {
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 1rem;
+	flex: 1;
+	flex-wrap: wrap;
+	min-width: 0;
+}
+
+.sliderContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-width: 0;
+	flex: 1;
+}
+
+.sliderLabel {
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: var(--text-secondary);
+}
+
+.sliderWrapper {
+	flex: 1;
+	min-width: 7.5rem;
+}
+
+.zoomSliderContainer,
+.heightSliderContainer {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	justify-content: center;
+	gap: 0.625rem;
+	min-width: 0;
+	flex: 1;
+}
+
+.zoomIconSmall,
+.zoomIconLarge,
+.heightIconShort,
+.heightIconTall {
+	color: var(--text-tertiary);
+}
+
+.heightIconShort,
+.heightIconTall {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 0.75rem;
+	border-radius: 0.125rem;
+	background-color: var(--text-tertiary);
+}
+
+.heightIconShort {
+	height: 0.375rem;
+	opacity: 0.6;
+}
+
+.heightIconTall {
+	height: 1rem;
+	opacity: 0.9;
+}
+
+.rotateButton {
+	box-sizing: content-box;
+	color: var(--text-tertiary);
+	cursor: pointer;
+	height: 2rem;
+	width: 2rem;
+	padding: 0.375rem;
+	margin-left: 0.5rem;
+	transition:
+		color 150ms ease,
+		transform 150ms ease;
+}
+
+.rotateButton:hover {
+	color: var(--text-primary);
+	transform: rotate(10deg);
+}
+
+.rotateButton:disabled {
+	color: var(--text-tertiary-muted);
+	cursor: default;
+	transform: none;
+}
+
+.rotateIcon {
+	color: inherit;
+}
+
+@media screen and (max-width: 640px) {
+	.controlsContainer {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 1rem;
+	}
+
+	.rotateButton {
+		align-self: center;
+		margin-left: 0;
+	}
+}

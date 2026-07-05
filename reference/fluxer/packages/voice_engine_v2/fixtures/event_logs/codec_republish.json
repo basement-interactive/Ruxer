@@ -1,0 +1,93 @@
+{
+	"name": "codec_republish",
+	"events": [
+		{
+			"type": "connection.connectRequested",
+			"options": {
+				"url": "wss://voice.example.test",
+				"token": "token-codec"
+			}
+		},
+		{
+			"type": "connection.connectSucceeded",
+			"operationId": 1
+		},
+		{
+			"type": "screen.publishRequested",
+			"options": {
+				"captureId": "capture-screen-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h264",
+				"hardwareEncoding": true,
+				"zeroCopyRequired": true,
+				"maxFramerate": 60
+			}
+		},
+		{
+			"type": "screen.publishSucceeded",
+			"operationId": 2
+		},
+		{
+			"type": "screen.updateEncodingRequested",
+			"options": {
+				"captureId": "capture-screen-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h265",
+				"hardwareEncoding": true,
+				"zeroCopyRequired": true,
+				"frameRate": 60
+			}
+		},
+		{
+			"type": "screen.publishSucceeded",
+			"operationId": 3
+		}
+	],
+	"expectedCommands": [
+		{
+			"type": "connection.connect",
+			"operationId": 1,
+			"options": {
+				"url": "wss://voice.example.test",
+				"token": "token-codec"
+			}
+		},
+		{
+			"type": "screen.publish",
+			"operationId": 2,
+			"options": {
+				"captureId": "capture-screen-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h264",
+				"hardwareEncoding": true,
+				"zeroCopyRequired": true,
+				"maxFramerate": 60
+			}
+		},
+		{
+			"type": "screen.publish",
+			"operationId": 3,
+			"options": {
+				"captureId": "capture-screen-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h265",
+				"hardwareEncoding": true,
+				"zeroCopyRequired": true,
+				"maxFramerate": 60
+			}
+		}
+	],
+	"expected": {
+		"nextOperationId": 4,
+		"screenStatus": "published",
+		"screenCaptureId": "capture-screen-1",
+		"screenCodec": "h265",
+		"screenHardwareEncoding": true,
+		"screenZeroCopyRequired": true,
+		"lastFailureCode": null
+	}
+}

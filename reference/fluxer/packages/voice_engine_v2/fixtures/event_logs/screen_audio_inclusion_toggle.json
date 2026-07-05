@@ -1,0 +1,53 @@
+{
+	"name": "screen_audio_inclusion_toggle",
+	"events": [
+		{
+			"type": "connection.connectRequested",
+			"options": {"url": "wss://voice.example.test", "token": "token-screen-audio"}
+		},
+		{"type": "connection.connectSucceeded", "operationId": 1},
+		{
+			"type": "screen.publishRequested",
+			"options": {"captureId": "capture-1", "width": 1920, "height": 1080, "codec": "h264", "maxFramerate": 30}
+		},
+		{"type": "screen.publishSucceeded", "operationId": 2},
+		{"type": "screenAudio.publishRequested", "options": {"sampleRate": 48000, "numChannels": 2}},
+		{"type": "screenAudio.publishSucceeded", "operationId": 3},
+		{
+			"type": "screen.updateEncodingRequested",
+			"options": {"captureId": "capture-1", "width": 1920, "height": 1080, "frameRate": 60}
+		},
+		{"type": "screen.updateEncodingSucceeded", "operationId": 4},
+		{"type": "screenAudio.unpublishRequested"},
+		{"type": "screenAudio.unpublishSucceeded", "operationId": 5},
+		{"type": "screenAudio.publishRequested", "options": {"sampleRate": 48000, "numChannels": 2}},
+		{"type": "screenAudio.publishSucceeded", "operationId": 6}
+	],
+	"expectedCommands": [
+		{
+			"type": "connection.connect",
+			"operationId": 1,
+			"options": {"url": "wss://voice.example.test", "token": "token-screen-audio"}
+		},
+		{
+			"type": "screen.publish",
+			"operationId": 2,
+			"options": {"captureId": "capture-1", "width": 1920, "height": 1080, "codec": "h264", "maxFramerate": 30}
+		},
+		{"type": "screenAudio.publish", "operationId": 3, "options": {"sampleRate": 48000, "numChannels": 2}},
+		{
+			"type": "screen.updateEncoding",
+			"operationId": 4,
+			"options": {"captureId": "capture-1", "width": 1920, "height": 1080, "frameRate": 60}
+		},
+		{"type": "screenAudio.unpublish", "operationId": 5},
+		{"type": "screenAudio.publish", "operationId": 6, "options": {"sampleRate": 48000, "numChannels": 2}}
+	],
+	"expected": {
+		"nextOperationId": 7,
+		"screenStatus": "published",
+		"screenCaptureId": "capture-1",
+		"screenAudioStatus": "published",
+		"lastFailureCode": null
+	}
+}

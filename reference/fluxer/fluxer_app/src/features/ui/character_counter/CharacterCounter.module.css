@@ -1,0 +1,32 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.counter {
+	font-family: ui-monospace, monospace;
+	font-size: 0.75rem;
+	line-height: 1rem;
+}
+
+.counterButton {
+	composes: counter;
+	cursor: pointer;
+	transition-property: opacity;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 150ms;
+}
+
+.counterButton:hover {
+	opacity: 0.8;
+}
+
+.counterSpan {
+	composes: counter;
+	cursor: default;
+}
+
+.textDanger {
+	color: var(--status-danger);
+}
+
+.textTertiary {
+	color: var(--text-tertiary);
+}

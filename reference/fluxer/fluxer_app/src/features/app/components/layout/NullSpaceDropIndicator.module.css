@@ -1,0 +1,39 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0.5rem;
+	right: 0.5rem;
+	display: flex;
+	align-items: center;
+}
+
+.containerDragging {
+	pointer-events: auto;
+}
+
+.containerNotDragging {
+	pointer-events: none;
+}
+
+.indicator {
+	height: 0.125rem;
+	width: 100%;
+	border-radius: 624.9375rem;
+	background-color: var(--brand-primary);
+	transition:
+		transform 150ms,
+		opacity 150ms;
+}
+
+.indicatorVisible {
+	transform: scaleY(1);
+	opacity: 1;
+}
+
+.indicatorHidden {
+	transform: scaleY(0);
+	opacity: 0;
+}

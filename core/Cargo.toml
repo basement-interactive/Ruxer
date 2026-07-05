@@ -1,0 +1,51 @@
+[package]
+name = "fluxer"
+version = "0.1.0"
+edition = "2021"
+description = "A minimal asynchronous Rust client for the Fluxer API (guilds, DMs, messages, reactions)."
+license = "MIT"
+build = "build.rs"
+
+[dependencies]
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "multipart", "gzip", "brotli"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"] }
+tokio-tungstenite = { version = "0.24", features = ["rustls-tls-webpki-roots"] }
+futures-util = "0.3"
+percent-encoding = "2"
+thiserror = "1"
+url = "2"
+tracing = "0.1"
+# F.24: typify-generated types use `regress` for regex-validated string schemas
+# (e.g. SnowflakeType's `^(0|[1-9][0-9]*)$` pattern) and `schemars` for the
+# generated enum/bitfield impls. These are runtime deps of the generated code.
+regress = "0.11"
+schemars = "0.8"
+# F.24: typify-generated types use `chrono` for `format: "date-time"` fields
+# (e.g. message timestamps, member joined_at, session activity times).
+chrono = { version = "0.4", features = ["serde"] }
+# rustls is a transitive dep (reqwest + tokio-tungstenite both use it), but we
+# need to call `crypto::ring::default_provider().install_default()` ourselves
+# because rustls 0.23 no longer auto-selects a crypto backend. The gateway's
+# WebSocket handshake panics without this.
+#
+# `default-features = false` is REQUIRED to drop aws-lc-sys (the AWS-LC C crypto
+# lib, built from source via cmake + cc) from the dependency graph. rustls 0.23's
+# DEFAULT features include `aws_lc_rs`, which unconditionally pulls aws-lc-rs →
+# aws-lc-sys even though we only ever use the `ring` provider. Without this
+# flag, every clean build compiled AWS-LC's C code (~30s+ on a fast machine, far
+# longer on CI) for nothing — `crypto::ring::default_provider()` is what's
+# installed at runtime, never the aws-lc provider. The explicit feature list
+# (`ring`, `logging`, `std`, `tls12`) restores the non-aws-lc parts of the
+# default set that we DO use. The transitive callers (reqwest `rustls-tls`,
+# tokio-tungstenite `rustls-tls-webpki-roots`, livekit `rustls-tls-webpki-roots`)
+# all select ring, so feature unification does not re-introduce aws-lc.
+rustls = { version = "0.23", default-features = false, features = ["ring", "logging", "std", "tls12"] }
+
+[build-dependencies]
+typify-impl = "0.7"
+schemars = "0.8"
+serde_json = "1"
+quote = "1"
+proc-macro2 = "1"

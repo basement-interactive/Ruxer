@@ -1,0 +1,695 @@
+name: build desktop
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Release channel label (stable or canary). Source is always this repository's main branch.
+        required: false
+        type: choice
+        options:
+          - stable
+          - canary
+        default: stable
+      test_build:
+        description: Stash artifacts under desktop-test/ instead of desktop/ (API will not pick these up as a release).
+        required: false
+        default: false
+        type: boolean
+      build_version:
+        description: Explicit Fluxer CalVer build version (YYYY.MDD.MICRO, UTC HHMMSS without leading zeroes) to use instead of automatic UTC clock allocation.
+        required: false
+        default: ""
+        type: string
+      skip_targets:
+        description: Comma-separated platforms or targets to skip, such as windows, macos-arm64, linux-x64.
+        required: false
+        default: ""
+        type: string
+permissions:
+  contents: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: desktop-${{ inputs.channel }}-${{ inputs.test_build && 'test' || 'release' }}
+  cancel-in-progress: true
+
+env:
+  CHANNEL: ${{ inputs.channel }}
+  BUILD_CHANNEL: ${{ inputs.channel == 'canary' && 'canary' || 'stable' }}
+  TEST_BUILD: ${{ inputs.test_build && 'true' || 'false' }}
+
+jobs:
+  meta:
+    name: Resolve build metadata
+    runs-on: ubuntu-24.04-arm
+    environment: desktop-releases
+    timeout-minutes: 25
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      pub_date: ${{ steps.meta.outputs.pub_date }}
+      channel: ${{ steps.meta.outputs.channel }}
+      build_channel: ${{ steps.meta.outputs.build_channel }}
+      test_build: ${{ steps.meta.outputs.test_build }}
+      s3_prefix: ${{ steps.meta.outputs.s3_prefix }}
+      source_sha: ${{ steps.meta.outputs.source_sha }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: main
+
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+
+      - name: Set metadata
+        id: meta
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FLUXER_BUILD_VERSION: ${{ inputs.build_version }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step set_metadata
+          --channel "${{ inputs.channel }}"
+          --test-build "${{ inputs.test_build }}"
+
+  matrix:
+    name: Resolve build matrix
+    runs-on: ubuntu-24.04-arm
+    environment: desktop-releases
+    timeout-minutes: 25
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      windows_x64: ${{ steps.set-matrix.outputs.windows_x64 }}
+      windows_arm64: ${{ steps.set-matrix.outputs.windows_arm64 }}
+      windows_x64_default: ${{ steps.set-matrix.outputs.windows_x64_default }}
+      windows_arm64_default: ${{ steps.set-matrix.outputs.windows_arm64_default }}
+      windows_game_capture_x64: ${{ steps.set-matrix.outputs.windows_game_capture_x64 }}
+      windows_game_capture_arm64: ${{ steps.set-matrix.outputs.windows_game_capture_arm64 }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+
+      - name: Build platform matrix
+        id: set-matrix
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step set_matrix
+          --skip-targets "${{ inputs.skip_targets }}"
+
+  build:
+    name: Build ${{ matrix.platform }} (${{ matrix.arch }}, ${{ matrix.desktop_variant }})
+    needs:
+      - meta
+      - matrix
+    runs-on: ${{ matrix.os }}
+    environment: desktop-releases
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+    env:
+      CHANNEL: ${{ needs.meta.outputs.channel }}
+      BUILD_CHANNEL: ${{ needs.meta.outputs.build_channel }}
+      RELEASE_CHANNEL: ${{ needs.meta.outputs.build_channel }}
+      PUBLIC_RELEASE_CHANNEL: ${{ needs.meta.outputs.build_channel }}
+      VERSION: ${{ needs.meta.outputs.version }}
+      BUILD_VERSION: ${{ needs.meta.outputs.version }}
+      PUBLIC_BUILD_VERSION: ${{ needs.meta.outputs.version }}
+      PUB_DATE: ${{ needs.meta.outputs.pub_date }}
+      SOURCE_SHA: ${{ needs.meta.outputs.source_sha }}
+      S3_DESKTOP_PREFIX: ${{ needs.meta.outputs.s3_prefix }}
+      DESKTOP_HANDOFF_PREFIX: _handoff/desktop/${{ needs.meta.outputs.build_channel }}/${{ needs.meta.outputs.version }}/${{ needs.meta.outputs.source_sha }}
+      S3_ENDPOINT: https://ewr1.vultrobjects.com
+      S3_BUCKET: fluxer-downloads
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DESKTOP_PLATFORM: ${{ matrix.platform }}
+      DESKTOP_ARCH: ${{ matrix.arch }}
+      DESKTOP_VARIANT: ${{ matrix.desktop_variant }}
+      FLUXER_DESKTOP_BUILD_VARIANT: ${{ matrix.desktop_variant }}
+      PLATFORM: ${{ matrix.platform }}
+      ARCH: ${{ matrix.arch }}
+      ELECTRON_ARCH: ${{ matrix.electron_arch }}
+      FLUXER_WINDOWS_GAME_CAPTURE_MODULE_ENABLED: ${{ matrix.desktop_variant == 'windows-game-capture' && 'true' || 'false' }}
+    steps:
+      - name: Checkout CI helpers
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ needs.meta.outputs.source_sha }}
+          path: _ci
+
+      - name: Checkout source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ needs.meta.outputs.source_sha }}
+          path: source
+
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+
+      - name: Set up Python (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.13"
+
+      - name: Ensure python3 command (Windows)
+        if: runner.os == 'Windows'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step ensure_python3_windows
+
+      - name: Shorten Windows paths and pin pnpm store
+        if: runner.os == 'Windows'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step windows_paths
+        env:
+          SUBST_TARGET: ${{ github.workspace }}/source
+
+      - name: Set workdir (Unix)
+        if: runner.os != 'Windows'
+        env:
+          SUBST_TARGET: ${{ github.workspace }}/source
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step set_workdir_unix
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24
+
+      - name: Set up pnpm via corepack
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step setup_pnpm_corepack
+
+      - name: Resolve pnpm store path (Windows)
+        if: runner.os == 'Windows'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step resolve_pnpm_store_windows
+
+      - name: Resolve pnpm store path (Unix)
+        if: runner.os != 'Windows'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step resolve_pnpm_store_unix
+
+      - name: Cache pnpm store
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ${{ env.PNPM_STORE_PATH }}
+          key: ${{ runner.os }}-${{ matrix.arch }}-pnpm-store-${{ hashFiles('source/**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.arch }}-pnpm-store-
+
+      - name: Install Python setuptools (Windows ARM64)
+        if: matrix.platform == 'windows' && matrix.arch == 'arm64'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step install_setuptools_windows_arm64
+
+      - name: Install Python setuptools (macOS)
+        if: matrix.platform == 'macos'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step install_setuptools_macos
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'linux'
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step install_linux_deps
+
+      - name: Set up Rust toolchain (Unix)
+        if: matrix.platform != 'windows'
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+          targets: ${{ matrix.platform == 'macos' && (matrix.arch == 'arm64' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin') || (matrix.arch == 'arm64' && 'aarch64-unknown-linux-gnu' || 'x86_64-unknown-linux-gnu') }}
+
+      - name: Install MSVC ARM64 build tools
+        if: matrix.platform == 'windows' && matrix.arch == 'arm64'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step install_msvc_arm64_tools
+
+      - name: Set up MSVC env (Windows)
+        if: matrix.platform == 'windows'
+        uses: TheMrMilchmann/setup-msvc-dev@79dac248aac9d0059f86eae9d8b5bfab4e95e97c
+        with:
+          arch: ${{ matrix.arch == 'arm64' && 'amd64_arm64' || 'amd64' }}
+
+      - name: Set up Rust toolchain (Windows)
+        if: matrix.platform == 'windows'
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step install_rust_windows_targets
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step install_dependencies
+
+      - name: Update version
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step update_version
+
+      - name: Set build channel
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        env:
+          BUILD_CHANNEL: ${{ env.BUILD_CHANNEL }}
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step set_build_channel
+
+      - name: Build Electron main process
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        env:
+          BUILD_CHANNEL: ${{ env.BUILD_CHANNEL }}
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step build_electron_main
+
+      - name: Set up .NET SDK (Windows)
+        if: matrix.platform == 'windows'
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install Velopack CLI
+        if: matrix.platform == 'windows'
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step install_velopack_cli
+
+      - name: Build Electron app (macOS)
+        if: matrix.platform == 'macos'
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        env:
+          BUILD_CHANNEL: ${{ env.BUILD_CHANNEL }}
+          CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
+          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step build_app_macos
+
+      - name: Verify macOS artifact (bundle ID + profile + signature)
+        if: matrix.platform == 'macos'
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        env:
+          BUILD_CHANNEL: ${{ env.BUILD_CHANNEL }}
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step verify_bundle_id
+
+      - name: Build Electron app (Windows)
+        if: matrix.platform == 'windows'
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        env:
+          BUILD_CHANNEL: ${{ env.BUILD_CHANNEL }}
+          TEMP: C:\t
+          TMP: C:\t
+          ELECTRON_BUILDER_CACHE: C:\ebcache
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step build_app_windows
+
+      - name: Package Windows app with Velopack
+        if: matrix.platform == 'windows'
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        env:
+          BUILD_CHANNEL: ${{ env.BUILD_CHANNEL }}
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step package_app_windows_velopack
+
+      - name: Analyze Velopack nupkg for long paths
+        if: matrix.platform == 'windows'
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        env:
+          BUILD_VERSION: ${{ env.VERSION }}
+          BUILD_CHANNEL: ${{ env.BUILD_CHANNEL }}
+          MAX_WINDOWS_PATH_LEN: 260
+          PATH_HEADROOM: 10
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step analyse_velopack_paths
+
+      - name: Build Electron app (Linux)
+        if: matrix.platform == 'linux'
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        env:
+          BUILD_CHANNEL: ${{ env.BUILD_CHANNEL }}
+          USE_SYSTEM_FPM: true
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step build_app_linux
+
+      - name: Create portable ZIP (Windows)
+        if: matrix.platform == 'windows'
+        working-directory: ${{ env.WORKDIR }}/fluxer_desktop
+        env:
+          BUILD_CHANNEL: ${{ env.BUILD_CHANNEL }}
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step create_portable_zip_windows
+
+      - name: Prepare artifacts (Windows)
+        if: runner.os == 'Windows'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step prepare_artifacts_windows
+
+      - name: Prepare artifacts (Unix)
+        if: runner.os != 'Windows'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step prepare_artifacts_unix
+
+      - name: Normalize updater YAML (arm64)
+        if: matrix.arch == 'arm64'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step normalise_updater_yaml
+
+      - name: Generate SHA256 checksums (Unix)
+        if: runner.os != 'Windows'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step generate_checksums_unix
+
+      - name: Generate SHA256 checksums (Windows)
+        if: runner.os == 'Windows'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step generate_checksums_windows
+
+      - name: Build desktop source tarball
+        if: matrix.platform == 'linux' && matrix.arch == 'x64' && needs.meta.outputs.build_channel == 'canary'
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step build_source_tarball
+
+      - name: Upload artifacts to S3 handoff
+        run: >-
+          cargo run --locked --quiet --manifest-path ${{ github.workspace }}/_ci/tools/ci/Cargo.toml -- build-desktop
+          --step upload_handoff
+
+  check_signing:
+    name: Check signing secrets
+    runs-on: ubuntu-24.04-arm
+    environment: desktop-releases
+    timeout-minutes: 5
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+
+      - name: Check for Azure signing secrets
+        id: check
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step check_signing_secrets
+
+  sign_windows:
+    name: Sign Windows artifacts (${{ matrix.arch }}, ${{ matrix.desktop_variant }})
+    if: ${{ needs.check_signing.outputs.enabled == 'true' }}
+    needs:
+      - meta
+      - matrix
+      - build
+      - check_signing
+    runs-on: blacksmith-32vcpu-windows-2025
+    environment: desktop-releases
+    timeout-minutes: 25
+    env:
+      BUILD_CHANNEL: ${{ needs.meta.outputs.build_channel }}
+      DESKTOP_HANDOFF_PREFIX: _handoff/desktop/${{ needs.meta.outputs.build_channel }}/${{ needs.meta.outputs.version }}/${{ needs.meta.outputs.source_sha }}
+      S3_ENDPOINT: https://ewr1.vultrobjects.com
+      S3_BUCKET: fluxer-downloads
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      EXPECT_WINDOWS_X64: ${{ needs.matrix.outputs.windows_x64 }}
+      EXPECT_WINDOWS_ARM64: ${{ needs.matrix.outputs.windows_arm64 }}
+      EXPECT_WINDOWS_X64_DEFAULT: ${{ needs.matrix.outputs.windows_x64_default }}
+      EXPECT_WINDOWS_ARM64_DEFAULT: ${{ needs.matrix.outputs.windows_arm64_default }}
+      EXPECT_WINDOWS_GAME_CAPTURE_X64: ${{ needs.matrix.outputs.windows_game_capture_x64 }}
+      EXPECT_WINDOWS_GAME_CAPTURE_ARM64: ${{ needs.matrix.outputs.windows_game_capture_arm64 }}
+      EXPECT_WINDOWS_ARTIFACTS: ${{ (matrix.desktop_variant == 'default' && matrix.arch == 'x64' && needs.matrix.outputs.windows_x64_default == 'true') || (matrix.desktop_variant == 'default' && matrix.arch == 'arm64' && needs.matrix.outputs.windows_arm64_default == 'true') || (matrix.desktop_variant == 'windows-game-capture' && matrix.arch == 'x64' && needs.matrix.outputs.windows_game_capture_x64 == 'true') || (matrix.desktop_variant == 'windows-game-capture' && matrix.arch == 'arm64' && needs.matrix.outputs.windows_game_capture_arm64 == 'true') }}
+      DESKTOP_VARIANT: ${{ matrix.desktop_variant }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            desktop_variant: default
+          - arch: arm64
+            desktop_variant: default
+          - arch: x64
+            desktop_variant: windows-game-capture
+          - arch: arm64
+            desktop_variant: windows-game-capture
+    steps:
+      - name: Checkout CI helpers
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ needs.meta.outputs.source_sha }}
+
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+
+      - name: Download Windows artifacts from S3 handoff
+        id: download_artifact
+        if: env.EXPECT_WINDOWS_ARTIFACTS == 'true'
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step download_windows_handoff
+
+      - name: Check whether artifacts exist for this arch
+        id: check_artifacts
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step check_windows_artifacts
+
+      - name: Azure login for Artifact Signing
+        if: steps.check_artifacts.outputs.found == 'true'
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign Windows executables with Artifact Signing
+        if: steps.check_artifacts.outputs.found == 'true'
+        uses: azure/artifact-signing-action@c7ab2a863ab5f9a846ddb8265964877ef296ee82
+        with:
+          endpoint: ${{ secrets.AZURE_ARTIFACT_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ secrets.AZURE_ARTIFACT_SIGNING_ACCOUNT_NAME }}
+          certificate-profile-name: ${{ secrets.AZURE_ARTIFACT_SIGNING_CERTIFICATE_PROFILE_NAME }}
+          files-folder: ${{ github.workspace }}\artifacts\windows-${{ matrix.arch }}${{ matrix.desktop_variant == 'windows-game-capture' && '-windows-game-capture' || '' }}
+          files-folder-filter: exe
+          files-folder-recurse: true
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Verify Authenticode signatures
+        if: steps.check_artifacts.outputs.found == 'true'
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step verify_authenticode
+
+      - name: Regenerate SHA256 checksums for signed executables
+        if: steps.check_artifacts.outputs.found == 'true'
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step regenerate_signed_checksums
+
+      - name: Re-upload signed Windows artifacts to S3 handoff
+        if: steps.check_artifacts.outputs.found == 'true'
+        env:
+          DESKTOP_PLATFORM: windows
+          DESKTOP_ARCH: ${{ matrix.arch }}
+          DESKTOP_VARIANT: ${{ matrix.desktop_variant }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step stage_signed_windows_artifacts
+
+  upload:
+    name: Upload to S3
+    if: ${{ !failure() && !cancelled() }}
+    needs:
+      - meta
+      - build
+      - sign_windows
+    runs-on: ubuntu-24.04-arm
+    environment: desktop-releases
+    timeout-minutes: 60
+    env:
+      CHANNEL: ${{ needs.meta.outputs.build_channel }}
+      DISPLAY_CHANNEL: ${{ needs.meta.outputs.channel }}
+      RELEASE_CHANNEL: ${{ needs.meta.outputs.build_channel }}
+      PUBLIC_RELEASE_CHANNEL: ${{ needs.meta.outputs.build_channel }}
+      VERSION: ${{ needs.meta.outputs.version }}
+      BUILD_VERSION: ${{ needs.meta.outputs.version }}
+      PUBLIC_BUILD_VERSION: ${{ needs.meta.outputs.version }}
+      PUB_DATE: ${{ needs.meta.outputs.pub_date }}
+      TEST_BUILD: ${{ needs.meta.outputs.test_build }}
+      SOURCE_SHA: ${{ needs.meta.outputs.source_sha }}
+      S3_DESKTOP_PREFIX: ${{ needs.meta.outputs.s3_prefix }}
+      DESKTOP_HANDOFF_PREFIX: _handoff/desktop/${{ needs.meta.outputs.build_channel }}/${{ needs.meta.outputs.version }}/${{ needs.meta.outputs.source_sha }}
+      S3_ENDPOINT: https://ewr1.vultrobjects.com
+      S3_BUCKET: fluxer-downloads
+      PUBLIC_DL_BASE: https://api.fluxer.app/dl
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ needs.meta.outputs.source_sha }}
+
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+
+      - name: Download S3 handoff artifacts
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step download_handoff
+
+      - name: Build S3 payload layout (+ manifest.json)
+        env:
+          VERSION: ${{ needs.meta.outputs.version }}
+          PUB_DATE: ${{ needs.meta.outputs.pub_date }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step build_payload
+
+      - name: Upload payload to S3
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step upload_payload
+
+      - name: Verify uploaded source tarball
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step verify_source_tarball
+
+      - name: Build summary
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step build_summary
+
+      - name: Write GitHub release desktop fragment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- release
+          publish-desktop
+          --build-version "${{ needs.meta.outputs.version }}"
+          --channel "${{ needs.meta.outputs.build_channel }}"
+          --test-build "${{ needs.meta.outputs.test_build }}"
+          --s3-prefix "${{ needs.meta.outputs.s3_prefix }}"
+          --payload-root s3_payload
+          --source-sha "${{ needs.meta.outputs.source_sha }}"
+      - name: Upload GitHub release fragment
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-fragment-desktop
+          path: release-out/fragments/fluxer-release-fragment-desktop-${{ needs.meta.outputs.build_channel }}.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Notify canary desktop webhook
+        if: ${{ success() && needs.meta.outputs.channel == 'canary' }}
+        env:
+          FLUXER_WEBHOOK_URL: ${{ secrets.FLUXER_WEBHOOK_URL }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step notify_webhook
+
+      - name: Cleanup S3 handoff
+        if: ${{ success() }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-desktop
+          --step cleanup_handoff
+
+  finalise_release:
+    name: Finalise GitHub desktop release
+    if: ${{ !failure() && !cancelled() && needs.meta.outputs.test_build != 'true' }}
+    needs:
+      - meta
+      - upload
+    runs-on: ubuntu-24.04-arm
+    environment: desktop-releases
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ needs.meta.outputs.source_sha }}
+
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+      - name: Download GitHub release fragments
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: release-fragment-*
+          path: release-out/fragments
+          merge-multiple: true
+
+      - name: Finalise GitHub desktop release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- release
+          finalise
+          --build-version "${{ needs.meta.outputs.version }}"
+          --source-sha "${{ needs.meta.outputs.source_sha }}"

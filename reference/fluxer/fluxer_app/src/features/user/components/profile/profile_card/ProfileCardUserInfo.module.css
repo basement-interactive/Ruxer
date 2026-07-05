@@ -1,0 +1,107 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.userInfoContainer {
+	user-select: text;
+	-webkit-user-select: text;
+}
+
+.nameRow {
+	display: flex;
+	align-items: center;
+	gap: 0.125rem;
+	min-width: 0;
+}
+
+.nameButton {
+	display: block;
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border: none;
+	background: transparent;
+	padding: 0;
+	text-align: left;
+	vertical-align: middle;
+	font-weight: 500;
+	color: var(--text-primary);
+	font-size: 1.25rem;
+	line-height: 1.5rem;
+	max-height: 1.5rem;
+}
+
+.nameButtonClickable {
+	cursor: pointer;
+}
+
+.nameButtonClickable:hover {
+	text-decoration: underline;
+}
+
+.badgeContainer {
+	display: inline-flex;
+	flex-shrink: 0;
+}
+
+.userTagWrapper {
+	margin-left: 0.25rem;
+}
+
+.actionsContainer {
+	margin-top: 0.25rem;
+	display: flex;
+}
+
+.usernameRow {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	min-width: 0;
+	overflow: hidden;
+	font-size: 0.875rem;
+	color: var(--text-tertiary);
+	line-height: 1.125rem;
+}
+
+.usernameButton {
+	display: block;
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: 100%;
+	cursor: pointer;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border: none;
+	background: transparent;
+	padding: 0;
+	text-align: left;
+	font: inherit;
+	color: inherit;
+	line-height: 1.125rem;
+	max-height: 1.125rem;
+}
+
+.usernameButton:hover {
+	text-decoration: underline;
+}
+
+.pronouns {
+	margin-top: 0.25rem;
+	font-size: 0.8125rem;
+	color: var(--text-tertiary);
+}
+
+.srOnly {
+	position: absolute;
+	width: 0.0625rem;
+	height: 0.0625rem;
+	padding: 0;
+	margin: -0.0625rem;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}

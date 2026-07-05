@@ -1,0 +1,62 @@
+[package]
+name = "fluxer-voice-native"
+version = "0.1.0"
+edition = "2021"
+description = "Native LiveKit voice engine — bridges window.electron.voiceEngine to livekit-rust so voice calls work on Linux (WebKitGTK ships without WebRTC)."
+license = "MIT"
+
+[features]
+# Native webcam capture (nokhwa). Off by default: nokhwa's `decoding` feature
+# pulls `mozjpeg-sys`, which needs NASM on Windows — gating it keeps the default
+# build NASM-free. With this off, `list_camera_devices` returns an empty list and
+# `publish_camera` errors with "camera support not compiled in". src-tauri enables
+# it on the fluxer-voice-native dep. See camera.rs.
+camera = ["dep:nokhwa"]
+
+[dependencies]
+# livekit's ws signaling client ships with NO TLS backend by default ("By
+# default ws TLS is not enabled" — livekit/Cargo.toml). Without a TLS feature,
+# connecting to any wss:// LiveKit server fails immediately with "TLS support
+# not compiled in" — hit live during Linux WSLg testing, not a hypothetical.
+# rustls-tls-webpki-roots matches the convention already used by src-tauri's
+# own reqwest/tokio-tungstenite deps elsewhere in this workspace (bundled
+# Mozilla roots, no OS cert store dependency — safer default for a portable
+# Linux AppImage that may run on a minimal system).
+livekit = { version = "0.7", features = ["rustls-tls-webpki-roots"] }
+
+# Upstream crates.io publish bug (confirmed, not fixable by pinning any
+# combination of published versions): every livekit >=0.7.4x requires
+# libwebrtc ^0.3.37/0.3.38, but the newest PUBLISHED webrtc-sys is 0.3.36 —
+# libwebrtc 0.3.37+ calls webrtc-sys APIs
+# (store_frame_metadata/FrameMetadata.user_data) that only exist in
+# webrtc-sys's git HEAD, never released to crates.io. `cargo check` on the
+# unpatched dependency tree fails to even resolve a version set. Patched to
+# the upstream monorepo's git HEAD, where all three crates (livekit,
+# libwebrtc, webrtc-sys) are built against each other directly and this
+# version-skew is structurally impossible.
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"] }
+# StreamExt for draining livekit's NativeVideoStream (remote video receive).
+futures = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+tracing = "0.1"
+
+# Screen-share video: the frame bus (sink registry) plus the platform capture
+# crates. The capture crate is cfg-selected per target — Windows.Graphics.Capture
+# on Windows, PipeWire/xdg-desktop-portal on Linux — behind the small
+# platform-agnostic `ScreenCapture` facade each exposes. See screen.rs.
+fluxer_screen_frame_bus = { path = "../native-vendor/screen-frame-bus" }
+crossbeam-queue = "0.3"
+
+# Native webcam capture, feature-gated (see [features].camera above). `decoding`
+# enables MJPEG→RGB decode (mozjpeg-sys, needs NASM on Windows — that's why this
+# is optional). `input-native` selects the per-OS capture backend (MediaFoundation
+# on Windows, V4L2 on Linux, AVFoundation on macOS).
+nokhwa = { version = "0.10", optional = true, default-features = false, features = ["input-native", "decoding"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+fluxer_win_game_capture = { path = "../native-vendor/win-game-capture" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+fluxer_linux_screen_capture = { path = "../native-vendor/linux-screen-capture" }

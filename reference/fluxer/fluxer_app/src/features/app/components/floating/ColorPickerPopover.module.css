@@ -1,0 +1,111 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	width: 16.25rem;
+	border-radius: 0.5rem;
+	border: 0.0625rem solid var(--background-header-secondary);
+	background-color: var(--background-primary);
+	padding: 1rem;
+}
+
+.pickerContainer {
+	margin-bottom: 0;
+}
+
+.pickerContainerWithMargin {
+	margin-bottom: 0.5rem;
+}
+
+.pickerWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	overflow: visible;
+	padding: 0.25rem;
+}
+
+.colorArea {
+	width: 100%;
+	height: 10rem;
+	border-radius: 0.25rem;
+	flex-shrink: 0;
+	cursor: crosshair;
+	user-select: none;
+}
+
+.colorSlider {
+	width: 100%;
+}
+
+.sliderTrack {
+	width: 100%;
+	height: 1rem;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	user-select: none;
+}
+
+.colorThumb {
+	width: 1.125rem;
+	height: 1.125rem;
+	box-sizing: border-box;
+	border: 0.125rem solid white;
+	border-radius: 50%;
+	box-shadow:
+		0 0 0 0.0625rem rgba(0, 0, 0, 0.3),
+		inset 0 0 0 0.0625rem rgba(0, 0, 0, 0.3);
+	transition: box-shadow 120ms ease;
+}
+
+.colorThumb[data-focus-visible] {
+	box-shadow:
+		0 0 0 0.0625rem rgba(0, 0, 0, 0.3),
+		0 0 0 0.1875rem var(--border-color-focus),
+		inset 0 0 0 0.0625rem rgba(0, 0, 0, 0.3);
+}
+
+.colorThumb[data-dragging] {
+	box-shadow:
+		0 0 0 0.0625rem rgba(0, 0, 0, 0.3),
+		0 0 0 0.1875rem var(--background-modifier-accent-focus),
+		inset 0 0 0 0.0625rem rgba(0, 0, 0, 0.3);
+}
+
+.resetButton {
+	background: transparent;
+	border: none;
+	padding: 0;
+	margin-top: 0.5rem;
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.5;
+	text-transform: none;
+	letter-spacing: normal;
+	cursor: pointer;
+	transition:
+		opacity 0.2s ease,
+		text-decoration 0.15s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	text-align: center;
+	gap: 0.25rem;
+	min-height: 1.5rem;
+}
+
+.resetButton:disabled {
+	cursor: default;
+	opacity: 0.6;
+}
+
+.resetButtonText {
+	text-decoration: none;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.resetButton:not(:disabled):hover
+	.resetButtonText {
+	text-decoration: underline;
+}

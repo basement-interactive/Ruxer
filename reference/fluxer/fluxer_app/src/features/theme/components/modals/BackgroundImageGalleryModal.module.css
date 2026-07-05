@@ -1,0 +1,364 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.selectionSection {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.dragOverlay {
+	pointer-events: none;
+	position: absolute;
+	inset: 0;
+	z-index: 50;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.5rem;
+	border: 0.125rem dashed var(--brand-primary);
+	background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
+}
+
+.dragContent {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.dragIcon {
+	color: var(--brand-primary);
+}
+
+.dragText {
+	font-weight: 500;
+	font-size: 1.125rem;
+	color: var(--brand-primary);
+}
+
+.freeUserContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.customBackgroundWrapper {
+	position: relative;
+}
+
+.actionButtons {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	display: flex;
+	gap: 0.5rem;
+	opacity: 0;
+	transition: none;
+}
+
+.customBackgroundWrapper:hover .actionButtons {
+	opacity: 1;
+}
+
+.actionButton {
+	composes: item roundItem from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+	--action-toolbar-item-size: 2rem;
+	--action-toolbar-item-background: rgba(0, 0, 0, 0.6);
+	--action-toolbar-item-color: white;
+	--action-toolbar-item-border-width: 0;
+}
+
+.actionButton:hover {
+	background: rgba(0, 0, 0, 0.8);
+}
+
+.actionButtonIcon {
+	color: white;
+}
+
+.builtInGrid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 0.75rem;
+}
+
+.uploadPlaceholder {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	cursor: pointer;
+	overflow: hidden;
+	border-radius: 0.5rem;
+	border: 0.125rem dashed;
+	border-color: var(--background-modifier-accent);
+	transition:
+		opacity 0.2s,
+		border-color 0.2s;
+}
+
+.uploadPlaceholder:hover {
+	opacity: 0.75;
+}
+
+.uploadPlaceholderContent {
+	display: flex;
+	height: 100%;
+	width: 100%;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	background: var(--background-secondary);
+}
+
+.uploadIcon {
+	color: var(--text-primary-muted);
+}
+
+.uploadTextContainer {
+	text-align: center;
+}
+
+.uploadTitle {
+	font-weight: 500;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.gifLinkButton {
+	margin-top: 0.25rem;
+	padding: 0;
+	border: none;
+	background: none;
+	font-size: 0.75rem;
+	color: var(--brand-primary);
+	cursor: pointer;
+}
+
+.gifLinkButton:hover {
+	text-decoration: underline;
+}
+
+.premiumGrid {
+	display: grid;
+	grid-template-columns: repeat(1, 1fr);
+	gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+	.premiumGrid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 1024px) {
+	.premiumGrid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+.backgroundItem {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	cursor: pointer;
+	overflow: hidden;
+	border-radius: 0.5rem;
+	border: 0.125rem solid;
+	transition:
+		opacity 0.2s,
+		border-color 0.2s;
+}
+
+.backgroundItem:hover {
+	opacity: 0.75;
+}
+
+.backgroundItemContent {
+	display: flex;
+	height: 100%;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	background: var(--background-secondary);
+}
+
+.backgroundItemInner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.backgroundItemIcon {
+	color: var(--text-primary-muted);
+}
+
+.backgroundItemText {
+	text-align: center;
+}
+
+.backgroundItemName {
+	font-weight: 500;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.loadingContainer {
+	display: flex;
+	height: 100%;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	background: var(--background-secondary);
+}
+
+.spinner {
+	height: 2rem;
+	width: 2rem;
+	animation: spin 1s linear infinite;
+	border-radius: 50%;
+	border: 0.125rem solid var(--background-modifier-accent);
+	border-top-color: var(--brand-primary);
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.errorContainer {
+	display: flex;
+	height: 100%;
+	width: 100%;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	background: var(--background-secondary);
+	padding: 1rem;
+}
+
+.errorIcon {
+	color: var(--status-danger);
+}
+
+.errorText {
+	text-align: center;
+	font-size: 0.75rem;
+	color: var(--text-primary-muted);
+}
+
+.errorButton {
+	border-radius: 0.25rem;
+	background: var(--background-modifier-accent);
+	padding: 0.25rem 0.5rem;
+	font-size: 0.75rem;
+	color: var(--text-primary);
+	cursor: pointer;
+}
+
+.errorButton:hover {
+	background: var(--background-modifier-hover);
+}
+
+.backgroundImage {
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+}
+
+.imageOverlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0);
+	transition: background-color 0.2s;
+}
+
+.backgroundItem:hover .imageOverlay {
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.deleteButton {
+	composes: item roundItem from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+	--action-toolbar-item-size: 2rem;
+	--action-toolbar-item-background: rgba(0, 0, 0, 0.6);
+	--action-toolbar-item-color: white;
+	--action-toolbar-item-border-width: 0;
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	opacity: 0;
+	transition: none;
+}
+
+.backgroundItem:hover .deleteButton {
+	opacity: 1;
+}
+
+.deleteButton:hover {
+	background: rgba(0, 0, 0, 0.8);
+}
+
+.deleteButtonIcon {
+	color: white;
+}
+
+.selectedBadge {
+	position: absolute;
+	top: 0.5rem;
+	left: 0.5rem;
+	border-radius: 50%;
+	background: var(--brand-primary);
+	padding: 0.375rem;
+}
+
+.selectedIcon {
+	color: white;
+}
+
+.fileInput {
+	display: none;
+}
+
+.statsText {
+	text-align: center;
+	font-size: 0.875rem;
+	color: var(--text-primary-muted);
+}
+
+.infoText {
+	text-align: center;
+	font-size: 0.75rem;
+	color: var(--text-primary-muted);
+}
+
+.premiumUpsell {
+	border-radius: 0.5rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	background: var(--background-secondary);
+	padding: 1rem;
+}
+
+.premiumHeader {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.premiumIcon {
+	flex-shrink: 0;
+}
+
+.premiumTitle {
+	font-weight: 500;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.premiumDesc {
+	margin-bottom: 0.75rem;
+	font-size: 0.875rem;
+	color: var(--text-primary-muted);
+}

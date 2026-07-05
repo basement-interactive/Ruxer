@@ -1,0 +1,36 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.messagePreview {
+	pointer-events: none;
+	position: relative;
+	overflow: hidden;
+	max-height: min(13.75rem, 40vh);
+	border-radius: 0.375rem;
+	border: 0.0625rem solid var(--background-header-secondary);
+	background-color: var(--background-secondary);
+	padding: 0.5rem 0;
+	font-size: 87.5%;
+}
+
+.messagePreviewOverflowing::after {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	z-index: 1;
+	height: 3rem;
+	pointer-events: none;
+	content: '';
+	background: linear-gradient(to bottom, transparent, var(--background-secondary));
+}
+
+.shiftBypassTip {
+	margin: -0.25rem 0 0;
+	color: var(--text-primary-muted);
+	font-size: 0.8125rem;
+	line-height: 1.4;
+}
+
+.shiftBypassTipLabel {
+	color: var(--accent-success);
+	font-weight: 700;
+}

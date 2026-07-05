@@ -1,0 +1,29 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	border-radius: 0.4375rem;
+	padding: 0.125rem 0.375rem;
+	font-size: 0.625rem;
+	font-weight: 700;
+	line-height: 1;
+	text-transform: uppercase;
+	letter-spacing: 0;
+	white-space: nowrap;
+}
+
+.new,
+.experimental {
+	background: var(--brand-primary);
+	color: #fff;
+}
+
+.badges {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	flex: 0 0 auto;
+}

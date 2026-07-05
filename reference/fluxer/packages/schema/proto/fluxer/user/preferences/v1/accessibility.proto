@@ -1,0 +1,111 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+syntax = "proto3";
+
+package fluxer.user.preferences.v1;
+
+message AccessibilitySettings {
+  optional double saturation_factor = 1;
+  bool always_underline_links = 2;
+  optional bool enable_text_selection = 3;
+  optional bool show_message_send_button = 4;
+  optional bool show_textarea_focus_ring = 5;
+  bool hide_keyboard_hints = 6;
+  optional bool escape_exits_keyboard_mode = 7;
+  optional bool sync_reduced_motion_with_system = 8;
+  optional bool reduced_motion_override = 9;
+
+  optional double message_group_spacing = 10;
+  optional double message_gutter = 11;
+  optional double font_size = 12;
+  optional bool show_user_avatars_in_compact_mode = 13;
+
+  bool mobile_sticker_animation_overridden = 14;
+  bool mobile_gif_autoplay_overridden = 15;
+  bool mobile_animate_emoji_overridden = 16;
+  optional int32 mobile_sticker_animation_value = 17;
+  optional bool mobile_gif_autoplay_value = 18;
+  optional bool mobile_animate_emoji_value = 19;
+
+  bool auto_send_klipy_gifs = 20;
+  optional bool show_gif_button = 21;
+  optional bool show_memes_button = 22;
+  optional bool show_stickers_button = 23;
+  optional bool show_emoji_button = 24;
+
+  optional bool show_media_favorite_button = 25;
+  optional bool show_media_download_button = 26;
+  optional bool show_media_delete_button = 27;
+  optional bool show_suppress_embeds_button = 28;
+  optional bool show_gif_indicator = 29;
+  optional bool show_attachment_expiry_indicator = 30;
+
+  optional bool use_browser_locale_for_time_format = 31;
+  ChannelTypingIndicatorMode channel_typing_indicator_mode = 32;
+  optional bool show_selected_channel_typing_indicator = 33;
+
+  optional bool show_message_action_bar = 34;
+  optional bool show_message_action_bar_quick_reactions = 35;
+  optional bool show_message_action_bar_shift_expand = 36;
+  optional bool show_message_action_bar_only_more_button = 37;
+
+  optional bool show_default_emojis_in_autocomplete = 38;
+  optional bool show_custom_emojis_in_autocomplete = 39;
+  optional bool show_stickers_in_autocomplete = 40;
+  optional bool show_memes_in_autocomplete = 41;
+
+  MediaDimensionSize attachment_media_dimension_size = 42;
+  MediaDimensionSize embed_media_dimension_size = 43;
+
+  optional bool voice_channel_join_requires_double_click = 44;
+  optional string custom_theme_css = 45;
+  optional bool show_favorites = 46;
+  optional double zoom_level = 47;
+  DmMessagePreviewMode dm_message_preview_mode = 48;
+  optional bool enable_tts_command = 49;
+  optional double tts_rate = 50;
+  optional bool show_faded_unread_on_muted_channels = 51;
+  optional bool show_context_menu_shortcuts = 52;
+  optional bool confirm_before_starting_calls = 53;
+  HdrDisplayMode hdr_display_mode = 54;
+  optional bool preserve_edit_draft = 55;
+  optional bool stay_interactive_when_unfocused = 56;
+  optional bool confirm_before_joining_voice_channels = 57;
+  optional bool screen_reader_announce_new_messages = 58;
+  optional bool first_click_pass_through_when_unfocused = 59;
+  optional double compact_message_group_spacing = 60;
+  optional bool scroll_to_bottom_on_message_send = 61;
+  optional bool dim_strikethrough_text = 62;
+}
+
+message AccessibilityOverrides {
+  bool gif_autoplay_dirty = 1;
+  bool animate_emoji_dirty = 2;
+  bool animate_stickers_dirty = 3;
+}
+
+enum ChannelTypingIndicatorMode {
+  CHANNEL_TYPING_INDICATOR_MODE_UNSPECIFIED = 0;
+  CHANNEL_TYPING_INDICATOR_MODE_AVATARS = 1;
+  CHANNEL_TYPING_INDICATOR_MODE_INDICATOR_ONLY = 2;
+  CHANNEL_TYPING_INDICATOR_MODE_HIDDEN = 3;
+}
+
+enum MediaDimensionSize {
+  MEDIA_DIMENSION_SIZE_UNSPECIFIED = 0;
+  MEDIA_DIMENSION_SIZE_SMALL = 1;
+  MEDIA_DIMENSION_SIZE_LARGE = 2;
+}
+
+enum DmMessagePreviewMode {
+  DM_MESSAGE_PREVIEW_MODE_UNSPECIFIED = 0;
+  DM_MESSAGE_PREVIEW_MODE_ALL = 1;
+  DM_MESSAGE_PREVIEW_MODE_UNREAD_ONLY = 2;
+  DM_MESSAGE_PREVIEW_MODE_NONE = 3;
+}
+
+enum HdrDisplayMode {
+  HDR_DISPLAY_MODE_UNSPECIFIED = 0;
+  HDR_DISPLAY_MODE_FULL = 1;
+  HDR_DISPLAY_MODE_STANDARD = 2;
+}

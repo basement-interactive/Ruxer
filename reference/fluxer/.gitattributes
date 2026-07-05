@@ -1,0 +1,2 @@
+* text=auto
+fluxer_static/** -text -diff

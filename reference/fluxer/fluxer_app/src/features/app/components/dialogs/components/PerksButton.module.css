@@ -1,0 +1,14 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.link {
+	cursor: pointer;
+	border: 0;
+	background: transparent;
+	padding: 0;
+	color: inherit;
+	font: inherit;
+	line-height: inherit;
+	font-weight: 500;
+	text-decoration: underline;
+	text-decoration-color: rgb(255 255 255 / 0.6);
+}

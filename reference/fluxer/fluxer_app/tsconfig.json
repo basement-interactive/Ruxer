@@ -1,0 +1,27 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"target": "ES2023",
+		"lib": ["DOM", "DOM.Iterable", "DOM.AsyncIterable", "ES2023"],
+		"moduleDetection": "force",
+		"verbatimModuleSyntax": true,
+		"allowArbitraryExtensions": true,
+		"allowImportingTsExtensions": true,
+		"noUncheckedSideEffectImports": false,
+		"sourceMap": true,
+		"noImplicitReturns": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"paths": {
+			"@app/*": ["./src/*"],
+			"@fluxer/*": ["../packages/*", "../packages/*/src/index.ts"],
+			"@app_scripts/*": ["./scripts/*"],
+			"@pkgs/*": ["./pkgs/*"],
+			"livekit-client": ["./pkgs/livekit-client/src/index.ts"],
+			"livekit-client/e2ee-worker": ["./pkgs/livekit-client/src/e2ee/worker/e2ee.worker.ts"]
+		}
+	},
+	"include": ["./src/**/*", "./scripts/**/*", "./pkgs/livekit-client/src/type-polyfills/*.d.ts"],
+	"exclude": ["node_modules", "dist", "coverage"]
+}

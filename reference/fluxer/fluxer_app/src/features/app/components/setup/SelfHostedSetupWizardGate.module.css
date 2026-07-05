@@ -1,0 +1,376 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.backdrop {
+	min-height: 100vh;
+	background:
+		radial-gradient(ellipse at 50% 0%, rgba(75, 168, 255, 0.34), transparent 58%),
+		linear-gradient(135deg, #071125 0%, #0b3f96 36%, #092151 68%, #050913 100%);
+}
+
+.backdropVisual {
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(160deg, rgba(31, 147, 255, 0.24) 0%, transparent 42%),
+		linear-gradient(135deg, #071225 0%, #0a4cbd 40%, #0b1d45 72%, #050812 100%);
+}
+
+.modal {
+	width: min(34rem, calc(100vw - 2rem)) !important;
+	min-height: 0 !important;
+	border-color: rgba(148, 180, 255, 0.16) !important;
+	background: color-mix(in srgb, var(--background-secondary) 92%, #0b1830) !important;
+	box-shadow:
+		0 1.5rem 4rem rgba(0, 0, 0, 0.36),
+		0 0 0 0.0625rem rgba(160, 190, 255, 0.08) !important;
+}
+
+.modal :global([data-flx='app.self-hosted-setup-wizard-gate.header']) {
+	background: transparent;
+	padding: 1.125rem 1.25rem 0.75rem;
+}
+
+.contentScroller {
+	padding: 1.25rem;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-height: min(33rem, calc(100svh - 12.5rem));
+}
+
+.step {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 1.125rem;
+	width: 100%;
+	max-width: 30rem;
+	margin: 0 auto;
+}
+
+.step:focus {
+	outline: none;
+}
+
+.centeredStep {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1.125rem;
+	width: 100%;
+	min-height: 16rem;
+	max-width: 26rem;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.stepHeader {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.5rem;
+	text-align: left;
+}
+
+.welcomeHero {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.65rem;
+	text-align: center;
+}
+
+.welcomeWordFrame {
+	position: relative;
+	display: grid;
+	place-items: center;
+	width: 100%;
+	min-height: 5.1rem;
+	overflow: hidden;
+}
+
+.welcomeWord,
+.welcomeWordMeasure {
+	display: inline-block;
+	margin: 0;
+	font-size: 3.35rem;
+	font-weight: 850;
+	line-height: 1;
+	letter-spacing: 0;
+	white-space: nowrap;
+}
+
+.welcomeWord {
+	color: var(--text-primary);
+	text-align: center;
+	transform-origin: center;
+	will-change: opacity, transform;
+}
+
+.welcomeWordMeasure {
+	position: absolute;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.welcomeTitle {
+	margin: 0;
+	color: var(--text-primary);
+	font-size: 1.125rem;
+	font-weight: 750;
+	line-height: 1.25;
+}
+
+.localeBlock {
+	display: flex;
+	flex-direction: column;
+	gap: 0.625rem;
+	width: min(100%, 24rem);
+	margin: 1rem auto 0;
+}
+
+.localeSelector {
+	width: 100%;
+}
+
+.themeBlock {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	margin-top: 0.125rem;
+}
+
+.themeButtonGroup {
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.title {
+	margin: 0;
+	color: var(--text-primary);
+	font-size: 1.5rem;
+	font-weight: 800;
+	line-height: 1.2;
+}
+
+.body {
+	margin: 0;
+	color: var(--text-secondary);
+	font-size: 0.9375rem;
+	line-height: 1.55;
+}
+
+.adminForm {
+	width: 100%;
+}
+
+.adminForm > form {
+	margin-top: 0;
+	gap: 0.875rem;
+}
+
+.fieldLabel {
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	font-weight: 700;
+}
+
+.assetSection {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.assetRow {
+	display: grid;
+	grid-template-columns: 3rem 1fr auto;
+	gap: 0.75rem;
+	align-items: center;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 0.5rem;
+	padding: 0.625rem 0.75rem;
+	background: var(--background-secondary);
+}
+
+.assetPreview {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 3rem;
+	height: 3rem;
+	overflow: hidden;
+	border-radius: 0.5rem;
+	background: var(--background-tertiary);
+	color: var(--text-tertiary);
+}
+
+.assetImage {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.assetLabel {
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+
+.assetActions {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.emptyNote {
+	margin: 0;
+	color: var(--text-secondary);
+	font-size: 0.875rem;
+	line-height: 1.45;
+	text-align: center;
+}
+
+.integrationFields {
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+}
+
+.integrationGrid {
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+}
+
+.collapsibleReveal {
+	overflow: hidden;
+}
+
+.integrationActionRow {
+	display: flex;
+	gap: 0.75rem;
+	align-items: center;
+	justify-content: space-between;
+	min-width: 0;
+}
+
+.integrationStatus {
+	min-width: 0;
+	color: var(--text-secondary);
+	font-size: 0.8125rem;
+	line-height: 1.35;
+	text-align: right;
+}
+
+.summary {
+	display: flex;
+	flex-direction: column;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 0.5rem;
+	overflow: hidden;
+}
+
+.summaryRow {
+	display: flex;
+	gap: 0.75rem;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.625rem 0.75rem;
+}
+
+.summaryRow:not(:last-child) {
+	border-bottom: 0.0625rem solid var(--background-modifier-accent);
+}
+
+.summaryLabel {
+	color: var(--text-secondary);
+	font-size: 0.875rem;
+}
+
+.summaryValue {
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	font-weight: 600;
+	text-align: right;
+}
+
+.submitError {
+	margin: 0;
+	color: var(--status-danger);
+	font-size: 0.875rem;
+	line-height: 1.45;
+	text-align: center;
+}
+
+.footerReveal {
+	flex: 0 0 auto;
+	overflow: hidden;
+}
+
+.footer {
+	background: transparent;
+	border-top: 0.0625rem solid color-mix(in srgb, var(--background-modifier-accent) 72%, transparent);
+	padding: 0.875rem 1.25rem 1.125rem;
+}
+
+.footerActions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	width: 100%;
+	min-width: 0;
+}
+
+.footerPrimary {
+	display: flex;
+	margin-left: auto;
+}
+
+.footerActions button {
+	min-width: 7rem;
+	white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+	.modal {
+		width: calc(100vw - 1rem) !important;
+	}
+
+	.contentScroller {
+		padding-right: 1rem;
+		padding-left: 1rem;
+	}
+
+	.assetRow {
+		grid-template-columns: 3rem 1fr;
+	}
+
+	.assetActions {
+		grid-column: 1 / -1;
+		justify-content: flex-end;
+	}
+
+	.integrationActionRow {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.integrationStatus {
+		text-align: left;
+	}
+
+	.welcomeWord,
+	.welcomeWordMeasure {
+		font-size: 2.65rem;
+	}
+
+	.footer {
+		padding-right: 1rem;
+		padding-left: 1rem;
+	}
+}

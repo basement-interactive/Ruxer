@@ -1,0 +1,51 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.scroller {
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+	scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+}
+
+.scroller::-webkit-scrollbar {
+	width: 1rem;
+	height: 1rem;
+}
+
+.scroller:-webkit-scrollbar-corner {
+	background-color: transparent;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+	background-color: var(--scrollbar-thumb-bg);
+	min-height: 2.5rem;
+}
+
+.scroller::-webkit-scrollbar-thumb:hover {
+	background-color: var(--scrollbar-thumb-bg-hover);
+}
+
+.scrollerWithBottomGutter::-webkit-scrollbar-track {
+	margin-bottom: 0.5rem;
+}
+
+.scrollerTextarea {
+	--scrollbar-track-bg: var(--form-surface-background);
+	overscroll-behavior: auto;
+}
+
+.scrollerTextarea::-webkit-scrollbar-track {
+	margin-top: 0.125rem;
+	margin-bottom: 0.125rem;
+}
+
+.scroller::-webkit-scrollbar-thumb,
+.scroller::-webkit-scrollbar-track {
+	border: 0.25rem solid transparent;
+	background-clip: padding-box;
+	border-radius: 0.5rem;
+}
+
+.scroller::-webkit-scrollbar-track {
+	background-color: var(--scrollbar-track-bg);
+}

@@ -1,0 +1,72 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.mediaContainer {
+	position: relative;
+	border-radius: var(--media-border-radius, 0);
+	overflow: hidden;
+	clip-path: inset(0 round var(--media-border-radius, 0));
+}
+
+.mediaHoverAction {
+	composes: toolbar from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+	--action-toolbar-surface: var(--form-surface-background);
+	--action-toolbar-border: var(--background-modifier-accent);
+	--media-hover-action-hover-background: var(--surface-interactive-hover-bg);
+	--media-hover-action-selected-background: var(--surface-interactive-selected-bg);
+	--media-hover-action-danger-text: color-mix(in srgb, var(--status-danger) 78%, var(--text-primary) 22%);
+	--media-hover-action-danger-background: color-mix(
+		in srgb,
+		var(--status-danger) 6%,
+		var(--surface-interactive-hover-bg)
+	);
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 10;
+	opacity: 0;
+	pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+		.mediaContainer:hover
+		.mediaHoverAction {
+		opacity: 1;
+		pointer-events: auto;
+	}
+}
+
+:global(.keyboard-focus-active) .mediaHoverAction {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.actionButton {
+	composes: item from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+}
+
+@media (hover: hover) and (pointer: fine) {
+	:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+		.actionButton:not(.deleteButton):not(.favoriteButtonActive):hover {
+		color: var(--text-primary);
+		background: var(--media-hover-action-hover-background);
+	}
+
+	:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+		.deleteButton:hover {
+		background: var(--media-hover-action-danger-background);
+	}
+}
+
+.deleteButton {
+	color: var(--media-hover-action-danger-text);
+}
+
+.actionIcon {
+	composes: icon from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+}
+
+.favoriteButtonActive {
+	color: var(--text-primary);
+	background: var(--media-hover-action-selected-background);
+}

@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	background-color: var(--background-primary);
+	z-index: 2;
+}
+
+.containerAttached {
+	border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.containerDetached {
+	border-radius: 0.5rem;
+}
+
+.scroller {
+	display: flex;
+	max-height: 30.625rem;
+	flex-direction: column;
+	gap: 0.25rem;
+	padding: 0.5rem 0;
+}

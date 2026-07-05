@@ -1,0 +1,52 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.controls {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.375rem;
+	border-radius: 0.75rem;
+	border: 0.0625rem solid color-mix(in srgb, var(--background-modifier-accent) 70%, transparent);
+	background: color-mix(in srgb, var(--background-secondary) 85%, transparent);
+	backdrop-filter: blur(0.75rem);
+}
+
+.controlsDisabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 0.5rem;
+	border: none;
+	background: transparent;
+	color: var(--text-primary-muted);
+	cursor: pointer;
+	transition:
+		background-color 0.15s ease,
+		color 0.15s ease;
+}
+
+.button:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.buttonActive {
+	background: var(--background-modifier-accent);
+	color: var(--text-primary);
+}
+
+.buttonActive:hover {
+	background: var(--background-modifier-accent);
+}
+
+.buttonDisabled {
+	cursor: not-allowed;
+	pointer-events: none;
+}

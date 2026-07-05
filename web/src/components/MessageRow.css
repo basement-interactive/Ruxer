@@ -1,0 +1,398 @@
+/* MessageRow — ported 1:1 from reference/fluxer/fluxer_app/src/features/theme/styles/Message.module.css
+ * + MessageLayoutSpec.ts (the message layout spec) + MessageActionBar.module.css (hover toolbar).
+ * Every value below is traced to the source line. Re-authored clean (not copied
+ * verbatim) but producing identical visual output.
+ *
+ * Message layout variables (MessageLayoutSpec.ts:101-158):
+ *   --message-avatar-size: 2.5rem (cozy, :103)
+ *   --message-gutter: 1rem (:114)
+ *   --message-spacing-y: 0.125rem (:115)
+ *   --message-action-bar-offset: 3rem (:120)
+ *   --message-mobile-margin: 0.75rem (:119)
+ *   --chat-horizontal-padding: 1rem (runtime, GenerateThemeVariables.ts:41)
+ */
+
+/* --- Message row: a single flex-based cozy layout. The avatar sits in a fixed
+   gutter (avatar-size + gutter = 3.5rem); grouped rows indent their content by
+   that gutter so text lines up under the first message's text. --- */
+.message-row {
+  position: relative;
+  user-select: text;
+  -webkit-user-select: text;
+  word-break: break-word;
+  padding: 0.125rem 1rem; /* spacing-y + horizontal padding */
+}
+.message-row:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+/* --- Hover toolbar (MessageActionBar.module.css:3-9) --- */
+.message-toolbar {
+  position: absolute; /* :4 */
+  bottom: calc(100% - 0.25rem - 12px); /* :5 */
+  right: 0; /* :6 */
+  z-index: var(--z-index-elevated-1, 10); /* :7 */
+  padding: 0 0.875rem 0.375rem 2rem; /* :8 */
+  display: flex;
+  gap: 0.125rem;
+  background: var(--form-surface-background); /* :13 (action bar surface) */
+  border: 0.0625rem solid var(--background-modifier-accent); /* :14 */
+  border-radius: 0.375rem; /* (toolbar radius from ActionToolbar.module.css) */
+  box-shadow: var(--shadow-md, 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1));
+}
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 0.375rem;
+  border: none;
+  background: transparent;
+  color: var(--text-primary-muted);
+  cursor: pointer;
+  padding: 0;
+}
+.toolbar-btn:hover {
+  color: var(--text-primary); /* MessageActionBar.module.css:52-53 */
+  background: var(--surface-interactive-hover-bg); /* :53 */
+}
+.toolbar-btn svg {
+  width: 1.125rem; /* MessageActionBar.module.css:86 */
+  height: 1.125rem; /* :87 */
+}
+
+/* --- Message content layout --- */
+.message-row-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* --- First message in a group: avatar (2.5rem) + 1rem gutter + content --- */
+.message-first {
+  display: flex;
+  gap: 1rem; /* gutter between avatar and content */
+  padding-top: 0.25rem; /* extra top padding above a group */
+}
+/* --- Grouped (follow-up) message: indent content by avatar + gutter (3.5rem)
+   so text lines up under the first message's text. --- */
+.message-grouped {
+  padding-left: 3.5rem; /* 2.5rem avatar + 1rem gutter */
+  position: relative;
+}
+.message-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-full, 624.9375rem);
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 0.125rem;
+}
+.message-avatar:hover {
+  opacity: 0.9; /* BaseAvatar.module.css:15 */
+}
+.message-body-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* --- Message header (author name + timestamp) --- */
+.message-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem; /* var(--spacing-2) */
+  margin-bottom: 0.0625rem;
+}
+.message-author {
+  font-size: 1rem; /* (inherits from message font-size) */
+  font-weight: 500; /* (Fluxer uses 500, not Discord's 600) */
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-primary);
+}
+.message-author:hover {
+  text-decoration: underline;
+}
+.bot-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6875rem; /* MentionBadge.module.css:23 (badgeSmall font-size) */
+  font-weight: 600;
+  color: #fff;
+  background: var(--brand-primary);
+  border-radius: 0.375rem; /* var(--radius-md) */
+  padding: 0 0.25rem;
+  height: 0.9375rem; /* (badgeSmall height - scaled) */
+  transform: translateY(-0.0625rem);
+}
+.message-time {
+  font-size: 0.75rem; /* MessageLayoutSpec.ts:104 (cozy timestampFontSize) */
+  color: var(--text-primary-muted); /* Message.module.css:4 (--message-timestamp-color) */
+  line-height: 1.125rem;
+}
+.message-edited {
+  margin-left: 0.25rem;
+  font-size: 0.75rem; /* MessageLayoutSpec.ts:139 (edited.fontSize) */
+  color: var(--text-primary-muted);
+}
+
+/* --- Message body --- */
+.message-body {
+  font-size: var(--font-size, 1rem); /* ChannelMessages.module.css:11 */
+  color: var(--text-chat); /* Message.module.css — uses text-chat for content */
+  line-height: 1.375rem; /* MessageLayoutSpec.ts:116 (lineHeight) */
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  padding-right: 0.5rem; /* keep distance from the action bar */
+}
+
+/* --- Grouped (continuation) message: content indented 3.5rem; the hover
+   timestamp sits absolutely in the left gutter and fades in on row hover. --- */
+.message-grouped {
+  position: relative;
+  min-height: 1.375rem; /* lineHeight */
+}
+.message-hover-time {
+  position: absolute;
+  left: 0;
+  width: 3.5rem; /* avatar + gutter — occupies the indent area */
+  font-size: 0.625rem;
+  color: var(--text-primary-muted);
+  text-align: center;
+  opacity: 0;
+  user-select: none;
+  line-height: 1.375rem;
+}
+.message-row:hover .message-hover-time {
+  opacity: 1;
+}
+.message-grouped .message-body {
+  flex: 1 1 auto;
+  padding-right: 0.5rem;
+}
+
+/* --- Reply reference (MessageLayoutSpec.ts:131-136) --- */
+.reply-ref {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* :132 (reply.spacing) */
+  margin-left: calc(var(--message-avatar-size, 2.5rem) + var(--message-gutter, 1rem)); /* avatar + gutter */
+  margin-bottom: 0.125rem;
+  font-size: 0.875rem; /* :134 (reply.fontSize) */
+  color: var(--text-primary-muted);
+  position: relative;
+  padding-left: 0.875rem; /* space for the spine */
+  height: 1.125rem; /* :133 (reply.height) */
+}
+.reply-ref-line {
+  position: absolute;
+  left: 0;
+  top: 0.5625rem;
+  width: 0.375rem; /* :135 (reply.spineWidth=0.125rem, but visual width wider) */
+  height: 0.5625rem;
+  border-left: 0.125rem solid var(--text-primary-muted); /* :135 (spineWidth) */
+  border-bottom: 0.125rem solid var(--text-primary-muted);
+  border-radius: 0 0 0 0.375rem; /* :136 (spineRadius) */
+}
+.reply-ref-name {
+  font-weight: 600;
+  flex-shrink: 0;
+  color: var(--text-primary);
+}
+.reply-ref-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Reactions (Message.module.css reactions, MessageReactions.module.css) --- */
+.message-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-left: calc(var(--message-avatar-size, 2.5rem) + var(--message-gutter, 1rem));
+  margin-top: 0.25rem; /* containerGap, MessageLayoutSpec.ts:117 */
+}
+.reaction-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.5rem; /* var(--radius-lg) */
+  background: var(--background-modifier-hover);
+  border: 0.0625rem solid transparent;
+  font-size: 0.8125rem;
+  color: var(--text-primary-muted);
+  cursor: pointer;
+  transition: background-color 100ms ease, border-color 100ms ease;
+}
+.reaction-chip:hover {
+  background: var(--background-modifier-accent);
+  border-color: var(--background-modifier-accent);
+}
+.reaction-chip.mine {
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  border-color: var(--brand-primary);
+  color: var(--text-primary);
+}
+.reaction-chip img {
+  object-fit: contain;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.reaction-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.375rem;
+  border-radius: 0.5rem;
+  background: var(--background-modifier-hover);
+  color: var(--text-primary-muted);
+  border: 0.0625rem solid transparent;
+  cursor: pointer;
+}
+.reaction-add:hover {
+  background: var(--background-modifier-accent);
+  color: var(--text-primary);
+}
+
+/* --- System messages --- */
+.system-message-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.125rem 1rem 0.125rem calc(var(--message-avatar-size, 2.5rem) + var(--message-gutter, 1rem));
+  color: var(--text-primary-muted);
+  font-size: 0.875rem;
+}
+.system-icon {
+  color: var(--text-primary-muted);
+  opacity: 0.6; /* Message.module.css:5 (system-message-icon-opacity) */
+  width: 1.125rem; /* MessageLayoutSpec.ts:130 (systemMessageIconSize) */
+  height: 1.125rem;
+  margin-left: -0.75rem;
+}
+
+/* --- Attachments --- */
+.message-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem; /* var(--spacing-2) */
+  margin-left: calc(var(--message-avatar-size, 2.5rem) + var(--message-gutter, 1rem));
+  margin-top: 0.25rem; /* containerGap */
+  max-width: 30rem; /* 480px */
+}
+.message-grouped + .message-attachments,
+.message-attachments {
+  margin-left: calc(var(--message-avatar-size, 2.5rem) + var(--message-gutter, 1rem));
+}
+
+/* --- Forwarded message snapshots --- */
+.message-forwarded-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-left: calc(var(--message-avatar-size, 2.5rem) + var(--message-gutter, 1rem));
+  margin-top: 0.25rem;
+  max-width: 30rem;
+}
+.message-forwarded {
+  border-left: 0.1875rem solid var(--background-modifier-accent);
+  background: var(--background-secondary-alt);
+  border-radius: var(--radius-xs, 0.25rem);
+  padding: 0.25rem 0.5rem;
+}
+.message-forwarded-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  margin-bottom: 0.125rem;
+  color: var(--text-primary-muted);
+}
+.message-forwarded-body {
+  font-size: 0.875rem;
+  color: var(--text-chat);
+}
+
+/* --- Attachment rendering --- */
+.attachment-image {
+  display: block;
+  max-width: 25rem; /* 400px */
+  max-height: 20rem; /* 320px */
+  border-radius: var(--media-border-radius, 0.25rem); /* globals.css:97 */
+  overflow: hidden;
+  cursor: pointer;
+}
+.attachment-image img,
+.attachment-image .attachment-image-placeholder {
+  display: block;
+  max-width: 100%;
+  max-height: 20rem;
+  object-fit: contain;
+  border-radius: var(--media-border-radius, 0.25rem);
+}
+.attachment-image-placeholder {
+  width: 15rem;
+  height: 10rem;
+  background: var(--background-secondary-alt);
+}
+.attachment-video {
+  max-width: 30rem;
+  max-height: 22.5rem;
+  border-radius: var(--media-border-radius, 0.25rem);
+}
+.attachment-audio {
+  width: 100%;
+  max-width: 30rem;
+}
+.attachment-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--media-border-radius, 0.25rem);
+  background: var(--background-secondary-alt);
+  border: 0.0625rem solid var(--background-modifier-accent);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.attachment-file:hover {
+  background: var(--background-modifier-hover);
+}
+.attachment-file.spoiler {
+  filter: blur(0.5rem);
+}
+.attachment-file.spoiler:hover {
+  filter: none;
+}
+.attachment-file-name {
+  font-weight: 600;
+}
+.attachment-file-size {
+  white-space: nowrap;
+  color: var(--text-primary-muted);
+}
+/* Attachments / embeds / reactions / forwards render at the .message-row level
+   (siblings of .message-row-content), so indent them to line up under the
+   message text (avatar 2.5rem + gutter 1rem = 3.5rem). */
+.message-row > .attachment-list,
+.message-row > .embed-list,
+.message-row > .message-reactions,
+.message-row > .forwarded-list,
+.message-row > .reply-ref {
+  margin-left: 3.5rem;
+}

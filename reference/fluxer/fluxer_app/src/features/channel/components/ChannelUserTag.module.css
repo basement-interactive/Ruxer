@@ -1,0 +1,49 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.tag {
+	display: inline-block;
+	background-color: var(--brand-primary);
+	text-indent: 0;
+	text-transform: uppercase;
+	color: var(--brand-primary-fill);
+	padding: 0 0.35rem;
+	vertical-align: baseline;
+	padding-block: var(--user-tag-padding-vertical, 0.125rem);
+	min-height: var(--user-tag-min-height, auto);
+	height: var(--user-tag-height, auto);
+	line-height: var(--user-tag-line-height, 1);
+	border-radius: 0.25rem;
+}
+
+.tagSm {
+	border-radius: 0.25rem;
+	font-size: 0.625rem;
+	--user-tag-min-height: 0.9375rem;
+	--user-tag-padding-vertical: 0.125rem;
+}
+
+.tagLg {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.375rem;
+	font-size: 0.75rem;
+	--user-tag-min-height: 1.5rem;
+	--user-tag-padding-vertical: 0.15rem;
+}
+
+.text {
+	display: inline-block;
+	font-weight: 600;
+	pointer-events: none;
+	line-height: var(--user-tag-line-height, 1);
+}
+
+.textSm {
+	font-size: 0.625rem;
+}
+
+.textLg {
+	font-size: 0.75rem;
+	letter-spacing: 0.025em;
+}

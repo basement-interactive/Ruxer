@@ -1,0 +1,522 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.textualPreview {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 50vw;
+	min-width: 0;
+	border-radius: var(--radius-md);
+	background-color: var(--background-secondary);
+	border: 0.0625rem solid var(--code-block-border);
+	overflow: hidden;
+}
+
+.previewSurface {
+	--preview-code-line-height: 1rem;
+	--preview-padding-block: 0.625rem;
+	--preview-padding-inline: 0.625rem;
+	--preview-reserved-scrollbar-size: 0.5rem;
+	--preview-visible-lines: 6;
+	--preview-panel-max-block-size: 31.25rem;
+	position: relative;
+	display: flex;
+	flex: 0 0 auto;
+	width: 100%;
+	min-width: 0;
+	block-size: min(
+		calc(
+			(var(--preview-visible-lines) * var(--preview-code-line-height)) +
+			(2 * var(--preview-padding-block)) +
+			var(--preview-reserved-scrollbar-size)
+		),
+		var(--preview-panel-max-block-size)
+	);
+	background-color: var(--bg-code-block);
+	overflow: hidden;
+}
+
+.previewActions {
+	position: absolute;
+	top: 0.25rem;
+	right: 0.25rem;
+	display: flex;
+	gap: 0.125rem;
+	opacity: 0;
+	transition: none;
+	z-index: 10;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.previewSurface:hover
+	.previewActions,
+.previewSurface:focus-within .previewActions {
+	opacity: 1;
+}
+
+.previewActionsVisible {
+	display: block;
+	opacity: 1;
+}
+
+.previewActionButton {
+	composes: item from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+	--action-toolbar-item-size: 1.5rem;
+	--action-toolbar-item-border-width: 0;
+	--action-toolbar-item-radius: var(--radius-sm);
+	--action-toolbar-item-background: var(--bg-secondary);
+	--action-toolbar-item-color: var(--text-secondary);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.previewActions
+	.previewActionButton:hover {
+	background-color: var(--bg-hover);
+	color: var(--text-primary);
+}
+
+.copyIcon {
+	height: 1rem;
+	width: 1rem;
+}
+
+.inlinePreviewSurface {
+	min-block-size: calc(
+		(6 * var(--preview-code-line-height)) +
+		(2 * var(--preview-padding-block)) +
+		var(--preview-reserved-scrollbar-size)
+	);
+	max-block-size: var(--preview-panel-max-block-size);
+}
+
+.previewViewport {
+	width: 100%;
+	block-size: 100%;
+	min-width: 0;
+	padding: var(--preview-padding-block) var(--preview-padding-inline);
+	box-sizing: border-box;
+	line-height: var(--preview-code-line-height);
+	overflow-x: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--code-muted) transparent;
+	overscroll-behavior-x: contain;
+	overscroll-behavior-y: auto;
+}
+
+.previewViewportCollapsed {
+	overflow-y: hidden;
+}
+
+.previewViewportExpanded {
+	overflow-y: auto;
+}
+
+.previewViewport::-webkit-scrollbar {
+	width: 0.5rem;
+	height: 0.5rem;
+}
+
+.previewViewport::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
+.previewViewport::-webkit-scrollbar-thumb {
+	background-color: var(--code-muted);
+	border-radius: 624.9375rem;
+}
+
+.previewViewport::-webkit-scrollbar-thumb:hover {
+	background-color: var(--text-code);
+}
+
+.csvTableViewport {
+	width: 100%;
+	block-size: 100%;
+	min-width: 0;
+	padding: var(--preview-padding-block) var(--preview-padding-inline);
+	box-sizing: border-box;
+	overflow-x: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--code-muted) transparent;
+	overscroll-behavior-x: contain;
+	overscroll-behavior-y: contain;
+}
+
+.csvTableViewport::-webkit-scrollbar {
+	width: 0.5rem;
+	height: 0.5rem;
+}
+
+.csvTableViewport::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
+.csvTableViewport::-webkit-scrollbar-thumb {
+	background-color: var(--code-muted);
+	border-radius: 624.9375rem;
+}
+
+.csvTableViewport::-webkit-scrollbar-thumb:hover {
+	background-color: var(--text-code);
+}
+
+.csvTableMarkup {
+	--message-compact-table-min-cell-width: 6rem;
+	--message-compact-table-max-inline-size: none;
+	width: max-content;
+	min-width: 100%;
+	color: var(--text-normal);
+}
+
+.previewCode {
+	--pre-padding: 0;
+	margin: 0;
+	border: 0;
+	background-color: transparent;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	line-height: var(--preview-code-line-height);
+	white-space: pre;
+	color: var(--text-code);
+	min-width: max-content;
+	min-block-size: calc(var(--preview-visible-lines) * var(--preview-code-line-height));
+}
+
+.previewCode :global(.hljs) {
+	display: block;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	color: inherit;
+	line-height: inherit;
+	overflow: visible;
+}
+
+.previewCodeWrap {
+	white-space: pre-wrap;
+	word-break: break-word;
+	min-width: 100%;
+}
+
+.previewError {
+	width: 100%;
+	block-size: 100%;
+	box-sizing: border-box;
+	padding: var(--preview-padding-block) 0.875rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--status-danger);
+	font-size: 0.8125rem;
+	line-height: 1.125rem;
+	overflow: auto;
+}
+
+.loadingState {
+	width: 100%;
+	block-size: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.footer {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 0.625rem;
+	border-top: 0.0625rem solid var(--border-color);
+	background-color: var(--background-secondary);
+}
+
+.expandButton {
+	composes: item from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+	--action-toolbar-item-size: 2rem;
+	--action-toolbar-item-border-width: 0;
+	--action-toolbar-item-radius: 0.625rem;
+	--action-toolbar-item-background: var(--background-modifier-hover);
+	--action-toolbar-item-color: var(--text-secondary);
+	flex-shrink: 0;
+}
+
+@media (hover: hover) {
+	.expandButton:hover {
+		background-color: var(--background-modifier-selected);
+		color: var(--text-primary);
+	}
+}
+
+.expandIcon {
+	transition: transform 0.12s ease;
+}
+
+.expandIconExpanded {
+	transform: rotate(180deg);
+}
+
+.fileSection {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	flex: 1;
+}
+
+.fileMeta {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	gap: 0.175rem;
+}
+
+.fileName {
+	font-size: 0.8125rem;
+	line-height: 1.25;
+	color: var(--text-primary);
+	font-weight: 500;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.fileSize {
+	font-size: 0.75rem;
+	color: var(--text-tertiary);
+}
+
+.footerActions {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.125rem;
+	flex-shrink: 0;
+}
+
+.controlButton {
+	composes: item from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+	--action-toolbar-item-size: 2rem;
+	--action-toolbar-item-border-width: 0;
+	--action-toolbar-item-radius: 0.5rem;
+	--action-toolbar-item-background: transparent;
+	--action-toolbar-item-color: var(--text-secondary);
+}
+
+@media (hover: hover) {
+	.controlButton:hover,
+	.controlButton[data-context-menu-open='true'] {
+		background-color: var(--background-modifier-hover);
+		color: var(--text-primary);
+	}
+}
+
+.controlButtonDisabled {
+	opacity: 0.5;
+}
+
+.languagePositioner {
+	z-index: 99999;
+	outline: none;
+}
+
+.languagePopup {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	width: 16rem;
+	max-width: var(--available-width);
+	max-height: var(--available-height);
+	border-radius: 0.5rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	background-color: var(--form-surface-background);
+	box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.24);
+	overflow: hidden;
+	color: var(--text-primary);
+	font-size: 0.8125rem;
+	line-height: 1.125rem;
+}
+
+.languageSearchWrap {
+	flex-shrink: 0;
+	padding: 0.5rem 0.5rem 0.25rem;
+}
+
+.languageSearchInput {
+	box-sizing: border-box;
+	width: 100%;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 0.5rem;
+	background-color: transparent;
+	color: var(--text-primary);
+	font-size: 0.8125rem;
+	line-height: 1.125rem;
+	padding: 0.4375rem 0.625rem;
+	outline: none;
+	transition: border-color 0.15s ease;
+}
+
+.languageSearchInput:focus {
+	border-color: var(--background-modifier-accent-focus);
+}
+
+.languageSearchInput::placeholder {
+	color: var(--text-tertiary);
+}
+
+.languageEmpty {
+	padding: 0.75rem 1rem;
+	color: var(--text-primary-muted);
+	text-align: center;
+}
+
+.languageEmpty:empty {
+	padding: 0;
+}
+
+.languageList {
+	flex: 1;
+	min-height: 0;
+	max-height: 14rem;
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: 0.25rem 0;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.languageList::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}
+
+.languageItem {
+	position: relative;
+	display: flex;
+	width: 100%;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.375rem 2rem 0.375rem 0.625rem;
+	color: var(--text-primary);
+	cursor: pointer;
+	outline: none;
+	white-space: nowrap;
+	transition: none;
+}
+
+.languageItemHighlighted {
+	background-color: var(--background-modifier-hover);
+}
+
+.languageItemSelected {
+	background-color: var(--brand-primary);
+	color: #fff;
+}
+
+.languageItemSelected.languageItemHighlighted {
+	background-color: var(--brand-primary);
+}
+
+.languageItemIndicator {
+	position: absolute;
+	top: 50%;
+	right: 0.625rem;
+	display: flex;
+	width: 1rem;
+	height: 1rem;
+	align-items: center;
+	justify-content: center;
+	color: currentColor;
+	pointer-events: none;
+	transform: translateY(-50%);
+}
+
+.languageItemIndicator svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.languageOptionContent {
+	display: flex;
+	flex: 1;
+	min-width: 0;
+	align-items: baseline;
+	gap: 0.5rem;
+}
+
+.languageOptionCode {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	line-height: 1rem;
+	color: currentColor;
+}
+
+.languageOptionCanonical {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.6875rem;
+	line-height: 1rem;
+	color: var(--text-tertiary);
+	text-transform: uppercase;
+	letter-spacing: 0;
+}
+
+.modalRoot {
+	width: 100% !important;
+	height: 100% !important;
+	max-width: min(79.875rem, calc(100vw - 2rem)) !important;
+	max-height: min(75rem, calc(100svh - 2rem)) !important;
+}
+
+.modalLayout {
+	display: flex;
+	flex-direction: column;
+	min-height: 6.25rem;
+	height: 100%;
+}
+
+.modalBody {
+	display: flex;
+	padding: 0;
+	min-height: 0;
+	flex: 1;
+}
+
+.modalPreviewSurface {
+	block-size: 100%;
+	height: 100%;
+	max-height: none;
+	max-block-size: none;
+	min-height: 0;
+	min-block-size: 0;
+	flex: 1;
+}
+
+.modalRoot .modalPreviewSurface,
+.modalRoot .modalPreviewSurface * {
+	user-select: text !important;
+	-webkit-user-select: text !important;
+}
+
+.previewViewportFill {
+	block-size: 100%;
+	height: 100%;
+}
+
+.previewCodeFill {
+	min-block-size: 100%;
+}
+
+@media (max-width: 768px) {
+	.textualPreview {
+		max-width: 100%;
+	}
+
+	.modalRoot {
+		max-width: calc(100vw - 1rem) !important;
+		max-height: calc(100svh - 1rem) !important;
+	}
+}

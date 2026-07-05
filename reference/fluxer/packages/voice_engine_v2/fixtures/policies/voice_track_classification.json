@@ -1,0 +1,123 @@
+[
+	{
+		"name": "classifies all explicit local and remote publication ids",
+		"input": {
+			"tracks": [
+				{"direction": "send", "kind": "video", "trackIdentifier": "local-camera", "bitrateKbps": 500},
+				{"direction": "send", "kind": "audio", "trackIdentifier": "local-mic", "bitrateKbps": 48},
+				{"direction": "send", "kind": "video", "trackIdentifier": "local-screen", "bitrateKbps": 1200},
+				{"direction": "send", "kind": "audio", "trackIdentifier": "local-screen-audio", "bitrateKbps": 96},
+				{"direction": "recv", "kind": "audio", "trackIdentifier": "remote-mic", "bitrateKbps": 64},
+				{"direction": "recv", "kind": "video", "trackIdentifier": "remote-camera", "bitrateKbps": 900},
+				{"direction": "recv", "kind": "video", "trackIdentifier": "remote-screen", "bitrateKbps": 1800},
+				{"direction": "recv", "kind": "audio", "trackIdentifier": "remote-screen-audio", "bitrateKbps": 128}
+			],
+			"publications": {
+				"localCameraTrackId": "local-camera",
+				"localMicrophoneTrackId": "local-mic",
+				"localScreenShareTrackId": "local-screen",
+				"localScreenShareAudioTrackId": "local-screen-audio",
+				"remoteMicrophoneTrackIds": ["remote-mic"],
+				"remoteScreenShareTrackIds": ["remote-screen"],
+				"remoteScreenShareAudioTrackIds": ["remote-screen-audio"]
+			}
+		},
+		"expected": {
+			"localVideoTrackIndex": 0,
+			"localAudioTrackIndex": 1,
+			"localScreenShareTrackIndex": 2,
+			"localScreenShareAudioTrackIndex": 3,
+			"remoteVideoTrackIndex": 5,
+			"remoteAudioTrackIndex": 4,
+			"remoteScreenShareTrackIndex": 6,
+			"remoteScreenShareAudioTrackIndex": 7
+		}
+	},
+	{
+		"name": "falls back to rid screen-share and non-rid camera when local ids are missing",
+		"input": {
+			"tracks": [
+				{"direction": "send", "kind": "video", "trackIdentifier": "camera-fallback", "bitrateKbps": 700},
+				{"direction": "send", "kind": "video", "rid": "h", "trackIdentifier": "screen-fallback", "bitrateKbps": 1600},
+				{"direction": "send", "kind": "audio", "trackIdentifier": "local-mic", "bitrateKbps": 48}
+			],
+			"publications": {
+				"localCameraTrackId": null,
+				"localMicrophoneTrackId": null,
+				"localScreenShareTrackId": null,
+				"localScreenShareAudioTrackId": null,
+				"remoteMicrophoneTrackIds": [],
+				"remoteScreenShareTrackIds": [],
+				"remoteScreenShareAudioTrackIds": []
+			}
+		},
+		"expected": {
+			"localVideoTrackIndex": 0,
+			"localAudioTrackIndex": 2,
+			"localScreenShareTrackIndex": 1,
+			"localScreenShareAudioTrackIndex": null,
+			"remoteVideoTrackIndex": null,
+			"remoteAudioTrackIndex": null,
+			"remoteScreenShareTrackIndex": null,
+			"remoteScreenShareAudioTrackIndex": null
+		}
+	},
+	{
+		"name": "does not classify remote screen-share audio as remote microphone",
+		"input": {
+			"tracks": [
+				{"direction": "recv", "kind": "audio", "trackIdentifier": "remote-screen-audio", "bitrateKbps": 4},
+				{"direction": "recv", "kind": "video", "trackIdentifier": "remote-screen", "bitrateKbps": 1800}
+			],
+			"publications": {
+				"localCameraTrackId": null,
+				"localMicrophoneTrackId": null,
+				"localScreenShareTrackId": null,
+				"localScreenShareAudioTrackId": null,
+				"remoteMicrophoneTrackIds": [],
+				"remoteScreenShareTrackIds": ["remote-screen"],
+				"remoteScreenShareAudioTrackIds": ["remote-screen-audio"]
+			}
+		},
+		"expected": {
+			"localVideoTrackIndex": null,
+			"localAudioTrackIndex": null,
+			"localScreenShareTrackIndex": null,
+			"localScreenShareAudioTrackIndex": null,
+			"remoteVideoTrackIndex": null,
+			"remoteAudioTrackIndex": null,
+			"remoteScreenShareTrackIndex": 1,
+			"remoteScreenShareAudioTrackIndex": 0
+		}
+	},
+	{
+		"name": "chooses active remote screen-share and camera candidates over silent rows",
+		"input": {
+			"tracks": [
+				{"direction": "recv", "kind": "video", "trackIdentifier": "remote-camera-silent", "bitrateKbps": 0},
+				{"direction": "recv", "kind": "video", "trackIdentifier": "remote-camera-live", "bitrateKbps": 900},
+				{"direction": "recv", "kind": "video", "trackIdentifier": "remote-screen-silent", "bitrateKbps": 0},
+				{"direction": "recv", "kind": "video", "trackIdentifier": "remote-screen-live", "bitrateKbps": 1600}
+			],
+			"publications": {
+				"localCameraTrackId": null,
+				"localMicrophoneTrackId": null,
+				"localScreenShareTrackId": null,
+				"localScreenShareAudioTrackId": null,
+				"remoteMicrophoneTrackIds": [],
+				"remoteScreenShareTrackIds": ["remote-screen-silent", "remote-screen-live"],
+				"remoteScreenShareAudioTrackIds": []
+			}
+		},
+		"expected": {
+			"localVideoTrackIndex": null,
+			"localAudioTrackIndex": null,
+			"localScreenShareTrackIndex": null,
+			"localScreenShareAudioTrackIndex": null,
+			"remoteVideoTrackIndex": 1,
+			"remoteAudioTrackIndex": null,
+			"remoteScreenShareTrackIndex": 3,
+			"remoteScreenShareAudioTrackIndex": null
+		}
+	}
+]

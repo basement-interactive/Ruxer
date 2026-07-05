@@ -1,0 +1,131 @@
+.emoji-picker {
+  position: absolute;
+  bottom: 64px;
+  right: var(--sp-4);
+  width: 360px;
+  height: 440px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-popout);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.emoji-picker-search {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.emoji-picker-search input {
+  flex: 1 1 auto;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-normal);
+}
+.emoji-picker-search input::placeholder {
+  color: var(--text-faint);
+}
+
+.emoji-picker-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--sp-2);
+}
+
+.emoji-section {
+  margin-bottom: var(--sp-3);
+}
+.emoji-section-title {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--sp-1) var(--sp-1) var(--sp-2);
+}
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 32px);
+  gap: var(--sp-1);
+  justify-content: space-between;
+}
+.emoji-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  font-size: 22px;
+  cursor: pointer;
+}
+.emoji-cell:hover {
+  background: var(--bg-modifier-hover);
+}
+.emoji-cell.custom {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.emoji-cell img {
+  object-fit: contain;
+}
+.emoji-empty {
+  padding: var(--sp-4);
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.emoji-picker-close {
+  position: absolute;
+  top: var(--sp-2);
+  right: var(--sp-2);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-full);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.emoji-picker-close:hover {
+  background: var(--bg-modifier-hover);
+  color: var(--text-bright);
+}
+
+/* Tab bar (Emoji / Stickers) */
+.emoji-picker-tabs {
+  display: flex;
+  border-top: 1px solid var(--border-color);
+  padding: 4px;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.emoji-picker-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background 100ms ease, color 100ms ease;
+}
+.emoji-picker-tab:hover {
+  background: var(--bg-modifier-hover);
+  color: var(--text-bright);
+}
+.emoji-picker-tab.active {
+  background: var(--bg-modifier-selected);
+  color: var(--text-bright);
+}

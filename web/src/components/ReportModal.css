@@ -1,0 +1,76 @@
+.report-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal, 1000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+}
+.report-modal {
+  width: 440px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  background: var(--background-primary, #313338);
+  border-radius: var(--radius-lg, 8px);
+  padding: 20px;
+  box-shadow: var(--shadow-high, 0 8px 24px rgba(0, 0, 0, 0.4));
+}
+.report-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-normal);
+}
+.report-help {
+  margin: 0 0 16px;
+}
+.report-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.report-category {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-normal);
+}
+.report-category:hover {
+  background: var(--background-modifier-hover, rgba(255, 255, 255, 0.04));
+}
+.report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+.report-cancel,
+.report-submit {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm, 6px);
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.report-cancel {
+  background: transparent;
+  color: var(--text-normal);
+}
+.report-cancel:hover {
+  text-decoration: underline;
+}
+.report-submit {
+  background: var(--status-danger, #f23f43);
+  color: #fff;
+}
+.report-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

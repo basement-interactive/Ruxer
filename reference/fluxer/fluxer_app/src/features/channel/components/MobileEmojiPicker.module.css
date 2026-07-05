@@ -1,0 +1,70 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	position: relative;
+	height: 100%;
+	min-width: 0;
+}
+
+.mobileEmojiPicker {
+	position: relative;
+	display: grid;
+	grid-template-rows: auto 1fr auto auto;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	min-width: 0;
+	padding: 0 0.5rem;
+}
+
+.bodyWrapper {
+	display: grid;
+	position: relative;
+	grid-row: 2 / 3;
+	grid-template-rows: 1fr;
+	min-width: 0;
+}
+
+.emojiPickerListWrapper {
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	min-width: 0;
+}
+
+.listWrapper {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	min-width: 0;
+}
+
+.list {
+	padding: 0 0.25rem;
+	min-width: 0;
+}
+
+.categoryListBottom {
+	position: relative;
+	grid-row: 3 / 4;
+	width: 100%;
+	min-width: 0;
+	background: var(--background-secondary);
+	border-top: 0.0625rem solid var(--background-header-secondary);
+}
+
+.categoryListBottomScroller {
+	height: 100%;
+}
+
+.categoryListBottomContent {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	min-width: max-content;
+	padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0)) 0.5rem;
+}

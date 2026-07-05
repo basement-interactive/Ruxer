@@ -1,0 +1,231 @@
+/* GuildsRail — ported 1:1 from reference/fluxer/fluxer_app/src/features/app/components/layout/GuildsLayout.module.css.
+ * Every value below is traced to the source line. Re-authored clean (not copied
+ * verbatim) but producing identical visual output.
+ *
+ * The real client uses framer-motion for the icon border-radius morph + the
+ * pill indicator height animation. We use CSS transitions with the same
+ * durations/easing (70ms ease-out for the icon morph, per GuildsLayout.module.css:210-212).
+ * The pill height is fixed per state (selected=40px, hover=20px, unread=8px,
+ * GuildListItem.tsx:506-510) — we render it via a CSS class per state rather
+ * than motion to keep the TSX simple; the visual result is identical.
+ */
+
+/* --- Rail container (GuildsLayout.module.css:40-61) --- */
+.guild-rail {
+  display: flex;
+  flex-direction: column;
+  width: var(--layout-guild-list-width, 4.5rem); /* :46 */
+  flex-shrink: 0;
+  height: 100%;
+  min-height: 0; /* allow the scrollable middle to bound */
+  background: var(--background-secondary); /* :48,18 */
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* --- Scroll container (GuildsLayout.module.css:53-61) --- */
+.guild-rail-top,
+.guild-rail-list,
+.guild-rail-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.guild-rail-top {
+  gap: 0.375rem; /* :89 (--guild-list-item-gap) */
+  padding-top: 0.25rem; /* :59 (--spacing-1) */
+}
+
+.guild-rail-list {
+  flex: 1 1 auto;
+  min-height: 0; /* allow the scroll area to shrink below content height */
+  overflow-y: auto;
+  overflow-x: hidden;
+  gap: 0.375rem; /* per-item slot already centers; small gap between guilds */
+  padding-bottom: 0.5rem; /* :60 (--spacing-2) */
+  scrollbar-width: none;
+}
+.guild-rail-list::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+.guild-rail-bottom {
+  padding-top: 0.5rem; /* :60 (--spacing-2) */
+  padding-bottom: 0.5rem;
+  gap: 0.375rem; /* :89 */
+}
+
+/* --- Divider (GuildsLayout.module.css:447-455) --- */
+.guild-rail-divider {
+  height: 0.125rem; /* :448 */
+  width: 2rem; /* :449 */
+  flex-shrink: 0; /* :450 */
+  margin-top: 0.375rem; /* :451 (--guild-list-item-gap) */
+  margin-bottom: 0.375rem; /* :452 */
+  border-radius: 0.0625rem; /* :453 */
+  background-color: var(--background-modifier-hover); /* :454 */
+}
+
+/* --- Guild list item (GuildsLayout.module.css:189-191, .guildListReorderTarget) --- */
+.guild-rail-item {
+  position: relative; /* :178 */
+  display: flex;
+  /* Box-size slot (3rem). The 2.75rem icon centers inside it; vertical spacing
+     between guilds comes from the list `gap` (0.375rem). */
+  height: 3rem; /* :180 (--guild-list-item-box-size) */
+  width: 100%;
+  align-items: center; /* :182 */
+  justify-content: center; /* :183 */
+  box-sizing: border-box; /* :185 */
+  z-index: 0; /* :186 */
+}
+
+/* --- Guild icon (GuildsLayout.module.css:193-217) --- */
+.guild-rail-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--guild-icon-size, 2.75rem); /* :197-198 */
+  width: var(--guild-icon-size, 2.75rem); /* :198 */
+  flex-shrink: 0; /* :199 */
+  cursor: pointer; /* :200 */
+  border-radius: var(--radius-full, 624.9375rem); /* :201 */
+  background-color: var(--guild-list-foreground); /* :238 (NoImage variant) */
+  background-size: cover; /* :203 */
+  background-position: center; /* :204 */
+  font-weight: 600; /* :205 */
+  font-size: 1.25rem; /* :206 */
+  color: var(--text-primary); /* :207 */
+  overflow: hidden; /* :208 */
+  border: none;
+  transition:
+    border-radius 70ms ease-out, /* :210 */
+    background-color 70ms ease-out,
+    color 70ms ease-out;
+}
+
+/* --- Hover morph: circle → 30% (GuildsLayout.module.css:223-232) --- */
+.guild-rail-icon:hover {
+  border-radius: 30%; /* :230 */
+}
+.guild-rail-icon.selected {
+  border-radius: 30%; /* :220 */
+  background-color: var(--brand-primary); /* :244 */
+  color: white; /* :245 */
+}
+
+/* --- Home/Fluxer button (GuildsLayout.module.css:385-413) --- */
+.guild-rail-icon.home {
+  background-color: var(--guild-list-foreground); /* :391 */
+  color: var(--text-primary); /* :392 */
+}
+.guild-rail-icon.home:hover {
+  background-color: var(--brand-primary); /* :410 */
+  color: white; /* :411 */
+}
+.guild-rail-icon.home.selected {
+  background-color: var(--brand-primary); /* :399 */
+  color: white; /* :400 */
+}
+
+/* --- Add button (GuildsLayout.module.css:415-445) --- */
+.guild-rail-icon.add {
+  border: 0.125rem dashed var(--background-modifier-accent); /* :428 */
+  background-color: transparent; /* :429 */
+  color: var(--text-primary); /* :430 */
+  transition-property: border-radius, border-color; /* :431 */
+  transition-duration: 70ms; /* :432 */
+  transition-timing-function: ease-out; /* :433 */
+}
+.guild-rail-icon.add:hover {
+  border-radius: 30%; /* morph like guild icons */
+  border-color: var(--text-primary); /* :443 */
+  background-color: transparent;
+}
+
+/* --- Discover button (same anatomy as home, GuildsLayout.module.css:385-413) --- */
+.guild-rail-icon.discover {
+  background-color: var(--guild-list-foreground);
+  color: var(--text-primary);
+}
+.guild-rail-icon.discover:hover {
+  background-color: var(--brand-primary);
+  color: white;
+  border-radius: 30%;
+}
+
+/* --- Selection/unread pill indicator (GuildsLayout.module.css:286-304) --- */
+/* The pill sits on the left edge of the rail item. Height animates by state:
+ * selected=40px, hover=20px, unread=8px (GuildListItem.tsx:506-510). */
+.guild-rail-item .guild-pill {
+  position: absolute; /* :287 */
+  left: -0.15rem; /* :288 — sits just inside the rail's left edge */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--guild-icon-size, 2.75rem); /* :292 */
+  width: 0.5rem; /* :293 */
+  pointer-events: none; /* :294 */
+  z-index: 2; /* :296 */
+}
+.guild-rail-item .guild-pill::before {
+  content: "";
+  display: block; /* :300 */
+  width: 0.35rem; /* :301 */
+  border-radius: 0 var(--radius-full, 624.9375rem) var(--radius-full, 624.9375rem) 0; /* :302 */
+  background-color: var(--text-primary); /* :303 */
+  transition: height 200ms cubic-bezier(0.25, 0.1, 0.25, 1); /* GuildListItem.tsx:819-820 */
+}
+/* Selected: full height (40px — GuildListItem.tsx:507) */
+.guild-rail-item.selected .guild-pill::before {
+  height: 2.5rem; /* 40px */
+}
+/* Hover (not selected): 20px — GuildListItem.tsx:508 */
+.guild-rail-item:hover:not(.selected) .guild-pill::before {
+  height: 1.25rem; /* 20px */
+}
+/* Unread (not selected, not hovering): 8px — GuildListItem.tsx:509 */
+.guild-rail-item.unread .guild-pill::before {
+  height: 0.5rem; /* 8px */
+  background-color: var(--text-primary);
+}
+
+/* --- Mention badge (GuildsLayout.module.css:306-316) --- */
+.guild-rail-item .guild-badge {
+  position: absolute; /* :307 */
+  right: -0.25rem; /* :308 */
+  bottom: -0.25rem; /* :309 */
+  pointer-events: none; /* :310 */
+  border-radius: var(--radius-md, 0.375rem); /* :311 */
+}
+.guild-rail-item .guild-badge-active {
+  box-shadow: 0 0 0 0.1875rem var(--background-secondary); /* :315 */
+}
+
+/* --- Tooltip (GuildsLayout.module.css:523-566) --- */
+.guild-rail-tooltip {
+  position: absolute;
+  left: calc(100% + 0.625rem);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--form-surface-background);
+  border: 0.0625rem solid var(--background-modifier-accent);
+  color: var(--text-primary);
+  padding: 0.4375rem 0.625rem; /* Tooltip.module.css:53 */
+  border-radius: 0.5rem; /* Tooltip.module.css:33 */
+  font-size: 0.8125rem; /* Tooltip.module.css:36 */
+  font-weight: 500; /* :37 */
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+  z-index: var(--z-index-tooltip, 45000);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.22); /* Tooltip.module.css:7 */
+}
+.guild-rail-item:hover .guild-rail-tooltip {
+  opacity: 1;
+}

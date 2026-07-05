@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import AppStorage from '@app/features/platform/state/PersistentStorage';
+import {makeAutoObservable} from 'mobx';
+
+const UNREAD_BADGE_CUSTOMIZATION_STORAGE_KEY = 'AdvancedSettings:unreadBadgeCustomizationEnabled';
+
+function readStoredBoolean(key: string, defaultValue = false): boolean {
+	const raw = AppStorage.getItem(key);
+	if (raw == null) return defaultValue;
+	try {
+		const parsed = JSON.parse(raw);
+		return typeof parsed === 'boolean' ? parsed : defaultValue;
+	} catch (_error) {
+		return raw === 'true' ? true : raw === 'false' ? false : defaultValue;
+	}
+}
+
+class AdvancedSettings {
+	unreadBadgeCustomizationEnabled = readStoredBoolean(UNREAD_BADGE_CUSTOMIZATION_STORAGE_KEY);
+
+	constructor() {
+		makeAutoObservable(this, {}, {autoBind: true});
+		if (typeof AppStorage.subscribe !== 'function') {
+			return;
+		}
+		AppStorage.subscribe(
+			(event) => {
+				this.unreadBadgeCustomizationEnabled = event.newValue === null ? false : readStoredBoolean(event.key ?? '');
+			},
+			{key: UNREAD_BADGE_CUSTOMIZATION_STORAGE_KEY, source: 'external'},
+		);
+	}
+
+	setUnreadBadgeCustomizationEnabled(value: boolean): void {
+		if (this.unreadBadgeCustomizationEnabled === value) return;
+		this.unreadBadgeCustomizationEnabled = value;
+		AppStorage.setItem(UNREAD_BADGE_CUSTOMIZATION_STORAGE_KEY, JSON.stringify(value));
+	}
+}
+
+export default new AdvancedSettings();

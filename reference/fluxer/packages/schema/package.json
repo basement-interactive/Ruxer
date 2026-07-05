@@ -1,0 +1,34 @@
+{
+	"name": "@fluxer/schema",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./*": "./*"
+	},
+	"scripts": {
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:watch": "vitest",
+		"typecheck": "tsgo --noEmit",
+		"generate": "cd proto && buf generate && cargo run --manifest-path ../../../tools/ci/Cargo.toml -- clean-schema-generated-files --root ../src/gen && cd .. && pnpm exec biome check --write --unsafe --no-errors-on-unmatched src/gen"
+	},
+	"dependencies": {
+		"@bufbuild/protobuf": "^2.12.0",
+		"@fluxer/constants": "workspace:*",
+		"@simplewebauthn/server": "catalog:",
+		"emoji-regex": "catalog:",
+		"uint8array-extras": "catalog:",
+		"validator": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@bufbuild/buf": "^1.69.0",
+		"@bufbuild/protoc-gen-es": "^2.12.0",
+		"@types/node": "catalog:",
+		"@types/validator": "catalog:",
+		"@typescript/native-preview": "catalog:",
+		"vite-tsconfig-paths": "catalog:",
+		"vitest": "catalog:"
+	}
+}

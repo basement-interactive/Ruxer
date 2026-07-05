@@ -1,0 +1,76 @@
+# ── Secrets (NEVER commit) ───────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+# Tauri updater signing key — lives ONLY as the GitHub Actions secret
+# TAURI_SIGNING_PRIVATE_KEY. The .pub is safe (it's baked into tauri.conf.json)
+# but we keep the whole dir out of git to avoid ever committing the private key.
+.tauri-signing/
+
+# ── Rust build artifacts ─────────────────────────────────────────────────
+/target
+**/target/
+# Cargo.lock IS committed (this is an application + CI reproducibility + the
+# workflow's libwebrtc cache key is derived from the pinned git rev). Do NOT
+# ignore it.
+
+# ── Node / frontend ──────────────────────────────────────────────────────
+# Every node_modules (regenerated in CI via `pnpm install --frozen-lockfile`).
+node_modules/
+**/node_modules/
+# Built frontend output. CI rebuilds the shipped bundle
+# (reference/fluxer/fluxer_app → web/dist) via maybe-rebuild-frontend.mjs, so
+# neither the intermediate dist nor the mirror needs to be in git.
+/web/dist/
+/web/.dist-hash
+reference/fluxer/fluxer_app/dist/
+# pnpm/npm/yarn debug + store
+.pnpm-store/
+npm-debug.log*
+yarn-error.log*
+
+# ── Vendored / generated ─────────────────────────────────────────────────
+# vendor/webrtc-sys IS committed (our NVENC patch lives there) — do NOT ignore.
+# core/openapi.json + build.rs generate types into target/, already ignored.
+
+# ── Standalone build GUI tool (separate workspace, not part of the release) ─
+build-gui/target/
+
+# ── OS / editor cruft ────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+
+# ── Release binary archives (published as GitHub Release assets, not in git) ──
+# 6+ GB of old MSI/AppImage builds — kept locally for reference but they belong
+# on the GitHub Releases page, never in the repo tree.
+/dist-archives/
+/build-gui/dist/
+*.msi
+*.AppImage
+*.msi.sig
+*.AppImage.sig
+
+# ── Reference monorepo: keep ONLY the shipped frontend + its workspace deps ──
+# The build (maybe-rebuild-frontend.mjs → rspack in fluxer_app) needs only
+# fluxer_app + the packages/* it depends on via workspace:*. The rest of the
+# upstream monorepo (server crates, static assets, marketing) is ~330MB of dead
+# weight — the runtime static assets are fetched from STATIC_CDN_ENDPOINT.
+reference/fluxer/fluxer_static/
+reference/fluxer/fluxer_marketing/
+reference/fluxer/fluxer_admin/
+reference/fluxer/fluxer_api/
+reference/fluxer/fluxer_gateway/
+reference/fluxer/fluxer_messages/
+reference/fluxer/fluxer_media_proxy/
+reference/fluxer/fluxer_gifs/
+reference/fluxer/fluxer_docs/
+reference/fluxer/fluxer_common/
+reference/fluxer/fluxer_desktop/
+reference/fluxer/fluxer_app_proxy/
+reference/fluxer/fluxer_snowflakes/
+reference/fluxer/deploy/
+reference/fluxer/config/

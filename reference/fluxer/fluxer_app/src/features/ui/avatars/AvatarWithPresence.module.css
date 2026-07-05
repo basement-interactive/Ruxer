@@ -1,0 +1,20 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	flex-shrink: 0;
+	border-radius: 624.9375rem;
+	container-type: inline-size;
+}
+
+.containerSpeaking {
+	outline-style: solid;
+	outline-width: min(0.1875rem, 10cqi);
+	outline-color: #22c55e;
+}
+
+.voiceIndicatorIcon {
+	display: block;
+	width: 66%;
+	height: 66%;
+	flex: none;
+}

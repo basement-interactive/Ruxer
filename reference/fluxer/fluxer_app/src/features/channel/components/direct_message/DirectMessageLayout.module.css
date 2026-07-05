@@ -1,0 +1,58 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.dmLayoutContainer {
+	display: grid;
+	grid-template-columns: var(--layout-sidebar-width) 1fr;
+	grid-template-rows: 1fr;
+	height: 100%;
+	min-height: 0;
+	width: 100%;
+	min-width: 0;
+	background-color: var(--background-secondary);
+}
+
+.dmLayoutContainerMobile {
+	composes: dmLayoutContainer;
+	grid-template-columns: 1fr;
+	background-color: var(--background-secondary);
+}
+
+.dmLayoutContainerFullscreen {
+	grid-template-columns: minmax(0, 1fr);
+	background-color: #000;
+}
+
+.dmListColumn {
+	display: flex;
+	height: 100%;
+	min-height: 0;
+	width: 100%;
+	min-width: 0;
+	flex-direction: column;
+	background-color: var(--background-secondary);
+}
+
+.contentColumn {
+	display: grid;
+	height: 100%;
+	min-height: 0;
+	width: 100%;
+	min-width: 0;
+	background-color: var(--background-tertiary);
+}
+
+.contentColumnFullscreen {
+	background-color: #000;
+}
+
+.contentInner {
+	height: 100%;
+	min-height: 0;
+	width: 100%;
+	min-width: 0;
+	background-color: var(--background-secondary);
+}
+
+.contentInnerFullscreen {
+	background-color: #000;
+}

@@ -1,0 +1,37 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.checkbox {
+	display: flex;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 0.25rem;
+}
+
+.checkbox::before {
+	content: '';
+	box-sizing: border-box;
+	width: 1.25rem;
+	height: 1.25rem;
+	border: 0.125rem solid;
+	border-radius: 0.25rem;
+}
+
+.checkboxUnchecked::before {
+	border-color: var(--text-tertiary-muted);
+}
+
+.checkboxChecked::before {
+	border-color: var(--text-primary);
+	background-color: var(--text-primary);
+}
+
+.checkIcon {
+	position: absolute;
+	height: 0.875rem;
+	width: 0.875rem;
+	color: var(--background-primary);
+}

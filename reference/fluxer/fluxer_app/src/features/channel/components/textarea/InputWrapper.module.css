@@ -1,0 +1,88 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.wrapperSides {
+	margin-left: 0;
+	margin-right: 0;
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.box {
+	position: relative;
+	background-color: var(--background-secondary-lighter);
+	border: none;
+	transition: border-color 0.2s ease;
+	margin-bottom: 0;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.stackSection {
+	width: 100%;
+	max-width: 100%;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.stackSection + .stackSection {
+	border-top: 0.0625rem solid var(--user-area-divider-color);
+}
+
+.box:focus-within {
+	border-top: none;
+}
+
+.roundedAll {
+	border-radius: 0;
+}
+
+.roundedTop {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.roundedBottom {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.noBottomBorder {
+	border-bottom-width: 0;
+}
+
+.bottomSpacing {
+	margin-bottom: 0;
+}
+
+.disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.topBarContainer {
+	position: relative;
+	z-index: 1;
+	flex-shrink: 0;
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.barInner {
+	display: grid;
+	align-items: center;
+	grid-template-columns: minmax(0, 1fr) auto;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.separator {
+	height: 0.0625rem;
+	background-color: transparent;
+}

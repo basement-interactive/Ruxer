@@ -1,0 +1,316 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import * as LinkChannelCommands from '@app/features/channel/commands/LinkChannelCommands';
+import {PreloadableUserPopout} from '@app/features/channel/components/PreloadableUserPopout';
+import Channels from '@app/features/channel/state/Channels';
+import * as ChannelUtils from '@app/features/channel/utils/ChannelUtils';
+import Guilds from '@app/features/guild/state/Guilds';
+import {isKeyboardActivationKey} from '@app/features/input/utils/KeyboardUtils';
+import type {RendererProps} from '@app/features/messaging/components/markdown/renderers/RendererTypes';
+import {GuildNavKind, MentionKind} from '@app/features/messaging/utils/markdown/parser/Enums';
+import type {MentionNode} from '@app/features/messaging/utils/markdown/parser/Nodes';
+import * as NavigationCommands from '@app/features/navigation/commands/NavigationCommands';
+import SelectedGuild from '@app/features/navigation/state/SelectedGuild';
+import markupStyles from '@app/features/theme/styles/Markup.module.css';
+import mentionRendererStyles from '@app/features/theme/styles/MentionRenderer.module.css';
+import * as ColorUtils from '@app/features/theme/utils/ColorUtils';
+import {ChannelContextMenu} from '@app/features/ui/action_menu/ChannelContextMenu';
+import * as ContextMenuCommands from '@app/features/ui/commands/ContextMenuCommands';
+import FocusRing from '@app/features/ui/focus_ring/FocusRing';
+import Users from '@app/features/user/state/Users';
+import * as NicknameUtils from '@app/features/user/utils/NicknameUtils';
+import {ChannelTypes} from '@fluxer/constants/src/ChannelConstants';
+import {msg} from '@lingui/core/macro';
+import {clsx} from 'clsx';
+import {observer} from 'mobx-react-lite';
+import type React from 'react';
+
+const UNKNOWN_ROLE_DESCRIPTOR = msg({
+	message: 'Unknown role',
+	comment: 'Short label in the messaging mention renderer. Keep it concise.',
+});
+const UNKNOWN_CHANNEL_DESCRIPTOR = msg({
+	message: 'unknown-channel',
+	comment: 'Short label in the messaging mention renderer. Keep it concise.',
+});
+const CHANNEL_LINK_DESCRIPTOR = msg({
+	message: 'channel link',
+	comment: 'Short label in the messaging mention renderer. Keep it concise.',
+});
+export const MentionRenderer = observer(function MentionRenderer({
+	node,
+	id,
+	options,
+}: RendererProps<MentionNode>): React.ReactElement {
+	const {kind} = node;
+	const {channelId} = options;
+	const i18n = options.i18n!;
+	const shouldDisableInteractions = options.disableInteractions === true;
+	switch (kind.kind) {
+		case MentionKind.User: {
+			const user = kind.id ? Users.getUser(kind.id) : null;
+			const channel = channelId ? Channels.getChannel(channelId) : undefined;
+			const resolvedGuildId = channel?.guildId || options.guildId || '';
+			let name: string | null = null;
+			if (user) {
+				name = user.displayName;
+				if (resolvedGuildId) {
+					name = NicknameUtils.getNickname(user, resolvedGuildId) || name;
+				}
+			}
+			const genericMention = (
+				<span key={id} className={markupStyles.mention} data-flx="messaging.markdown.renderers.mention-renderer.span">
+					@{name || kind.id}
+				</span>
+			);
+			if (!user) {
+				return genericMention;
+			}
+			if (shouldDisableInteractions) {
+				return (
+					<span
+						key={id}
+						className={markupStyles.mention}
+						data-flx="messaging.markdown.renderers.mention-renderer.span--2"
+					>
+						@{name || user.displayName}
+					</span>
+				);
+			}
+			return (
+				<PreloadableUserPopout
+					key={id}
+					user={user}
+					isWebhook={false}
+					guildId={resolvedGuildId}
+					position="right-start"
+					data-flx="messaging.markdown.renderers.mention-renderer.preloadable-user-popout"
+				>
+					<FocusRing data-flx="messaging.markdown.renderers.mention-renderer.focus-ring">
+						<span
+							role="button"
+							tabIndex={0}
+							className={clsx(markupStyles.mention, markupStyles.interactive)}
+							onClick={(e) => e.stopPropagation()}
+							onKeyDown={(e) => {
+								if (!isKeyboardActivationKey(e.key)) return;
+								e.preventDefault();
+								e.stopPropagation();
+							}}
+							data-flx="messaging.markdown.renderers.mention-renderer.button.stop-propagation"
+						>
+							@{name || user.displayName}
+						</span>
+					</FocusRing>
+				</PreloadableUserPopout>
+			);
+		}
+		case MentionKind.Role: {
+			const channel = channelId ? Channels.getChannel(channelId) : null;
+			const resolvedGuildId = channel?.guildId || options.guildId || SelectedGuild.selectedGuildId;
+			const guild = resolvedGuildId != null ? Guilds.getGuild(resolvedGuildId) : null;
+			const role = guild?.roles[kind.id];
+			if (!role) {
+				return (
+					<span
+						key={id}
+						className={markupStyles.mention}
+						data-flx="messaging.markdown.renderers.mention-renderer.span--3"
+					>
+						@{i18n._(UNKNOWN_ROLE_DESCRIPTOR)}
+					</span>
+				);
+			}
+			const style = role.color
+				? ({
+						color: ColorUtils.int2rgb(role.color),
+						backgroundColor: ColorUtils.int2rgba(role.color, 0.1),
+						boxShadow: `inset 0 0 0 1px ${ColorUtils.int2rgba(role.color, 0.3)}`,
+					} as React.CSSProperties)
+				: undefined;
+			return (
+				<span
+					key={id}
+					className={markupStyles.mention}
+					style={style}
+					data-flx="messaging.markdown.renderers.mention-renderer.span--4"
+				>
+					@{role.name}
+				</span>
+			);
+		}
+		case MentionKind.Channel: {
+			const fallbackMention = options.mentionChannels?.find((mention) => mention.id === kind.id);
+			const unknownMention = (
+				<span
+					key={id}
+					className={markupStyles.mention}
+					data-flx="messaging.markdown.renderers.mention-renderer.span--5"
+				>
+					{ChannelUtils.getIcon({type: ChannelTypes.GUILD_TEXT}, {className: mentionRendererStyles.channelIcon})}
+					{i18n._(UNKNOWN_CHANNEL_DESCRIPTOR)}
+				</span>
+			);
+			const channel = Channels.getChannel(kind.id);
+			if (!channel) {
+				if (fallbackMention) {
+					return (
+						<span
+							key={id}
+							className={markupStyles.mention}
+							data-flx="messaging.markdown.renderers.mention-renderer.span--6"
+						>
+							{ChannelUtils.getIcon(fallbackMention, {className: mentionRendererStyles.channelIcon})}
+							{fallbackMention.name}
+						</span>
+					);
+				}
+				return unknownMention;
+			}
+			if (channel.type === ChannelTypes.GUILD_CATEGORY) {
+				return (
+					<span key={id} data-flx="messaging.markdown.renderers.mention-renderer.span--7">
+						#{channel.name}
+					</span>
+				);
+			}
+			if (
+				channel.type !== ChannelTypes.GUILD_TEXT &&
+				channel.type !== ChannelTypes.GUILD_VOICE &&
+				channel.type !== ChannelTypes.GUILD_LINK
+			) {
+				return unknownMention;
+			}
+			if (shouldDisableInteractions) {
+				return (
+					<span
+						key={id}
+						className={markupStyles.mention}
+						data-flx="messaging.markdown.renderers.mention-renderer.span--8"
+					>
+						{ChannelUtils.getIcon(channel, {className: mentionRendererStyles.channelIcon})}
+						{channel.name}
+					</span>
+				);
+			}
+			const activate = () => {
+				if (LinkChannelCommands.openLinkChannel(channel)) {
+					return;
+				}
+				NavigationCommands.selectChannel(channel.guildId!, channel.id);
+			};
+			return (
+				<FocusRing key={id} data-flx="messaging.markdown.renderers.mention-renderer.focus-ring--2">
+					<span
+						role="button"
+						tabIndex={0}
+						className={clsx(markupStyles.mention, markupStyles.interactive)}
+						aria-roledescription={i18n._(CHANNEL_LINK_DESCRIPTOR)}
+						onClick={(e) => {
+							e.stopPropagation();
+							activate();
+						}}
+						onKeyDown={(e) => {
+							if (!isKeyboardActivationKey(e.key)) return;
+							e.preventDefault();
+							e.stopPropagation();
+							activate();
+						}}
+						onContextMenu={(event) => {
+							event.preventDefault();
+							event.stopPropagation();
+							ContextMenuCommands.openFromEvent(event, ({onClose}) => (
+								<ChannelContextMenu
+									channel={channel}
+									onClose={onClose}
+									data-flx="messaging.markdown.renderers.mention-renderer.channel-context-menu"
+								/>
+							));
+						}}
+						data-flx="messaging.markdown.renderers.mention-renderer.button.stop-propagation--2"
+					>
+						{ChannelUtils.getIcon(channel, {className: mentionRendererStyles.channelIcon})}
+						{channel.name}
+					</span>
+				</FocusRing>
+			);
+		}
+		case MentionKind.Everyone: {
+			return (
+				<span
+					key={id}
+					className={markupStyles.mention}
+					data-flx="messaging.markdown.renderers.mention-renderer.span--9"
+				>
+					@everyone
+				</span>
+			);
+		}
+		case MentionKind.Here: {
+			return (
+				<span
+					key={id}
+					className={markupStyles.mention}
+					data-flx="messaging.markdown.renderers.mention-renderer.span--10"
+				>
+					@here
+				</span>
+			);
+		}
+		case MentionKind.Command: {
+			const {name, subcommandGroup, subcommand} = kind;
+			const commandName = [
+				`/${name}`,
+				...(subcommandGroup ? [subcommandGroup] : []),
+				...(subcommand ? [subcommand] : []),
+			].join(' ');
+			return (
+				<span
+					key={id}
+					className={markupStyles.mention}
+					data-flx="messaging.markdown.renderers.mention-renderer.span--11"
+				>
+					{commandName}
+				</span>
+			);
+		}
+		case MentionKind.GuildNavigation: {
+			const {navigationType} = kind;
+			let content: string;
+			switch (navigationType) {
+				case GuildNavKind.Customize:
+					content = '<id:customize>';
+					break;
+				case GuildNavKind.Browse:
+					content = '<id:browse>';
+					break;
+				case GuildNavKind.Guide:
+					content = '<id:guide>';
+					break;
+				case GuildNavKind.LinkedRoles: {
+					const linkedRolesId = (kind as {navigationType: 'LinkedRoles'; id?: string}).id;
+					content = linkedRolesId ? `<id:linked-roles:${linkedRolesId}>` : '<id:linked-roles>';
+					break;
+				}
+				default:
+					content = `<id:${navigationType}>`;
+					break;
+			}
+			return (
+				<span
+					key={id}
+					className={markupStyles.mention}
+					data-flx="messaging.markdown.renderers.mention-renderer.span--12"
+				>
+					{content}
+				</span>
+			);
+		}
+		default:
+			return (
+				<span key={id} data-flx="messaging.markdown.renderers.mention-renderer.span--13">
+					{'<unknown-mention>'}
+				</span>
+			);
+	}
+});

@@ -1,0 +1,75 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.modalRoot {
+	composes: root large from '@app/features/app/components/dialogs/Modal.module.css';
+	width: 45rem;
+	max-width: 45rem;
+	overflow: visible;
+}
+
+@media screen and (max-width: 639px) {
+	.modalRoot {
+		width: 100%;
+		max-width: 100%;
+	}
+}
+
+.spinnerContainer {
+	display: flex;
+	justify-content: center;
+	padding: 1.5rem 0;
+}
+
+.errorBox {
+	border-radius: 0.375rem;
+	border: 0.0625rem solid var(--background-header-secondary);
+	background: var(--background-tertiary);
+	padding: 1rem;
+}
+
+.errorText {
+	margin: 0;
+	text-align: center;
+	color: var(--text-primary-muted);
+}
+
+.stateBox {
+	display: flex;
+	justify-content: center;
+	padding: 1.5rem 0;
+}
+
+.stateText {
+	margin: 0;
+	color: var(--text-primary-muted);
+	font-size: 0.875rem;
+}
+
+.invitesWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.invitesList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.scroller {
+	max-height: 24rem;
+}
+
+.inviteItems {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0 0.75rem 0.75rem 0.75rem;
+}

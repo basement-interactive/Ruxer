@@ -1,0 +1,139 @@
+/* MemberList — ported 1:1 from reference/fluxer/fluxer_app/src/features/channel/components/MemberListContainer.module.css
+ * + MemberListItem.module.css. Every value below is traced to the source line.
+ * Re-authored clean (not copied verbatim) but producing identical visual output.
+ */
+
+/* --- Container (MemberListContainer.module.css:3-20) --- */
+.member-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  width: 16.5rem; /* :17 (desktop --member-list-width) */
+  min-width: 0;
+  overflow: hidden; /* :10 */
+  background-color: var(--background-secondary-lighter); /* :11 */
+  flex-shrink: 0;
+}
+
+/* --- Scroller (MemberListContainer.module.css:22-30) --- */
+.member-list-scroll {
+  flex: 1;
+  min-height: 0;
+  background-color: var(--background-secondary-lighter); /* :25 */
+  padding-top: 0.25rem; /* :26 */
+  padding-left: var(--spacing-2, 0.5rem); /* :27 */
+  padding-right: var(--spacing-2, 0.5rem); /* :28 */
+  padding-bottom: var(--spacing-4, 1rem); /* :29 */
+  overflow-y: auto;
+}
+
+.member-list-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-tertiary-muted);
+}
+
+/* --- Role group header (matches ChannelItem category anatomy) --- */
+.member-group {
+  margin-bottom: 0.75rem;
+}
+.member-group-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary-muted, var(--text-tertiary));
+  line-height: 1rem;
+  padding: 0.5rem 0.5rem 0.125rem;
+  margin-top: 0.125rem;
+}
+
+/* --- Member row (MemberListItem.module.css:3-54) --- */
+.member-row {
+  position: relative; /* :4 */
+  padding-top: 0.25rem; /* :5 */
+  padding-bottom: 0.25rem; /* :6 */
+  cursor: pointer; /* :7 */
+  border-radius: 0.375rem; /* :8 */
+  color: var(--text-chat); /* :9 */
+  display: block; /* :10 */
+  width: 100%; /* :11 */
+  text-align: left; /* :12 */
+}
+.member-row:hover {
+  background-color: var(--background-modifier-hover); /* :20 */
+  color: var(--text-primary); /* :21 */
+  opacity: 1; /* :22 */
+}
+.member-row[aria-expanded='true'] {
+  background-color: var(--background-modifier-selected); /* :26 */
+  color: var(--text-primary); /* :27 */
+  opacity: 1; /* :28 */
+}
+.member-row.offline {
+  opacity: 0.3; /* :32 (buttonOffline) */
+}
+
+/* --- Member grid (MemberListItem.module.css:45-54) --- */
+.member-row-inner {
+  display: grid;
+  min-height: 2rem; /* :47 */
+  min-width: 0;
+  grid-template-columns: 1fr auto; /* :49 */
+  align-items: center; /* :50 */
+  gap: 0.25rem; /* :51 */
+  padding-left: 0.5rem; /* :52 */
+  padding-right: 0.5rem; /* :53 */
+}
+
+/* --- Member content (MemberListItem.module.css:56-62) — the horizontal row:
+   avatar | info. Without this flex wrapper the block-level button stacked the
+   avatar above the name. --- */
+.member-row-content,
+.member-row-text {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.625rem; /* :60 */
+  font-weight: 500; /* :61 */
+}
+/* Avatar holder (MemberListItem.module.css:64-66) */
+.member-row-avatar {
+  flex-shrink: 0;
+}
+/* Info column (name + future custom status) (MemberListItem.module.css:68-73) */
+.member-row-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex-grow: 1;
+}
+/* Name + badges row (MemberListItem.module.css:75-80) */
+.member-row-namebox {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  gap: 0.25rem;
+}
+.member-row-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.25rem; /* :86 */
+  max-height: 1.25rem; /* :87 */
+  font-size: 0.9375rem; /* slightly smaller than 1rem, matching the visual density */
+  color: inherit;
+}
+
+/* --- Custom status (MemberListItem.module.css:90-100) --- */
+.member-row-status {
+  max-width: 100%;
+  color: var(--text-primary-muted); /* :92 */
+  font-size: 0.6875rem; /* :93 */
+  line-height: 0.875rem; /* :94 */
+  font-weight: 500; /* :95 */
+  opacity: 0.85; /* :96 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,26 @@
+{
+	"name": "@fluxer/openapi",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./*": "./*"
+	},
+	"scripts": {
+		"generate": "tsx src/scripts/GenerateSpec.ts",
+		"typecheck": "tsgo --noEmit",
+		"validate": "tsx src/scripts/GenerateSpec.ts --validate-only"
+	},
+	"dependencies": {
+		"@fluxer/constants": "workspace:*",
+		"@fluxer/errors": "workspace:*",
+		"ts-morph": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@typescript/native-preview": "catalog:",
+		"prettier": "^3.8.3",
+		"tsx": "catalog:"
+	}
+}

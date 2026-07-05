@@ -1,0 +1,60 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.channelListScroller {
+	background-color: var(--background-secondary);
+}
+
+.channelListScrollerWrapper {
+	position: relative;
+	width: 100%;
+	min-height: 0;
+	min-width: 0;
+}
+
+.navigationContainer {
+	width: 100%;
+	min-width: 0;
+	min-height: 100%;
+	padding-right: var(--spacing-2);
+}
+
+.topDropZone {
+	position: relative;
+	height: 0.625rem;
+}
+
+.channelGroupsContainer {
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	flex-direction: column;
+	gap: 0;
+}
+
+.channelGroup {
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	flex-direction: column;
+	gap: 0;
+}
+
+.bottomDropZone {
+	position: relative;
+	height: 0.625rem;
+}
+
+.membersSection {
+	padding: 0 0 0.125rem;
+}
+
+.membersSeparator {
+	height: 0.0625rem;
+	margin: 0.375rem 0.75rem;
+	background: var(--background-modifier-hover);
+}
+
+.bottomSpacer {
+	height: calc(var(--layout-user-area-overlay-height, var(--layout-user-area-reserved-height, 0)) + var(--spacing-2));
+	flex: 0 0 auto;
+}

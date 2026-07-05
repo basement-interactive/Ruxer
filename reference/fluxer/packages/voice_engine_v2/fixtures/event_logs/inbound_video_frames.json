@@ -1,0 +1,66 @@
+{
+	"name": "inbound native video frame projection",
+	"events": [
+		{
+			"type": "inboundVideo.trackSubscribed",
+			"track": {
+				"participantSid": "PA_alice",
+				"participantIdentity": "alice",
+				"trackSid": "TR_screen",
+				"source": "screen"
+			}
+		},
+		{
+			"type": "inboundVideo.frameReceived",
+			"frame": {
+				"participantSid": "PA_alice",
+				"participantIdentity": "alice",
+				"trackSid": "TR_screen",
+				"width": 640,
+				"height": 360,
+				"timestampUs": 1000,
+				"byteLength": 345600
+			}
+		},
+		{
+			"type": "inboundVideo.frameReceived",
+			"frame": {
+				"participantSid": "PA_alice",
+				"participantIdentity": "alice",
+				"trackSid": "TR_screen",
+				"width": 1280,
+				"height": 720,
+				"timestampUs": 2000,
+				"byteLength": 1382400
+			}
+		},
+		{
+			"type": "inboundVideo.frameReceived",
+			"frame": {
+				"participantSid": "PA_alice",
+				"trackSid": "TR_unknown",
+				"width": 320,
+				"height": 180,
+				"timestampUs": 3000,
+				"byteLength": 86400
+			}
+		}
+	],
+	"expected": {
+		"inboundVideoTracks": [
+			{
+				"participantSid": "PA_alice",
+				"participantIdentity": "alice",
+				"trackSid": "TR_screen",
+				"source": "screen",
+				"width": 1280,
+				"height": 720,
+				"frameCount": 2,
+				"lastFrameTimestampUs": 2000,
+				"lastFrameByteLength": 1382400
+			}
+		],
+		"droppedFrameCount": 1,
+		"commands": []
+	}
+}

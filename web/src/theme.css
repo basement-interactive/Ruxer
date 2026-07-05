@@ -1,0 +1,259 @@
+/* Fluxer dark theme. CSS variables centralize the palette + spacing so every
+   component keeps consistent distance from edges and consistent borders. */
+
+:root {
+  /* Layout widths */
+  --guild-rail-width: 72px;
+  --sidebar-width: 240px;
+  --member-list-width: 240px;
+  --header-height: 48px;
+  --composer-min-height: 44px;
+  --user-area-height: 52px;
+
+  /* Spacing scale (multiples of 4). Used everywhere for consistent distance. */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* Radii */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-full: 50%;
+
+  /* Discord/Fluxer dark palette */
+  --bg-mention-list-item-hover: rgba(78, 80, 88, 0.3);
+  --bg-side-bar-item-active: #404249;
+  --bg-channel-list: #2b2d31;
+  --bg-guild-rail: #1e1f22;
+  --bg-main: #313338;
+  --bg-panel: #2b2d31;
+  --bg-elevated: #383a40;
+  --bg-input: #1e1f22;
+  --bg-modifier-hover: rgba(255, 255, 255, 0.06);
+  --bg-modifier-selected: rgba(255, 255, 255, 0.08);
+  --bg-modifier-accent: #5865f2;
+
+  --text-normal: #dbdee1;
+  --text-muted: #949ba4;
+  --text-faint: #80848e;
+  --text-bright: #f2f3f5;
+  --header-primary: #f2f3f5;
+  --header-secondary: #949ba4;
+  --interactive-normal: #b5bac1;
+  --interactive-hover: #dbdee1;
+  --interactive-active: #fff;
+
+  --brand: #5865f2;
+  --brand-hover: #4752c4;
+  --green: #23a55a;
+  --yellow: #f0b232;
+  --red: #f23f43;
+  --orange: #f0b232;
+
+  --border-color: rgba(255, 255, 255, 0.06);
+  --divider: rgba(255, 255, 255, 0.04);
+
+  /* Typography */
+  --font-primary: "gg sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+  --font-code: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+
+  /* Shadows */
+  --shadow-popout: 0 8px 16px rgba(0, 0, 0, 0.24);
+  --shadow-elevation-low: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05),
+    0 2px 0 rgba(4, 4, 5, 0.05);
+}
+
+/* Light theme: applied via `<html data-theme="light">`. Defaults to dark. */
+:root[data-theme="light"] {
+  --bg-mention-list-item-hover: rgba(78, 80, 88, 0.16);
+  --bg-side-bar-item-active: #d4d7dc;
+  --bg-channel-list: #e6e9ef;
+  --bg-guild-rail: #d4d7dc;
+  --bg-main: #ffffff;
+  --bg-panel: #e6e9ef;
+  --bg-elevated: #ccd0da;
+  --bg-input: #e6e9ef;
+  --bg-modifier-hover: rgba(0, 0, 0, 0.04);
+  --bg-modifier-selected: rgba(0, 0, 0, 0.08);
+  --bg-modifier-accent: #5865f2;
+
+  --text-normal: #4c4f69;
+  --text-muted: #6c6f85;
+  --text-faint: #8c8fa1;
+  --text-bright: #1e1e2e;
+  --header-primary: #1e1e2e;
+  --header-secondary: #6c6f85;
+  --interactive-normal: #4c4f69;
+  --interactive-hover: #1e1e2e;
+  --interactive-active: #000;
+
+  --border-color: rgba(0, 0, 0, 0.08);
+  --divider: rgba(0, 0, 0, 0.06);
+
+  --shadow-popout: 0 8px 16px rgba(0, 0, 0, 0.12);
+  --shadow-elevation-low: 0 1px 0 rgba(0, 0, 0, 0.04), 0 1.5px 0 rgba(0, 0, 0, 0.03),
+    0 2px 0 rgba(0, 0, 0, 0.03);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  color: var(--text-normal);
+  background: var(--bg-main);
+  -webkit-font-smoothing: antialiased;
+  /* Unicode usernames: enable proper font fallback so non-ASCII renders
+     instead of tofu boxes. */
+  unicode-bidi: plaintext;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--text-normal);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Utility classes */
+.row { display: flex; flex-direction: row; align-items: center; }
+.col { display: flex; flex-direction: column; }
+.grow { flex: 1 1 auto; min-width: 0; min-height: 0; }
+.muted { color: var(--text-muted); }
+.faint { color: var(--text-faint); }
+.strong { font-weight: 600; }
+.small { font-size: var(--font-size-sm); }
+.nowrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Full-screen loading splash used during silent session restore. */
+.app-loading {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-main);
+}
+
+/* Startup loading screen: shown while identity media (avatars, guild icons,
+ * emoji) is pre-cached after login. */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+}
+.loading-screen-logo {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--brand, #5865f2);
+  letter-spacing: -0.5px;
+}
+.loading-screen-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--bg-modifier-accent, #4f545c);
+  border-top-color: var(--brand, #5865f2);
+  border-radius: 50%;
+  animation: loading-spin 0.8s linear infinite;
+}
+@keyframes loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Generic pill/badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  padding: 0 4px;
+}
+/* Streamer mode: blur sensitive fields (email, invite codes, MFA secrets)
+   unless hovered, so they don't leak on stream. Activated by the
+   `data-streamer` attribute on <html> (toggled in Privacy settings). */
+html[data-streamer] .sensitive,
+html[data-streamer] .streamer-hide {
+  filter: blur(6px);
+  transition: filter 0.1s ease;
+  cursor: pointer;
+}
+html[data-streamer] .sensitive:hover,
+html[data-streamer] .streamer-hide:hover {
+  filter: none;
+}
+
+/* Accessibility: font scaling. --font-scale (default 1) multiplies the base
+   type sizes so the whole UI grows/shrinks proportionally. Set from the
+   Accessibility settings pane. */
+:root {
+  --font-scale: 1;
+}
+html {
+  font-size: calc(100% * var(--font-scale));
+}
+.settings-pane,
+.message-stream,
+.dm-list,
+.channel-list,
+.member-list {
+  font-size: calc(var(--font-size-md) * var(--font-scale));
+}
+
+/* Accessibility: reduced motion. Kills transitions + animations app-wide when
+   the user opts in (independent of the OS prefers-reduced-motion media query). */
+html[data-reduced-motion] *,
+html[data-reduced-motion] *::before,
+html[data-reduced-motion] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}

@@ -1,0 +1,180 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.tooltip {
+	--tooltip-surface: var(--settings-surface-background, var(--form-surface-background));
+	--tooltip-border-width: 0.0625rem;
+	--tooltip-border-color: var(--settings-border-color, var(--background-modifier-accent));
+	--tooltip-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.22);
+	--tooltip-danger-text: var(
+		--settings-danger-text,
+		color-mix(in srgb, var(--status-danger) 78%, var(--text-primary) 22%)
+	);
+	--tooltip-danger-surface: var(
+		--settings-danger-background,
+		color-mix(in srgb, var(--status-danger) 8%, var(--form-surface-background))
+	);
+	--tooltip-danger-border: var(
+		--settings-danger-border-color,
+		color-mix(in srgb, var(--status-danger) 32%, transparent)
+	);
+	--tooltip-active-surface: var(--tooltip-surface);
+	--tooltip-active-border-color: var(--tooltip-border-color);
+	--tooltip-pointer-surface: var(--tooltip-active-surface);
+	--tooltip-pointer-border: var(--tooltip-active-border-color);
+	--tooltip-pointer-size: 0.625rem;
+	--tooltip-pointer-half-size: calc(var(--tooltip-pointer-size) / 2);
+	position: relative;
+	z-index: var(--z-index-tooltip);
+	pointer-events: none;
+	will-change: opacity, transform;
+	box-sizing: border-box;
+	max-width: 11.875rem;
+	border: var(--tooltip-border-width) solid var(--tooltip-active-border-color);
+	border-radius: 0.5rem;
+	background: var(--tooltip-active-surface);
+	color: var(--text-primary);
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1.125rem;
+	word-wrap: break-word;
+	box-shadow: var(--tooltip-shadow);
+}
+
+:global(.theme-light) .tooltip {
+	--tooltip-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.12);
+}
+
+.tooltipPointer {
+	display: none;
+	pointer-events: none;
+}
+
+.tooltipContent {
+	padding: 0.4375rem 0.625rem;
+	overflow: hidden;
+	white-space: normal;
+	word-break: break-word;
+	text-align: center;
+}
+
+.tooltipContentLarge {
+	composes: tooltipContent;
+	padding: 0.625rem 0.875rem;
+	font-size: 0.9375rem;
+	line-height: 1.25rem;
+}
+
+.tooltipTop {
+	transform-origin: 50% 100%;
+}
+
+.tooltipTop .tooltipPointer {
+	position: absolute;
+	top: calc(100% - var(--tooltip-pointer-half-size));
+	left: 50%;
+	margin-left: calc(-1 * var(--tooltip-pointer-half-size));
+}
+
+.tooltipCenter,
+.tooltipBottom {
+	transform-origin: 50% 0%;
+}
+
+.tooltipCenter .tooltipPointer,
+.tooltipBottom .tooltipPointer {
+	position: absolute;
+	bottom: calc(100% - var(--tooltip-pointer-half-size));
+	left: 50%;
+	margin-left: calc(-1 * var(--tooltip-pointer-half-size));
+}
+
+.tooltipLeft {
+	transform-origin: 100% 50%;
+}
+
+.tooltipLeft .tooltipPointer {
+	position: absolute;
+	left: calc(100% - var(--tooltip-pointer-half-size));
+	top: 50%;
+	margin-top: calc(-1 * var(--tooltip-pointer-half-size));
+}
+
+.tooltipRight {
+	transform-origin: 0% 50%;
+}
+
+.tooltipRight .tooltipPointer {
+	position: absolute;
+	right: calc(100% - var(--tooltip-pointer-half-size));
+	top: 50%;
+	margin-top: calc(-1 * var(--tooltip-pointer-half-size));
+}
+
+.tooltipPrimary {
+	--tooltip-active-surface: var(--tooltip-surface);
+	--tooltip-active-border-color: var(--tooltip-border-color);
+}
+
+.tooltipPointer.tooltipPointerBg {
+	display: block;
+	box-sizing: border-box;
+	width: var(--tooltip-pointer-size);
+	height: var(--tooltip-pointer-size);
+	border: 0;
+	background: var(--tooltip-pointer-border);
+	transform: rotate(45deg);
+}
+
+.tooltipTop .tooltipPointer.tooltipPointerBg {
+	border-right: var(--tooltip-border-width) solid var(--tooltip-pointer-border);
+	border-bottom: var(--tooltip-border-width) solid var(--tooltip-pointer-border);
+	background: var(--tooltip-pointer-surface);
+}
+
+.tooltipBottom .tooltipPointer.tooltipPointerBg,
+.tooltipCenter .tooltipPointer.tooltipPointerBg {
+	border-top: var(--tooltip-border-width) solid var(--tooltip-pointer-border);
+	border-left: var(--tooltip-border-width) solid var(--tooltip-pointer-border);
+	background: var(--tooltip-pointer-surface);
+}
+
+.tooltipLeft .tooltipPointer.tooltipPointerBg {
+	border-top: var(--tooltip-border-width) solid var(--tooltip-pointer-border);
+	border-right: var(--tooltip-border-width) solid var(--tooltip-pointer-border);
+	background: var(--tooltip-pointer-surface);
+}
+
+.tooltipRight .tooltipPointer.tooltipPointerBg {
+	border-bottom: var(--tooltip-border-width) solid var(--tooltip-pointer-border);
+	border-left: var(--tooltip-border-width) solid var(--tooltip-pointer-border);
+	background: var(--tooltip-pointer-surface);
+}
+
+.tooltipRed {
+	--tooltip-active-surface: var(--tooltip-danger-surface);
+	--tooltip-active-border-color: var(--tooltip-danger-border);
+	--tooltip-pointer-surface: var(--tooltip-danger-surface);
+	--tooltip-pointer-border: var(--tooltip-danger-border);
+	color: var(--tooltip-danger-text);
+}
+
+.tooltips {
+	background: none;
+	inset: 0;
+	pointer-events: none;
+	position: fixed;
+	z-index: var(--z-index-tooltip);
+}
+
+.hoverFloatingTooltipSurface {
+	position: fixed;
+	left: var(--hover-floating-tooltip-left);
+	top: var(--hover-floating-tooltip-top);
+	visibility: var(--hover-floating-tooltip-visibility);
+	z-index: var(--z-index-tooltip);
+	pointer-events: auto;
+}
+
+.triggerWrapper {
+	display: inline-flex;
+}

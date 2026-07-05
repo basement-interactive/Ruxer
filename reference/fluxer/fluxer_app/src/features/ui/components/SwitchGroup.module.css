@@ -1,0 +1,75 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: flex;
+	flex-direction: column;
+	margin: -1rem 0;
+}
+
+.item {
+	display: flex;
+	height: 4.25rem;
+	align-items: center;
+	border-bottom: 0.0625rem solid var(--background-modifier-accent);
+}
+
+.itemInteractive {
+	cursor: pointer;
+}
+
+.container > .item:last-child {
+	border-bottom: 0;
+}
+
+.itemContent {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.itemLabel {
+	display: flex;
+	flex: 1;
+	min-width: 0;
+	align-items: center;
+	gap: 0.5rem;
+	border: none;
+	background: transparent;
+	padding: 0;
+	font-size: 0.875rem;
+	line-height: 1.35;
+	color: var(--text-primary);
+	text-align: left;
+}
+
+.itemLabelInteractive,
+.itemLabel:is(button) {
+	cursor: pointer;
+}
+
+.itemLabel.disabled {
+	cursor: not-allowed;
+}
+
+.labelText {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.shortcut {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.extraContent {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}

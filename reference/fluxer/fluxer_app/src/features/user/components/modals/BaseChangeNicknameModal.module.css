@@ -1,0 +1,21 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.clearButton {
+	position: absolute;
+	top: 50%;
+	right: 0.5rem;
+	transform: translateY(-50%);
+	padding: 0.25rem;
+	color: var(--text-tertiary);
+	transition: color 0.2s ease;
+	cursor: pointer;
+}
+
+.clearButton:hover {
+	color: var(--text-primary);
+}
+
+.helperText {
+	font-size: 0.875rem;
+	color: var(--text-primary-muted);
+}

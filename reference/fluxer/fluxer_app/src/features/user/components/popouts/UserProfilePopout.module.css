@@ -1,0 +1,72 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.role > :first-child {
+	margin-right: 0.25rem;
+	margin-left: 0.0625rem;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.role:hover
+	.roleRemoveIcon {
+	opacity: 1;
+}
+
+.iconSmall {
+	height: 1rem;
+	width: 1rem;
+}
+
+.iconMedium {
+	height: 1.25rem;
+	width: 1.25rem;
+}
+
+.loadingContainer {
+	display: flex;
+	height: 6.25rem;
+	width: 18.75rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.375rem;
+	border: 0.125rem solid var(--brand-primary);
+	background-color: var(--background-primary);
+}
+
+.profileCustomStatus {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.profileCustomStatusText {
+	font-size: 0.75rem;
+	line-height: 1rem;
+	color: var(--text-primary-muted);
+}
+
+.profileDisplayName {
+	font-size: clamp(1.0625rem, calc(30rem / var(--profile-display-name-length, 1)), 1.25rem);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.profileCustomStatus:hover
+	.profileCustomStatusText {
+	--emoji-show-animated: 1;
+}
+
+.profileDataWarning {
+	margin-bottom: 0.5rem;
+}
+
+.profilePopoutCard {
+	--profile-popout-content-width: 18.75rem;
+	--profile-popout-border-width: 0.15625rem;
+	--profile-card-width: calc(
+		var(--profile-popout-content-width) +
+		var(--profile-popout-border-width) +
+		var(--profile-popout-border-width)
+	);
+	--profile-card-border-width: var(--profile-popout-border-width);
+
+	box-sizing: border-box;
+}

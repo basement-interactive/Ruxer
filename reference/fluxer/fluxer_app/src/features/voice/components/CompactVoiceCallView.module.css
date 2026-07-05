@@ -1,0 +1,339 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	--compact-call-edge-padding: clamp(12px, calc(var(--compact-call-height, 320px) * 0.045), 24px);
+	--compact-call-control-button-size: 56px;
+	--compact-call-secondary-button-size: 42px;
+	--compact-call-secondary-button-radius: 14px;
+	--compact-call-control-padding-top: clamp(16px, calc(var(--compact-call-height, 320px) * 0.04), 24px);
+	--compact-call-control-padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+	--compact-call-control-height-fallback: calc(
+		var(--compact-call-control-button-size) +
+		var(--compact-call-control-padding-top) +
+		var(--compact-call-control-padding-bottom)
+	);
+	--compact-call-control-reserve: calc(
+		var(--compact-call-control-height, var(--compact-call-control-height-fallback)) +
+		clamp(16px, calc(var(--compact-call-height, 320px) * 0.055), 28px)
+	);
+	--compact-call-edge-gradient-extension: clamp(14px, calc(var(--compact-call-height, 320px) * 0.052), 22px);
+	--compact-call-header-reserve: 0px;
+	--compact-call-content-safe-top-limit: calc(var(--compact-call-height, 320px) * 0.3);
+	--compact-call-content-safe-bottom-limit: calc(var(--compact-call-height, 320px) * 0.34);
+	--compact-call-footer-reserve: calc(
+		var(--compact-call-control-reserve) +
+		var(--compact-call-edge-gradient-extension)
+	);
+	--compact-call-content-safe-top: max(
+		var(--compact-call-edge-padding),
+		min(var(--compact-call-header-reserve), var(--compact-call-content-safe-top-limit))
+	);
+	--compact-call-content-safe-bottom: max(
+		var(--compact-call-edge-padding),
+		min(var(--compact-call-footer-reserve), var(--compact-call-content-safe-bottom-limit))
+	);
+	--compact-call-audio-avatar-padding-top: max(
+		var(--compact-call-content-safe-top),
+		min(
+			clamp(18px, calc(var(--compact-call-height, 320px) * 0.065), 28px),
+			calc(var(--compact-call-control-reserve) * 0.34)
+		)
+	);
+	--compact-call-audio-avatar-padding-bottom: var(--compact-call-content-safe-bottom);
+	--compact-call-audio-max-width: min(100%, 48rem);
+	--voice-edge-gradient-extension: var(--compact-call-edge-gradient-extension);
+	--voice-edge-gradient-base: rgba(0, 0, 0, 0.7);
+	--voice-edge-gradient-mid: rgba(0, 0, 0, 0.38);
+	--voice-edge-gradient-feather: rgba(0, 0, 0, 0.14);
+	display: flex;
+	flex-direction: column;
+	background-color: var(--voice-surface-0);
+	color: var(--voice-text-strong);
+	min-width: 0;
+	min-height: 0;
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+	container-type: size;
+}
+
+.container::before {
+	content: none;
+}
+
+.containerNoHeader {
+	padding-top: 0;
+}
+
+.containerReserveHeaderChrome {
+	--compact-call-header-reserve: calc(var(--layout-header-height, 56px) + 72px);
+}
+
+.containerNoControlBar {
+	--compact-call-control-reserve: clamp(48px, calc(var(--compact-call-height, 320px) * 0.12), 68px);
+	--compact-call-edge-gradient-extension: clamp(12px, calc(var(--compact-call-height, 320px) * 0.045), 20px);
+	--compact-call-audio-avatar-padding-top: var(--compact-call-control-reserve);
+	--compact-call-audio-avatar-padding-bottom: var(--compact-call-control-reserve);
+}
+
+.containerFillHeight {
+	flex: 1 1 auto;
+	height: 100%;
+	min-height: 0;
+}
+
+.contentArea {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	position: relative;
+	z-index: 1;
+	background-color: #000;
+}
+
+.contentAreaAudioOnly {
+	container-type: size;
+}
+
+.audioAvatarLayout {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #000;
+	padding: var(--compact-call-audio-avatar-padding-top)
+		max(var(--compact-call-edge-padding), env(safe-area-inset-right, 0)) var(--compact-call-audio-avatar-padding-bottom)
+		max(var(--compact-call-edge-padding), env(safe-area-inset-left, 0));
+}
+
+.audioAvatarLayoutInner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--compact-call-audio-max-width);
+	max-width: 100%;
+	height: 100%;
+	min-height: 0;
+}
+
+.audioAvatarLayoutFullBleed {
+	align-items: stretch;
+	justify-content: stretch;
+	padding: 0;
+}
+
+.audioAvatarLayoutInnerFullBleed {
+	width: 100%;
+	max-width: none;
+	height: 100%;
+}
+
+.audioAvatarList {
+	--voice-participant-avatar-size: clamp(
+		44px,
+		calc(min(var(--compact-call-width, 640px), var(--compact-call-content-height, 320px)) * 0.18),
+		88px
+	);
+	--avatar-voice-indicator-cutout-surface: #000;
+	--voice-participant-avatar-gap: clamp(8px, calc(var(--compact-call-height, 320px) * 0.024), 16px);
+}
+
+.layoutHost {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	--voice-call-horizontal-padding: 0;
+	container-type: size;
+	overflow: hidden;
+}
+
+.layoutHostFullHeight {
+	--voice-call-horizontal-padding: clamp(1rem, 8vw, 14rem);
+	width: 100%;
+	height: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	align-items: center;
+	justify-content: center;
+	padding-left: var(--voice-call-horizontal-padding);
+	padding-right: var(--voice-call-horizontal-padding);
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.layoutHostFullHeightGrid {
+	--voice-call-horizontal-padding: 0;
+	padding-left: 0;
+	padding-right: 0;
+	padding-top: var(--compact-call-content-safe-top);
+	padding-bottom: var(--compact-call-content-safe-bottom);
+}
+
+.layoutHostFullHeightFocus {
+	--voice-call-horizontal-padding: 0;
+	--voice-participants-toggle-bottom: calc(var(--compact-call-control-reserve) + 0.5rem);
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.controlBarSection {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	padding: var(--compact-call-control-padding-top) 1rem var(--compact-call-control-padding-bottom);
+	z-index: 12;
+	pointer-events: none;
+}
+
+.controlBarInner {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	min-width: 0;
+	pointer-events: auto;
+}
+
+.fullscreenButtonWrap {
+	position: absolute;
+	right: max(0.75rem, env(safe-area-inset-right, 0));
+	bottom: calc(0.75rem + env(safe-area-inset-bottom, 0));
+	z-index: 13;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing-2);
+}
+
+.heightToggleButtonWrap {
+	position: absolute;
+	left: max(0.75rem, env(safe-area-inset-left, 0));
+	bottom: calc(0.75rem + env(safe-area-inset-bottom, 0));
+	z-index: 13;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.heightToggleButtonShell {
+	position: relative;
+	display: inline-flex;
+}
+
+.fullscreenButtonWrap button {
+	width: var(--compact-call-secondary-button-size);
+	height: var(--compact-call-secondary-button-size);
+	border: 0.0625rem solid rgba(255, 255, 255, 0.12);
+	border-radius: var(--compact-call-secondary-button-radius);
+	background-color: #000;
+	box-shadow:
+		0 0.1875rem 0.625rem rgba(0, 0, 0, 0.26),
+		inset 0 0.0625rem 0 rgba(255, 255, 255, 0.08);
+	color: rgba(255, 255, 255, 0.9);
+	transition:
+		background-color 140ms linear,
+		border-color 140ms linear,
+		color 140ms linear;
+}
+
+.fullscreenButtonWrap button > svg {
+	width: 1.3rem;
+	height: 1.3rem;
+}
+
+.fullscreenButtonWrap button:hover {
+	border-color: rgba(255, 255, 255, 0.2);
+	background-color: #111;
+	color: #fff;
+}
+
+.heightTogglePill {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--compact-call-secondary-button-size);
+	height: var(--compact-call-secondary-button-size);
+	padding: 0;
+	border: 0.0625rem solid rgba(255, 255, 255, 0.12);
+	border-radius: var(--compact-call-secondary-button-radius);
+	background-color: #000;
+	color: rgba(255, 255, 255, 0.9);
+	line-height: 1;
+	cursor: pointer;
+	box-shadow:
+		0 0.1875rem 0.625rem rgba(0, 0, 0, 0.26),
+		inset 0 0.0625rem 0 rgba(255, 255, 255, 0.08);
+	transition:
+		background-color 140ms linear,
+		border-color 140ms linear,
+		color 140ms linear;
+}
+
+.heightTogglePill:hover {
+	background-color: #111;
+	border-color: rgba(255, 255, 255, 0.2);
+	color: #fff;
+}
+
+.heightTogglePillIcon {
+	width: 1.3rem;
+	height: 1.3rem;
+	flex-shrink: 0;
+}
+
+.heightToggleUnreadBadge {
+	position: absolute;
+	top: -0.4rem;
+	right: -0.4rem;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0.875rem;
+	height: 0.875rem;
+	padding: 0 0.25rem;
+	border-radius: 624.9375rem;
+	background-color: var(--status-danger);
+	color: #fff;
+	font-size: 0.5625rem;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0;
+	box-shadow: 0 0 0 0.09375rem #000;
+	pointer-events: none;
+}
+
+.resizeHandle {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: ns-resize;
+	z-index: 14;
+	touch-action: none;
+}
+
+.resizePill {
+	display: none;
+}
+
+.container[data-voice-call-popped-out='true'] .resizeHandle {
+	z-index: 31;
+}
+
+.containerResizing {
+	user-select: none;
+}

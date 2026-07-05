@@ -1,0 +1,328 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.dock {
+	position: fixed;
+	/* Sit BELOW the app's custom titlebar so its window controls stay clickable
+	 * and the dock header isn't clipped by the drag region. */
+	top: var(--native-titlebar-height, 0px);
+	right: 0;
+	bottom: 0;
+	z-index: 8000;
+	width: 340px;
+	display: flex;
+	flex-direction: column;
+	background: var(--background-secondary);
+	border-left: 1px solid var(--border-color);
+	box-shadow: -12px 0 40px -12px rgba(0, 0, 0, 0.5);
+	animation: dockIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+	font-size: 14px;
+	color: var(--text-primary);
+}
+
+@keyframes dockIn {
+	from {
+		transform: translateX(100%);
+		opacity: 0.6;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-3, 12px);
+	padding: var(--spacing-4, 16px);
+	border-bottom: 1px solid var(--border-color);
+}
+
+.brand {
+	font-weight: 750;
+	font-size: 15px;
+	letter-spacing: -0.01em;
+}
+
+.modeToggle {
+	display: flex;
+	margin-left: auto;
+	background: var(--background-tertiary);
+	border-radius: var(--radius-md, 8px);
+	padding: 3px;
+	gap: 2px;
+}
+
+.modeButton {
+	font: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	padding: 5px 12px;
+	border: none;
+	border-radius: var(--radius-sm, 6px);
+	background: transparent;
+	color: var(--text-tertiary);
+	cursor: pointer;
+	transition:
+		background 0.16s ease,
+		color 0.16s ease;
+}
+.modeActive {
+	background: var(--accent-primary);
+	color: var(--button-primary-text, #fff);
+}
+
+.closeButton {
+	font: inherit;
+	background: transparent;
+	border: none;
+	color: var(--text-tertiary);
+	cursor: pointer;
+	font-size: 15px;
+	padding: 4px 6px;
+	border-radius: var(--radius-sm, 6px);
+	transition:
+		color 0.16s ease,
+		background 0.16s ease;
+}
+.closeButton:hover {
+	color: var(--text-primary);
+	background: var(--background-modifier-hover);
+}
+
+.scroll {
+	flex: 1;
+	overflow-y: auto;
+	padding: var(--spacing-4, 16px);
+}
+
+.section {
+	margin-bottom: var(--spacing-6, 24px);
+}
+
+.sectionTitle {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--text-tertiary);
+	margin: 0 0 var(--spacing-3, 12px);
+}
+
+.swatchGrid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: var(--spacing-3, 12px);
+}
+
+.swatch {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-2, 8px);
+	cursor: pointer;
+}
+
+.colorInput {
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md, 8px);
+	background: none;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+.colorInput::-webkit-color-swatch-wrapper {
+	padding: 2px;
+}
+.colorInput::-webkit-color-swatch {
+	border: none;
+	border-radius: var(--radius-sm, 5px);
+}
+
+.swatchLabel {
+	font-size: 13px;
+	color: var(--text-secondary);
+}
+
+.editLayoutButton {
+	font: inherit;
+	font-size: 14px;
+	font-weight: 650;
+	width: 100%;
+	padding: 12px;
+	border-radius: var(--radius-md, 8px);
+	border: 1px solid var(--accent-primary);
+	background: color-mix(in srgb, var(--accent-primary) 12%, transparent);
+	color: var(--accent-primary);
+	cursor: pointer;
+	transition:
+		background 0.16s ease,
+		filter 0.16s ease;
+}
+.editLayoutButton:hover {
+	background: color-mix(in srgb, var(--accent-primary) 20%, transparent);
+}
+
+.sectionHint {
+	font-size: 12.5px;
+	line-height: 1.5;
+	color: var(--text-tertiary);
+	margin: var(--spacing-2, 8px) 0 var(--spacing-3, 12px);
+}
+
+.regionToggles {
+	display: flex;
+	flex-direction: column;
+}
+
+.regionRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--spacing-2, 8px) 0;
+}
+
+.regionLabel {
+	font-size: 14px;
+	color: var(--text-primary);
+}
+
+.regionControls {
+	display: flex;
+	gap: 4px;
+}
+
+.iconButton {
+	font: inherit;
+	font-size: 13px;
+	width: 30px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md, 8px);
+	background: var(--background-tertiary);
+	color: var(--text-secondary);
+	cursor: pointer;
+	transition:
+		background 0.16s ease,
+		color 0.16s ease;
+}
+.iconButton:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+.iconActive {
+	border-color: var(--accent-primary);
+	color: var(--accent-primary);
+}
+
+/* --- advanced (Lua) mode ------------------------------------------------- */
+
+.advanced {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-3, 12px);
+	height: 100%;
+}
+
+.advancedHint {
+	font-size: 12.5px;
+	line-height: 1.5;
+	color: var(--text-tertiary);
+	margin: 0;
+}
+.advancedHint code {
+	background: var(--bg-code, var(--background-tertiary));
+	padding: 1px 5px;
+	border-radius: 4px;
+	font-family: var(--font-mono, monospace);
+	color: var(--text-primary);
+}
+
+.codeEditor {
+	flex: 1;
+	min-height: 300px;
+	resize: vertical;
+	font-family: var(--font-mono, ui-monospace, monospace);
+	font-size: 12.5px;
+	line-height: 1.55;
+	color: var(--text-primary);
+	background: var(--bg-code-block, var(--background-tertiary));
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md, 8px);
+	padding: var(--spacing-3, 12px);
+	tab-size: 2;
+}
+.codeEditor:focus {
+	outline: none;
+	border-color: var(--accent-primary);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 22%, transparent);
+}
+
+.error {
+	margin: 0;
+	font-family: var(--font-mono, monospace);
+	font-size: 12px;
+	color: var(--accent-danger, #f87171);
+	background: color-mix(in srgb, var(--accent-danger, #f87171) 12%, transparent);
+	border: 1px solid color-mix(in srgb, var(--accent-danger, #f87171) 30%, transparent);
+	border-radius: var(--radius-md, 8px);
+	padding: var(--spacing-3, 12px);
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* --- footer -------------------------------------------------------------- */
+
+.footer {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-2, 8px);
+	padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+	border-top: 1px solid var(--border-color);
+}
+
+.spacer {
+	flex: 1;
+}
+
+.primaryButton,
+.ghostButton {
+	font: inherit;
+	font-size: 13px;
+	font-weight: 650;
+	padding: 8px 14px;
+	border-radius: var(--radius-md, 8px);
+	cursor: pointer;
+	border: 1px solid transparent;
+	transition:
+		filter 0.16s ease,
+		background 0.16s ease,
+		color 0.16s ease;
+}
+
+.primaryButton {
+	background: var(--button-primary-fill, var(--accent-primary));
+	color: var(--button-primary-text, #fff);
+}
+.primaryButton:hover:not(:disabled) {
+	filter: brightness(1.08);
+}
+.primaryButton:disabled {
+	opacity: 0.55;
+	cursor: default;
+}
+
+.ghostButton {
+	background: transparent;
+	color: var(--text-tertiary);
+	display: inline-flex;
+	align-items: center;
+}
+.ghostButton:hover {
+	color: var(--text-primary);
+	background: var(--background-modifier-hover);
+}

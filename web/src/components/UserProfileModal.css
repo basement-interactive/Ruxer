@@ -1,0 +1,183 @@
+/* UserProfileModal — ported from reference/fluxer/fluxer_app/src/features/user/components/profile/profile_card/
+ * (ProfileCardLayout, ProfileCardBanner, ProfileCardContent, ProfileCardUserInfo, ProfileCardActions).
+ * Every value below is traced to the source line.
+ */
+
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-modal, 10000);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Profile card (ProfileCardLayout.module.css:9-20) --- */
+.profile-card {
+  position: relative;
+  display: flex;
+  width: 20rem; /* var(--profile-card-width, 18.75rem) — widened slightly */
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: visible;
+  border-radius: 0.375rem; /* :14 */
+  background-color: var(--background-primary); /* :17 */
+  box-shadow: var(--shadow-xl, 0 10px 20px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1));
+  pointer-events: all;
+}
+
+/* --- Banner area (ProfileCardBanner.module.css:3-30) --- */
+.profile-card-banner-area {
+  height: 8.75rem; /* :4 (headerSection height) */
+  position: relative;
+  border-radius: 0.375rem 0.375rem 0 0;
+  overflow: hidden;
+  background: var(--background-tertiary);
+}
+.profile-card-banner {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-position: center;
+}
+
+/* --- Avatar (ProfileCardBanner.module.css:25-33) --- */
+.profile-card-avatar {
+  position: absolute;
+  bottom: -1.5rem;
+  left: 0.75rem;
+  z-index: 1;
+  border: 0.2rem solid var(--background-primary);
+  border-radius: 50%;
+  background-color: var(--background-primary);
+  padding: 0;
+}
+.profile-card-avatar > div {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* --- Content (ProfileCardContent.module.css:3-9) --- */
+.profile-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* :6 */
+  padding-top: 2rem; /* space for the overlapping avatar */
+  padding-left: 1rem; /* :7 */
+  padding-right: 1rem; /* :8 */
+  padding-bottom: 0.75rem;
+}
+
+/* --- Name row (ProfileCardUserInfo.module.css:10-30) --- */
+.profile-card-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.profile-card-name {
+  font-weight: 500; /* :28 */
+  color: var(--text-primary); /* :29 */
+  font-size: 1.25rem; /* :30 */
+  line-height: 1.5rem; /* :31 */
+  max-height: 1.5rem; /* :32 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-card-bot-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--brand-primary);
+  border-radius: 0.25rem;
+  padding: 0.0625rem 0.25rem;
+  flex-shrink: 0;
+}
+
+/* --- Username (ProfileCardUserInfo.module.css:43+) --- */
+.profile-card-username {
+  font-size: 0.875rem;
+  color: var(--text-primary-muted);
+  margin-top: -0.25rem;
+}
+
+/* --- Section titles --- */
+.profile-card-section-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+  margin-bottom: 0.375rem;
+}
+
+/* --- Bio --- */
+.profile-card-bio-section {
+  margin-top: 0.5rem;
+}
+.profile-card-bio {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-chat);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* --- Roles --- */
+.profile-card-roles-section {
+  margin-top: 0.5rem;
+}
+.profile-card-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.profile-card-role {
+  display: flex;
+  height: 1.5rem;
+  min-width: 0;
+  max-width: 16.75rem;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  border: 0.0625rem solid var(--background-header-secondary, var(--background-modifier-accent));
+  background: var(--background-primary, var(--background-secondary));
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1rem;
+  color: var(--text-primary);
+}
+.profile-card-role-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: 0.0625rem;
+}
+
+/* --- Member since --- */
+.profile-card-member-since {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+}
+.profile-card-member-date {
+  font-size: 0.875rem;
+  color: var(--text-chat);
+}
+
+/* --- Actions (ProfileCardActions.module.css) --- */
+.profile-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 0.0625rem solid var(--user-area-divider-color);
+}

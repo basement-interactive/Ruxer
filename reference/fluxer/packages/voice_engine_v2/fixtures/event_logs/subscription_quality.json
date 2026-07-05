@@ -1,0 +1,81 @@
+{
+	"name": "remote subscription quality and participant volume commands",
+	"events": [
+		{"type": "connection.connectRequested", "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "connection.connectSucceeded", "operationId": 1},
+		{
+			"type": "remoteTrackSubscription.setRequested",
+			"options": {
+				"participantIdentity": "alice",
+				"source": "screen",
+				"subscribed": true,
+				"enabled": true,
+				"quality": "high"
+			}
+		},
+		{
+			"type": "remoteTrackSubscription.setRequested",
+			"options": {
+				"participantIdentity": "alice",
+				"source": "screen",
+				"subscribed": true,
+				"enabled": true,
+				"quality": "high"
+			}
+		},
+		{
+			"type": "remoteTrackSubscription.setRequested",
+			"options": {
+				"participantIdentity": "alice",
+				"source": "screen",
+				"subscribed": true,
+				"enabled": true,
+				"quality": "low"
+			}
+		},
+		{"type": "participantVolume.setRequested", "options": {"participantIdentity": "alice", "volume": 0.35}},
+		{"type": "participantVolume.setRequested", "options": {"participantIdentity": "alice", "volume": 0.35}}
+	],
+	"expected": {
+		"remoteTrackSubscriptions": {
+			"alice:screen": {
+				"participantIdentity": "alice",
+				"source": "screen",
+				"subscribed": true,
+				"enabled": true,
+				"quality": "low"
+			}
+		},
+		"participantVolumes": {"alice": 0.35},
+		"commands": [
+			{"type": "connection.connect", "operationId": 1, "options": {"url": "wss://voice", "token": "token"}},
+			{
+				"type": "remoteTrackSubscription.set",
+				"operationId": 2,
+				"options": {
+					"participantIdentity": "alice",
+					"source": "screen",
+					"subscribed": true,
+					"enabled": true,
+					"quality": "high"
+				}
+			},
+			{
+				"type": "remoteTrackSubscription.set",
+				"operationId": 3,
+				"options": {
+					"participantIdentity": "alice",
+					"source": "screen",
+					"subscribed": true,
+					"enabled": true,
+					"quality": "low"
+				}
+			},
+			{
+				"type": "participantVolume.set",
+				"operationId": 4,
+				"options": {"participantIdentity": "alice", "volume": 0.35}
+			}
+		]
+	}
+}

@@ -1,0 +1,170 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.messagesWrapper {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 0%;
+	min-height: 0;
+	min-width: 0;
+	height: 100%;
+	font-size: var(--font-size, 1rem);
+	--scrollbar-track-bg: var(--background-secondary-lighter);
+	--message-group-spacing: 1rem;
+}
+
+.scrollerContainer {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	min-width: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.scrollerContent {
+	display: flex;
+	flex-direction: column;
+	flex: 1 0 auto;
+	min-height: 100%;
+	overflow-anchor: none;
+}
+
+.scrollerSpacer {
+	display: block;
+	height: var(--scroller-spacer-height);
+	pointer-events: none;
+	width: 100%;
+	flex-shrink: 0;
+}
+
+.placeholderSpacer {
+	flex: 0 0 auto;
+	height: 1rem;
+}
+
+.groupSpacer,
+.groupSpacerHalf {
+	flex: 0 0 auto;
+}
+
+.groupSpacer {
+	height: var(--message-group-spacing);
+}
+
+.groupSpacerHalf {
+	height: calc(var(--message-group-spacing) / 2);
+}
+
+.scrollerInner {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	min-height: 100%;
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+	position: relative;
+}
+
+@media (min-width: 768px) {
+	.scrollerInner {
+		padding-left: var(--chat-horizontal-padding);
+		padding-right: var(--chat-horizontal-padding);
+	}
+}
+
+.newMessagesBar {
+	position: absolute;
+	left: 0.5rem;
+	right: 0.5rem;
+	top: -0.5rem;
+	z-index: var(--z-index-elevated-3);
+	display: flex;
+	align-items: stretch;
+	justify-content: space-between;
+	height: 2.5rem;
+	padding-top: 0.375rem;
+	border-radius: 0 0 0.5rem 0.5rem;
+	background: var(--brand-primary);
+}
+
+.jumpToPresentBar {
+	box-sizing: border-box;
+	border: 0.0625rem solid color-mix(in srgb, var(--background-modifier-accent) 80%, transparent);
+	border-bottom: 0;
+	background: var(--background-tertiary);
+}
+
+.jumpToPresentBar .newMessagesBarText {
+	color: var(--text-secondary);
+}
+
+.jumpToPresentBar .newMessagesBarAction {
+	color: var(--text-primary);
+}
+
+.newMessagesBarText {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	background: none;
+	border: none;
+	padding: 0 0.75rem;
+	color: white;
+	font-size: 0.875rem;
+	font-weight: 500;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: left;
+	cursor: pointer;
+}
+
+.newMessagesBarAction {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	background: none;
+	border: none;
+	padding: 0 0.75rem;
+	color: white;
+	font-size: 0.875rem;
+	font-weight: 600;
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
+.loadMoreContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0.75rem 0;
+}
+
+.loadMoreTopPadding {
+	padding-top: 1.25rem;
+}
+
+.loadMoreBottomPadding {
+	padding-bottom: 1.25rem;
+}
+
+.unreadOverlay {
+	position: absolute;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	pointer-events: none;
+}
+
+.unreadSlot {
+	display: none;
+	pointer-events: none;
+}
+
+.unreadSlot[data-visible='1'] {
+	display: block;
+}

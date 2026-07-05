@@ -1,0 +1,298 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.root {
+	--ic-width: 20rem;
+	--ic-viewport-margin: 1.5rem;
+	--ic-radius: 1.75rem;
+	--ic-padding-x: 1.5rem;
+	--ic-padding-top: 1.625rem;
+	--ic-padding-bottom: 1.375rem;
+	--ic-z-index: 2001;
+
+	--ic-surface-top: #2c2c2e;
+	--ic-surface-bottom: #1c1c1e;
+	--ic-surface-highlight: rgba(255, 255, 255, 0.06);
+	--ic-surface-border: rgba(255, 255, 255, 0.08);
+	--ic-surface-shadow:
+		0 1.5rem 3.75rem rgba(0, 0, 0, 0.55), 0 0.25rem 0.75rem rgba(0, 0, 0, 0.35),
+		inset 0 0.0625rem 0 rgba(255, 255, 255, 0.06);
+	--ic-surface-blur: blur(1.875rem) saturate(160%);
+
+	--ic-text-primary: #ffffff;
+	--ic-text-secondary: rgba(235, 235, 245, 0.55);
+	--ic-text-tertiary: rgba(235, 235, 245, 0.5);
+	--ic-text-action: rgba(235, 235, 245, 0.7);
+
+	--ic-drag-handle-height: 1.125rem;
+	--ic-drag-pill-width: 2.25rem;
+	--ic-drag-pill-height: 0.3125rem;
+	--ic-drag-pill-color: rgba(235, 235, 245, 0.28);
+
+	--ic-avatar-size: 6rem;
+	--ic-avatar-bg: rgba(255, 255, 255, 0.04);
+	--ic-avatar-shadow: 0 0.75rem 1.75rem rgba(0, 0, 0, 0.45);
+	--ic-avatar-ring-color: rgba(255, 255, 255, 0.18);
+	--ic-avatar-ring-spread: 0.625rem;
+
+	--ic-name-size: 1.375rem;
+	--ic-name-weight: 600;
+	--ic-subtitle-size: 0.875rem;
+	--ic-subtitle-weight: 400;
+
+	--ic-circle-size: 4rem;
+	--ic-circle-gap: 3.5rem;
+	--ic-action-icon-size: 1.75rem;
+	--ic-action-label-size: 0.8125rem;
+	--ic-action-label-weight: 500;
+
+	--ic-accept-bg: #34c759;
+	--ic-accept-bg-hover: #30d158;
+	--ic-accept-shadow: 0 0.375rem 1rem rgba(52, 199, 89, 0.45);
+	--ic-reject-bg: #ff3b30;
+	--ic-reject-bg-hover: #ff453a;
+	--ic-reject-shadow: 0 0.375rem 1rem rgba(255, 59, 48, 0.45);
+
+	--ic-ignore-bg-hover: rgba(255, 255, 255, 0.06);
+
+	--ic-press-duration: 120ms;
+	--ic-pulse-duration: 2.2s;
+}
+
+.root {
+	z-index: var(--ic-z-index);
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: min(var(--ic-width), calc(100vw - var(--ic-viewport-margin)));
+	pointer-events: auto;
+	isolation: isolate;
+	color: var(--ic-text-primary);
+}
+
+.card {
+	position: relative;
+	border-radius: var(--ic-radius);
+	border: 0.0625rem solid var(--ic-surface-border);
+	background:
+		radial-gradient(140% 100% at 50% 0%, var(--ic-surface-highlight) 0%, transparent 60%),
+		linear-gradient(180deg, var(--ic-surface-top) 0%, var(--ic-surface-bottom) 100%);
+	box-shadow: var(--ic-surface-shadow);
+	backdrop-filter: var(--ic-surface-blur);
+	overflow: hidden;
+}
+
+.dragHandle {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: var(--ic-drag-handle-height);
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	padding-bottom: 0.25rem;
+	cursor: grab;
+	user-select: none;
+	-webkit-user-select: none;
+	touch-action: none;
+	z-index: 1;
+}
+
+.dragHandle:active {
+	cursor: grabbing;
+}
+
+.dragPill {
+	width: var(--ic-drag-pill-width);
+	height: var(--ic-drag-pill-height);
+	border-radius: 62.4375rem;
+	background: var(--ic-drag-pill-color);
+}
+
+.stack {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: var(--ic-padding-top) var(--ic-padding-x) var(--ic-padding-bottom);
+	text-align: center;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	justify-content: center;
+	color: var(--ic-text-secondary);
+	font-size: 0.8125rem;
+	font-weight: 500;
+	margin-bottom: 1.125rem;
+}
+
+.headerIcon {
+	flex-shrink: 0;
+	color: currentColor;
+}
+
+.avatar {
+	width: var(--ic-avatar-size);
+	height: var(--ic-avatar-size);
+	border-radius: 62.4375rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 1rem;
+	background: var(--ic-avatar-bg);
+	box-shadow:
+		var(--ic-avatar-shadow),
+		0 0 0 0 var(--ic-avatar-ring-color);
+	overflow: hidden;
+	animation: ic-ring-pulse var(--ic-pulse-duration) ease-in-out infinite;
+}
+
+@keyframes ic-ring-pulse {
+	0%,
+	100% {
+		box-shadow:
+			var(--ic-avatar-shadow),
+			0 0 0 0 var(--ic-avatar-ring-color);
+	}
+	50% {
+		box-shadow:
+			var(--ic-avatar-shadow),
+			0 0 0 var(--ic-avatar-ring-spread) transparent;
+	}
+}
+
+.callerInfo {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	margin-bottom: 1.75rem;
+}
+
+.callerName {
+	font-size: var(--ic-name-size);
+	font-weight: var(--ic-name-weight);
+	color: var(--ic-text-primary);
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.callerSubtitle {
+	font-size: var(--ic-subtitle-size);
+	color: var(--ic-text-secondary);
+	margin-top: 0.25rem;
+	font-weight: var(--ic-subtitle-weight);
+}
+
+.actions {
+	display: flex;
+	justify-content: center;
+	gap: var(--ic-circle-gap);
+	margin-bottom: 0.875rem;
+}
+
+.actionGroup {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.625rem;
+}
+
+.circleButton {
+	width: var(--ic-circle-size);
+	height: var(--ic-circle-size);
+	border-radius: 62.4375rem;
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: var(--ic-text-primary);
+	padding: 0;
+	transition:
+		transform var(--ic-press-duration) ease-out,
+		filter var(--ic-press-duration) ease-out,
+		background var(--ic-press-duration) ease-out;
+}
+
+.circleButton:active {
+	transform: translateY(0.0625rem);
+}
+
+.circleButtonAccept {
+	background: var(--ic-accept-bg);
+	box-shadow: var(--ic-accept-shadow);
+}
+
+.circleButtonAccept:hover {
+	background: var(--ic-accept-bg-hover);
+	filter: brightness(1.05);
+}
+
+.circleButtonReject {
+	background: var(--ic-reject-bg);
+	box-shadow: var(--ic-reject-shadow);
+}
+
+.circleButtonReject:hover {
+	background: var(--ic-reject-bg-hover);
+	filter: brightness(1.05);
+}
+
+.circleButtonIconRotated {
+	transform: rotate(135deg);
+}
+
+.actionLabel {
+	font-size: var(--ic-action-label-size);
+	font-weight: var(--ic-action-label-weight);
+	color: var(--ic-text-action);
+}
+
+.ignoreLink {
+	background: transparent;
+	border: none;
+	color: var(--ic-text-tertiary);
+	font-size: var(--ic-subtitle-size);
+	font-weight: 500;
+	cursor: pointer;
+	padding: 0.5rem 0.875rem;
+	border-radius: 62.4375rem;
+	margin-top: 0.375rem;
+	transition:
+		background var(--ic-press-duration) ease-out,
+		color var(--ic-press-duration) ease-out;
+}
+
+.ignoreLink:hover {
+	color: var(--ic-text-primary);
+	background: var(--ic-ignore-bg-hover);
+}
+
+.screenReaderOnly {
+	position: absolute;
+	width: 0.0625rem;
+	height: 0.0625rem;
+	padding: 0;
+	margin: -0.0625rem;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+	white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avatar {
+		animation: none;
+	}
+}
+
+.bottomSheetStack {
+	padding: 0 1rem 1rem;
+}

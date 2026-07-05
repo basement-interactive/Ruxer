@@ -1,0 +1,53 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1rem;
+}
+
+@media (min-width: 768px) {
+	.grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+.gridSingle {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1rem;
+}
+
+.inlineEditWrapper {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.inlineEditLabel {
+	font-size: 0.875rem;
+	color: var(--text-tertiary);
+}
+
+.inlineEditWrapper {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.inlineEditCaption {
+	font-size: 0.875rem;
+	color: var(--text-tertiary);
+}
+
+.colorPickersGrid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1rem;
+}
+
+@media (min-width: 768px) {
+	.colorPickersGrid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}

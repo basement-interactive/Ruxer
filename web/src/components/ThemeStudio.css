@@ -1,0 +1,99 @@
+.ts-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+}
+.ts-modal {
+  width: 480px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  background: var(--bg-panel, #313338);
+  border-radius: var(--r-lg, 8px);
+  padding: 20px;
+  box-shadow: var(--shadow-popout, 0 8px 24px rgba(0, 0, 0, 0.4));
+}
+.ts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ts-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-bright, #fff);
+}
+.ts-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #949ba4);
+  font-size: 18px;
+  cursor: pointer;
+}
+.ts-close:hover {
+  color: var(--text-bright, #fff);
+}
+.ts-help {
+  margin: 4px 0 16px;
+}
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+}
+.ts-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+}
+.ts-row-label {
+  font-size: 13px;
+  color: var(--text-normal, #dbdee1);
+}
+.ts-color {
+  width: 44px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--r-sm, 6px);
+  background: transparent;
+  cursor: pointer;
+}
+.ts-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+.ts-reset,
+.ts-save {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--r-sm, 6px);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+.ts-reset {
+  background: transparent;
+  color: var(--text-normal, #dbdee1);
+}
+.ts-reset:hover {
+  text-decoration: underline;
+}
+.ts-save {
+  background: var(--brand, #5865f2);
+  color: #fff;
+}
+.ts-save:disabled,
+.ts-reset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

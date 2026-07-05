@@ -1,0 +1,86 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.modeItem {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-width: 0;
+	flex: 1;
+}
+
+.modeLabelColumn {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	flex: 1;
+	gap: 0.125rem;
+}
+
+.modeTitle {
+	font-size: 0.875rem;
+	line-height: 1.125rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.modeDescription {
+	font-size: 0.6875rem;
+	font-weight: 400;
+	color: var(--text-tertiary);
+	line-height: 0.875rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex: 1;
+	min-width: 0;
+}
+
+.rowLabel {
+	flex: 1;
+	min-width: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.premiumBadge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	color: var(--status-online);
+	margin-left: auto;
+	flex-shrink: 0;
+}
+
+.audioDeviceLabel {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	flex: 1;
+	gap: 0.125rem;
+}
+
+.audioDeviceName {
+	font-size: 0.875rem;
+	line-height: 1.125rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.audioDeviceSubtext {
+	font-size: 0.6875rem;
+	font-weight: 400;
+	color: var(--text-tertiary);
+	line-height: 0.875rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

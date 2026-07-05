@@ -1,0 +1,42 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.infoSection {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.infoSection p {
+	margin: 0;
+}
+
+.infoBox {
+	border-radius: 0.375rem;
+	border: 0.0625rem solid var(--background-header-secondary);
+	background: var(--background-secondary);
+	padding: 0.75rem;
+	color: inherit;
+	font-size: inherit;
+	line-height: inherit;
+}
+
+.infoBoxTitle {
+	margin: 0 0 0.5rem;
+	font-weight: 600;
+	color: inherit;
+}
+
+.infoList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin: 0;
+	padding-left: 1.125rem;
+	color: inherit;
+	font-size: inherit;
+	line-height: inherit;
+}
+
+.disclaimer {
+	color: inherit;
+}

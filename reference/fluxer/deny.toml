@@ -1,0 +1,102 @@
+# cargo-deny configuration for the Fluxer workspace.
+#
+# Applies to the root workspace (Cargo.toml at the repo root) AND to every
+# per-addon crate under fluxer_desktop/native/* (each addon has its own
+# [workspace], so we invoke cargo-deny with --config pointing here).
+#
+# Used by the native desktop security gate in CI.
+
+[graph]
+all-features = false
+no-default-features = false
+
+[output]
+feature-depth = 1
+
+# ---------------------------------------------------------------------------
+# Advisories (RustSec advisory DB)
+# ---------------------------------------------------------------------------
+[advisories]
+version = 2
+yanked = "deny"
+unmaintained = "all"
+# Placeholder for future per-advisory ignores. Prefer fixing/upgrading the
+# crate before adding an entry here. Each entry should be a string ID, e.g.
+# "RUSTSEC-2024-0000", optionally as { id = "...", reason = "..." }.
+ignore = []
+
+# ---------------------------------------------------------------------------
+# Licenses
+# ---------------------------------------------------------------------------
+# This repo is AGPL-3.0-or-later. Dependency licenses below are vetted to be
+# compatible with AGPL distribution. If a crate is essential and ships under a
+# license not listed here, add it explicitly (do NOT route around via
+# [[licenses.exceptions]] or [[licenses.clarify]] without justification in the
+# commit message).
+[licenses]
+version = 2
+confidence-threshold = 0.93
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "MPL-2.0",
+    "Unicode-DFS-2016",
+    "Unicode-3.0",
+    "Zlib",
+    "CC0-1.0",
+    "AGPL-3.0-or-later",
+    "BSL-1.0",
+    "OpenSSL",
+    "CDLA-Permissive-2.0",
+]
+# Explicitly deny GPL-only / strong-copyleft licenses that don't compose with
+# AGPL-3.0-or-later linking semantics in a library context.
+exceptions = []
+
+# ring uses a custom BSD-ish + OpenSSL license combo that cargo-deny can't
+# auto-classify; clarify it as the ISC/OpenSSL/MIT triple it actually is.
+[[licenses.clarify]]
+crate = "ring"
+expression = "ISC AND MIT AND OpenSSL"
+license-files = [
+    { path = "LICENSE", hash = 0xbd0eed23 },
+]
+
+# ---------------------------------------------------------------------------
+# Bans
+# ---------------------------------------------------------------------------
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# Per-addon crates path-depend on ../rust (the shared `fluxer_desktop_native`
+# crate) without a version. cargo-deny flags that as a wildcard; we allow it
+# because path deps can't realistically pin a SemVer range, and this only
+# affects intra-repo workspace links (registry wildcards remain denied).
+allow-wildcard-paths = true
+highlight = "all"
+workspace-default-features = "allow"
+external-default-features = "allow"
+# Keep desktop packaging and native addons away from the obsolete libfuse2 stack.
+# AppImage packaging must use the static electron-builder runtime instead.
+deny = [
+    { crate = "fuse", reason = "libfuse2-based Rust wrapper; use a maintained FUSE3-native crate only if Fluxer ever needs FUSE directly" },
+    { crate = "fuse-sys", reason = "libfuse2 FFI crate; Fluxer AppImages must not reintroduce libfuse2 through native Rust dependencies" },
+]
+skip = []
+skip-tree = []
+
+# ---------------------------------------------------------------------------
+# Sources
+# ---------------------------------------------------------------------------
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
+
+[sources.allow-org]
+github = []

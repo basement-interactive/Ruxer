@@ -1,0 +1,51 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.previewWrapper {
+	background: var(--background-secondary-lighter);
+}
+
+.previewContainer {
+	padding: 1rem;
+	border-radius: 0.5rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+}
+
+.previewActionsRow {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.previewAvatarsRow {
+	display: flex;
+	gap: 0.75rem;
+}
+
+.previewMessageContainer {
+	margin-top: 0.75rem;
+}
+
+.ttsSection {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.ttsPreviewRow {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.ttsPreviewButton {
+	min-width: 7.5rem;
+}
+
+.ttsPreviewDescription {
+	margin: 0;
+	font-size: 0.8125rem;
+	line-height: 1.4;
+	color: var(--text-tertiary);
+}

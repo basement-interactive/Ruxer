@@ -1,0 +1,23 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.wrapper {
+	position: absolute;
+	bottom: 0.375rem;
+	right: 0.375rem;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.button {
+	background: rgba(0, 0, 0, 0.95);
+	color: white;
+	font-size: 0.55rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	border-radius: 0.1875rem;
+	padding: 0.0625rem 0.1875rem;
+	cursor: pointer;
+}

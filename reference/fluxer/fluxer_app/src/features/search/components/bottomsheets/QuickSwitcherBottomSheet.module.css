@@ -1,0 +1,203 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background-color: var(--background-secondary);
+	padding: 0;
+	gap: 0.75rem;
+}
+
+.tabsContainer {
+	padding: 0.25rem 0.75rem 0;
+}
+
+.panels {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.searchPanel,
+.friendsPanel {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.panelHidden {
+	display: none;
+}
+
+.searchContainer {
+	margin-bottom: 0.25rem;
+	padding-inline: 0.75rem;
+}
+
+.searchInput {
+	width: 100%;
+	min-height: 3.25rem;
+	padding-block: 0.6rem;
+}
+
+.srOnly {
+	position: absolute;
+	width: 0.0625rem;
+	height: 0.0625rem;
+	padding: 0;
+	margin: -0.0625rem;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.searchClearButton {
+	background: transparent;
+	border: none;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-tertiary);
+	cursor: pointer;
+	border-radius: 62.4375rem;
+}
+
+.scroller {
+	flex: 1;
+	min-height: 0;
+}
+
+.scrollContent {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	padding-inline: 0.75rem;
+	padding-bottom: var(--quick-switcher-scroll-padding-bottom, 0.5rem);
+}
+
+.friendsContent {
+	height: 100%;
+	padding-inline: 0.75rem;
+}
+
+.section {
+	display: flex;
+	flex-direction: column;
+}
+
+.sectionHeader {
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--text-primary-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin-bottom: 0.35rem;
+}
+
+.sectionList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.option {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	border: none;
+	background: transparent;
+	color: var(--text-primary);
+	border-radius: var(--radius-md);
+	padding: 0.25rem 0.25rem;
+	cursor: pointer;
+	text-align: left;
+}
+
+.optionContent {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex: 1;
+	min-width: 0;
+}
+
+.optionText {
+	display: flex;
+	flex-direction: column;
+	gap: 0.0625rem;
+	flex: 1;
+	min-width: 0;
+}
+
+.optionTitle {
+	font-weight: 500;
+	font-size: 0.9375rem;
+	line-height: 1.125rem;
+	color: var(--text-primary);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.optionDescription {
+	font-size: 0.8125rem;
+	line-height: 1rem;
+	color: var(--text-primary-muted);
+	opacity: 0.8;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.optionIcon {
+	width: 1.75rem;
+	height: 1.75rem;
+	flex-shrink: 0;
+	color: var(--text-primary-muted);
+}
+
+.optionHighlight {
+	color: var(--text-secondary);
+}
+
+.optionIconHighlight {
+	color: var(--text-secondary);
+}
+
+.avatar {
+	width: 2rem;
+	height: 2rem;
+	flex-shrink: 0;
+}
+
+.guildIcon {
+	height: 2rem;
+	width: 2rem;
+	border-radius: 624.9375rem;
+	flex-shrink: 0;
+}
+
+.emptyState {
+	padding: 2rem 1rem;
+	text-align: center;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: var(--text-tertiary);
+}
+
+.emptyStateTitle {
+	font-weight: 500;
+}
+
+.emptyStateHint {
+	margin-top: 0.25rem;
+	color: var(--text-primary-muted);
+	font-size: 0.75rem;
+	line-height: 1rem;
+}

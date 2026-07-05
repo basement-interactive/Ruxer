@@ -1,0 +1,34 @@
+{
+	"name": "e2ee_lifecycle",
+	"events": [
+		{"type": "e2ee.setEnabledRequested", "enabled": true, "keyId": "key-a"},
+		{"type": "e2ee.setEnabledRequested", "enabled": false},
+		{"type": "e2ee.enabled", "operationId": 1, "keyId": "key-a"},
+		{"type": "e2ee.disabled", "operationId": 2},
+		{"type": "e2ee.enabled", "operationId": null, "keyId": "key-b"},
+		{
+			"type": "e2ee.failed",
+			"operationId": null,
+			"error": {
+				"code": "implementationError",
+				"message": "Remote participant key material could not be applied",
+				"capability": "e2ee"
+			}
+		}
+	],
+	"expectedCommands": [
+		[{"type": "e2ee.setEnabled", "operationId": 1, "enabled": true, "keyId": "key-a"}],
+		[{"type": "e2ee.setEnabled", "operationId": 2, "enabled": false}],
+		[],
+		[],
+		[],
+		[]
+	],
+	"expected": {
+		"nextOperationId": 3,
+		"status": "failed",
+		"keyId": "key-b",
+		"operationId": null,
+		"failureCode": "implementationError"
+	}
+}

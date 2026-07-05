@@ -1,0 +1,40 @@
+{
+	"name": "native_frame_sink",
+	"events": [
+		{
+			"type": "nativeFrameSink.attachRequested",
+			"options": {
+				"sinkId": "sink-screen-1",
+				"captureId": "capture-native-1",
+				"trackSid": "TR_screen_1",
+				"zeroCopyRequired": true
+			}
+		},
+		{
+			"type": "nativeFrameSink.detachRequested",
+			"sinkId": "sink-screen-1"
+		}
+	],
+	"expectedCommands": [
+		{
+			"type": "nativeFrameSink.attach",
+			"operationId": 1,
+			"options": {
+				"sinkId": "sink-screen-1",
+				"captureId": "capture-native-1",
+				"trackSid": "TR_screen_1",
+				"zeroCopyRequired": true
+			}
+		},
+		{
+			"type": "nativeFrameSink.detach",
+			"operationId": 2,
+			"sinkId": "sink-screen-1"
+		}
+	],
+	"expected": {
+		"nextOperationId": 3,
+		"nativeFrameSinkCount": 0,
+		"lastFailureCode": null
+	}
+}

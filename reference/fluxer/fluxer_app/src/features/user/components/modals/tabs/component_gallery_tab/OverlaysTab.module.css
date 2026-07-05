@@ -1,0 +1,18 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.buttonsWrapper {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.demoArea {
+	border-radius: 0.5rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	background-color: var(--background-secondary);
+	padding: 1rem;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+	cursor: pointer;
+}

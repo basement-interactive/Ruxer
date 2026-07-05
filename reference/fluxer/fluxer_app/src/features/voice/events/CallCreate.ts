@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import type {GatewayHandlerContext} from '@app/features/gateway/events/EventRouter';
+import type {CallVoiceState} from '@app/features/gateway/types/GatewayVoiceTypes';
+import Dimension from '@app/features/ui/state/Dimension';
+import CallAvailability from '@app/features/voice/state/CallAvailability';
+import CallState, {type GatewayCallData} from '@app/features/voice/state/CallState';
+
+interface CallCreatePayload {
+	channel_id: string;
+	message_id?: string;
+	region?: string;
+	voice_states?: Array<CallVoiceState>;
+	ringing?: Array<string>;
+}
+
+export function handleCallCreate(data: CallCreatePayload, _context: GatewayHandlerContext): void {
+	const callData: GatewayCallData = {
+		channel_id: data.channel_id,
+		message_id: data.message_id,
+		region: data.region,
+		voice_states: data.voice_states,
+		ringing: data.ringing,
+	};
+	Dimension.handleCallCreate(data.channel_id);
+	CallAvailability.setCallAvailable(data.channel_id);
+	CallState.handleCallCreate({channelId: data.channel_id, call: callData});
+}

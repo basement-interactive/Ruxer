@@ -1,0 +1,8 @@
+[package]
+name = "fluxer-capture-codec"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+image = { version = "0.25", default-features = false }
+jpeg-encoder = { version = "0.7", features = ["simd"] }

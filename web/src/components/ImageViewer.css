@@ -1,0 +1,58 @@
+.image-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  animation: image-viewer-fade 0.12s ease;
+}
+
+@keyframes image-viewer-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.image-viewer-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  user-select: none;
+  cursor: zoom-in;
+  transition: max-width 0.1s, max-height 0.1s;
+}
+/* Fit-to-screen (default): bounded by the viewport. */
+.image-viewer-img.fit {
+  max-width: 90vw;
+  max-height: 90vh;
+}
+/* Actual size: drop the max constraints so large images show 1:1. */
+.image-viewer-img.zoomed {
+  max-width: none;
+  max-height: none;
+  cursor: zoom-out;
+}
+
+.image-viewer-close {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+  z-index: 1;
+}
+.image-viewer-close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}

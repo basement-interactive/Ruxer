@@ -1,0 +1,112 @@
+[
+	{
+		"name": "dimensions and bitrate update in place",
+		"input": {
+			"published": {
+				"captureId": "capture-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h264",
+				"maxFramerate": 60,
+				"maxBitrateBps": 8000000
+			},
+			"desired": null,
+			"update": {
+				"captureId": "capture-1",
+				"width": 1280,
+				"height": 720,
+				"frameRate": 30,
+				"maxBitrateBps": 3000000
+			}
+		},
+		"expectedAction": "updateEncoding",
+		"expectedReason": "dimensionsOrBitrateChanged",
+		"expectedCodec": "h264"
+	},
+	{
+		"name": "codec change republishes",
+		"input": {
+			"published": {
+				"captureId": "capture-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h264"
+			},
+			"desired": null,
+			"update": {
+				"captureId": "capture-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h265"
+			}
+		},
+		"expectedAction": "republish",
+		"expectedReason": "codecChanged",
+		"expectedCodec": "h265"
+	},
+	{
+		"name": "hardware encoder change republishes",
+		"input": {
+			"published": {
+				"captureId": "capture-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h264",
+				"hardwareEncoding": false
+			},
+			"desired": null,
+			"update": {
+				"captureId": "capture-1",
+				"width": 1920,
+				"height": 1080,
+				"hardwareEncoding": true,
+				"zeroCopyRequired": true
+			}
+		},
+		"expectedAction": "republish",
+		"expectedReason": "hardwareEncoderChanged",
+		"expectedHardwareEncoding": true
+	},
+	{
+		"name": "zero-copy requirement change republishes",
+		"input": {
+			"published": {
+				"captureId": "capture-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h264",
+				"zeroCopyRequired": false
+			},
+			"desired": null,
+			"update": {
+				"captureId": "capture-1",
+				"width": 1920,
+				"height": 1080,
+				"zeroCopyRequired": true
+			}
+		},
+		"expectedAction": "republish",
+		"expectedReason": "zeroCopyRequirementChanged",
+		"expectedZeroCopyRequired": true
+	},
+	{
+		"name": "capture mismatch rejects",
+		"input": {
+			"published": {
+				"captureId": "capture-1",
+				"width": 1920,
+				"height": 1080,
+				"codec": "h264"
+			},
+			"desired": null,
+			"update": {
+				"captureId": "capture-2",
+				"width": 1920,
+				"height": 1080
+			}
+		},
+		"expectedAction": "reject",
+		"expectedReason": "captureMismatch",
+		"expectedErrorCode": "invalidArgument"
+	}
+]

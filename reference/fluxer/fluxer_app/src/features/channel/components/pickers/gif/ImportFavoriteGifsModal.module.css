@@ -1,0 +1,45 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.description {
+	color: var(--text-secondary);
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.4;
+}
+
+.danger {
+	color: var(--status-danger);
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.4;
+}
+
+.muted {
+	color: var(--text-chat-muted);
+	font-size: 0.75rem;
+	margin: 0;
+}
+
+.progressTrack {
+	height: 0.375rem;
+	background-color: var(--background-modifier-accent);
+	border-radius: 0.1875rem;
+	overflow: hidden;
+}
+
+.progressBar {
+	height: 100%;
+	background-color: var(--brand-primary-light);
+	border-radius: 0.1875rem;
+	transition: width 0.3s ease;
+}
+
+:global(.theme-light) .progressBar {
+	background-color: var(--brand-primary);
+}

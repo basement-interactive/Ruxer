@@ -1,0 +1,150 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	position: relative;
+	--avatar-status-transition-duration: 160ms;
+	--avatar-status-transition-easing: ease-out;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.clickable:hover {
+	opacity: 0.9;
+}
+
+.overlay {
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+}
+
+.hoverOverlay {
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	pointer-events: none;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.clickable:hover
+	.hoverOverlay {
+	opacity: 0.4;
+}
+
+.statusContainer {
+	pointer-events: auto;
+	position: absolute;
+	right: var(--avatar-status-right);
+	bottom: var(--avatar-status-bottom);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--avatar-status-width);
+	height: var(--avatar-status-height);
+	overflow: hidden;
+	border-radius: var(--avatar-status-radius);
+	transition:
+		right var(--avatar-status-transition-duration) var(--avatar-status-transition-easing),
+		bottom var(--avatar-status-transition-duration) var(--avatar-status-transition-easing),
+		width var(--avatar-status-transition-duration) var(--avatar-status-transition-easing),
+		height var(--avatar-status-transition-duration) var(--avatar-status-transition-easing),
+		border-radius var(--avatar-status-transition-duration) var(--avatar-status-transition-easing);
+}
+
+.statusTooltipDisabled {
+	pointer-events: none;
+}
+
+.reducedMotion {
+	transition-duration: 0s;
+}
+
+.statusAnimationDriven {
+	transition: none;
+}
+
+.animatedMaskShape {
+	cx: var(--avatar-mask-cx);
+	x: var(--avatar-mask-x);
+	width: var(--avatar-mask-width);
+	transition:
+		cx var(--avatar-status-transition-duration) var(--avatar-status-transition-easing),
+		x var(--avatar-status-transition-duration) var(--avatar-status-transition-easing),
+		width var(--avatar-status-transition-duration) var(--avatar-status-transition-easing);
+}
+
+.animatedMaskReducedMotion {
+	transition-duration: 0s;
+}
+
+.typingBubble {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background-color: var(--avatar-status-color);
+	border-radius: inherit;
+}
+
+.typingDots {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--avatar-typing-dot-gap);
+}
+
+.typingDot {
+	width: var(--avatar-typing-dot-size);
+	height: var(--avatar-typing-dot-size);
+	background-color: white;
+	border-radius: 50%;
+	animation: 1s blink infinite;
+}
+
+.typingDot:nth-child(2) {
+	animation-delay: 250ms;
+}
+
+.typingDot:nth-child(3) {
+	animation-delay: 500ms;
+}
+
+.customStatusBadge {
+	position: relative;
+	display: block;
+	width: 100%;
+	height: 100%;
+	color: white;
+}
+
+.customStatusBadgeBackground,
+.customStatusBadgeContent {
+	position: absolute;
+	inset: 0;
+}
+
+.customStatusBadgeBackground {
+	display: block;
+}
+
+.customStatusBadgeContent {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+}
+
+@keyframes blink {
+	50% {
+		opacity: 0;
+	}
+}
+
+:global(html:not(.window-focused):not(.unfocused-fully-interactive)) .typingDot {
+	animation-play-state: paused;
+	opacity: 1;
+}

@@ -1,0 +1,35 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	min-width: 0;
+}
+
+.moreCallsText {
+	align-self: flex-start;
+	padding: 0.125rem 0;
+	color: var(--text-primary-muted);
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+.allCallsGrid {
+	display: grid;
+	grid-template-columns: repeat(1, minmax(0, 1fr));
+	gap: 0.5rem;
+	max-height: min(56vh, 32.5rem);
+	overflow-y: auto;
+	padding-right: 0.125rem;
+}
+
+.gridItem {
+	min-width: 0;
+}
+
+@media (min-width: 768px) {
+	.allCallsGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}

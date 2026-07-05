@@ -1,0 +1,81 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.scrollerWrap {
+	--scroller-track-size: 0.5rem;
+	position: relative;
+	display: flex;
+	min-height: 0;
+	min-width: 0;
+	width: 100%;
+	height: 100%;
+	max-height: inherit;
+	flex: 1 1 auto;
+}
+
+.scroller {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	min-width: 0;
+	width: 100%;
+	height: 100%;
+	max-height: inherit;
+	flex: 1 1 auto;
+	overscroll-behavior: contain;
+	overflow-anchor: none;
+	clip-path: inset(0);
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.scroller::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}
+
+.horizontal .scroller {
+	overscroll-behavior-x: contain;
+	overscroll-behavior-y: none;
+}
+
+.scrollbarReserve {
+	padding-inline-end: var(--scroller-track-size);
+}
+
+.scrollerChildren {
+	display: flex;
+	flex: 1 1 0%;
+	flex-direction: column;
+	min-height: 0;
+	min-width: 0;
+}
+
+.horizontal .scrollerChildren {
+	margin-inline-end: 0;
+	flex-direction: row;
+}
+
+.dragging {
+	pointer-events: none;
+}
+
+.regular {
+	--scroller-track-size: 1rem;
+}
+
+.horizontal.scrollerWrap {
+	height: auto;
+	flex: 0 1 auto;
+	width: 100%;
+}
+
+.horizontal .scroller {
+	height: auto;
+	flex: 0 1 auto;
+	width: 100%;
+}
+
+.horizontal.scrollbarReserve {
+	padding-inline-end: 0;
+	padding-block-end: var(--scroller-track-size);
+}

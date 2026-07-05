@@ -1,0 +1,64 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	--emoji-tooltip-surface: var(--settings-surface-background, var(--form-surface-background));
+	--emoji-tooltip-border: var(--settings-border-color, var(--background-modifier-accent));
+	--emoji-tooltip-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.22);
+	max-width: 18rem;
+	padding: 0.75rem;
+	overflow: hidden;
+	background: var(--emoji-tooltip-surface);
+	font-weight: 500;
+	color: var(--text-primary);
+	border-radius: 0.5rem;
+	border: 0.0625rem solid var(--emoji-tooltip-border);
+	box-shadow: var(--emoji-tooltip-shadow);
+}
+
+:global(.theme-light) .container {
+	--emoji-tooltip-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.12);
+}
+
+.emoji {
+	width: 2rem;
+	height: 2rem;
+}
+
+.textContainer {
+	margin-left: 0.75rem;
+	font-size: 0.8125rem;
+	line-height: 1.25;
+	color: var(--text-primary);
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-height: 3.5rem;
+	min-width: 10rem;
+	justify-content: center;
+}
+
+.loading {
+	align-items: center;
+}
+
+.subtext {
+	font-size: 0.75rem;
+	font-weight: 400;
+	color: var(--text-primary-muted);
+}
+
+.inner {
+	pointer-events: all;
+	display: flex;
+	align-items: center;
+	word-break: break-word;
+	hyphens: auto;
+}
+
+button.inner {
+	cursor: pointer;
+}
+
+button.inner:hover a {
+	text-decoration: underline;
+}

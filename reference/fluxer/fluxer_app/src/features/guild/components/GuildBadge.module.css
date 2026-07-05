@@ -1,0 +1,37 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.badgeWrapper {
+	display: inline-flex;
+	align-items: center;
+}
+
+.badge {
+	flex-shrink: 0;
+	--guild-badge-seal: white;
+	--guild-badge-icon: var(--brand-primary);
+}
+
+.badgeOnLightSurface {
+	flex-shrink: 0;
+	--guild-badge-seal: white;
+	--guild-badge-icon: var(--brand-primary);
+}
+
+:global(.theme-light) .badgeOnLightSurface {
+	--guild-badge-seal: var(--brand-primary);
+	--guild-badge-icon: white;
+}
+
+.badgeBanner {
+	flex-shrink: 0;
+	filter: drop-shadow(0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.9));
+	--guild-badge-seal: white;
+	--guild-badge-icon: var(--brand-primary);
+}
+
+.badgeBannerDark {
+	flex-shrink: 0;
+	filter: drop-shadow(0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.9));
+	--guild-badge-seal: white;
+	--guild-badge-icon: var(--brand-primary);
+}

@@ -1,0 +1,19 @@
+{
+	"name": "@fluxer/constants",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./*": "./*"
+	},
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"typecheck": "tsgo --noEmit"
+	},
+	"devDependencies": {
+		"@typescript/native-preview": "catalog:",
+		"vite-tsconfig-paths": "catalog:",
+		"vitest": "catalog:"
+	}
+}

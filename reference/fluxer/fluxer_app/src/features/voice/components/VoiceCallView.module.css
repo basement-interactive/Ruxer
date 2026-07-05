@@ -1,0 +1,1564 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+:global(.lk-grid-layout) {
+	--lk-col-count: 1;
+	--lk-row-count: 1;
+	--grid-gap: 0.75rem;
+	display: grid;
+	grid-template-columns: repeat(var(--lk-col-count), 1fr);
+	gap: var(--grid-gap);
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	padding: 0;
+	place-items: center;
+	align-content: center;
+	position: relative;
+}
+
+:global(.lk-grid-layout[data-lk-pagination='true']) {
+	padding-bottom: calc(var(--grid-gap) * 2);
+}
+
+:global(:root) {
+	--voice-surface-0: #0d0d0f;
+	--voice-surface-1: #151517;
+	--voice-surface-2: #1c1c1e;
+	--voice-surface-3: #232326;
+	--voice-surface-4: #2a2a2d;
+	--voice-surface-5: #353539;
+	--voice-overlay-base: #000;
+	--voice-overlay-strong: rgba(0, 0, 0, 0.78);
+	--voice-overlay: rgba(0, 0, 0, 0.62);
+	--voice-overlay-soft: rgba(0, 0, 0, 0.46);
+	--voice-overlay-subtle: rgba(0, 0, 0, 0.32);
+	--voice-overlay-light: rgba(255, 255, 255, 0.12);
+	--voice-overlay-light-strong: rgba(255, 255, 255, 0.2);
+	--voice-overlay-light-bold: rgba(255, 255, 255, 0.48);
+	--voice-text-strong: #fff;
+	--voice-text-muted: rgba(255, 255, 255, 0.72);
+	--voice-text-subtle: rgba(255, 255, 255, 0.52);
+	--voice-shadow-base: #000;
+	--voice-shadow-strong: color-mix(in srgb, var(--voice-shadow-base) 40%, transparent);
+	--voice-shadow-medium: color-mix(in srgb, var(--voice-shadow-base) 30%, transparent);
+	--voice-shadow-soft: color-mix(in srgb, var(--voice-shadow-base) 20%, transparent);
+	--voice-status-success: var(--status-online);
+	--voice-status-success-bg: color-mix(in srgb, var(--voice-status-success) 20%, transparent);
+	--voice-status-success-bg-solid: color-mix(in srgb, var(--voice-status-success) 20%, var(--voice-surface-2));
+	--voice-status-success-bg-strong: color-mix(in srgb, var(--voice-status-success) 30%, transparent);
+	--voice-status-success-bg-strong-solid: color-mix(in srgb, var(--voice-status-success) 30%, var(--voice-surface-2));
+	--voice-status-warning: var(--status-warning);
+	--voice-status-warning-alt: var(--status-idle);
+	--voice-status-caution: var(--alert-caution-color);
+	--voice-status-warning-bg: color-mix(in srgb, var(--voice-status-warning-alt) 20%, transparent);
+	--voice-status-danger: var(--status-danger);
+	--voice-status-danger-bg: color-mix(in srgb, var(--voice-status-danger) 20%, transparent);
+	--voice-status-danger-bg-solid: color-mix(in srgb, var(--voice-status-danger) 20%, var(--voice-surface-2));
+	--voice-status-danger-bg-strong: color-mix(in srgb, var(--voice-status-danger) 30%, transparent);
+	--voice-status-danger-bg-strong-solid: color-mix(in srgb, var(--voice-status-danger) 30%, var(--voice-surface-2));
+	--voice-hud-material-top: #000;
+	--voice-hud-material-bottom: #000;
+	--voice-hud-material-highlight: transparent;
+	--voice-hud-material-border: rgba(255, 255, 255, 0.1);
+	--voice-hud-material-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.24);
+	--voice-hud-material-blur: none;
+	--voice-hud-button-bg: #000;
+	--voice-hud-button-bg-hover: #111;
+	--voice-edge-gradient-extension: 2.5rem;
+	--voice-edge-gradient-base: rgba(0, 0, 0, 0.84);
+	--voice-edge-gradient-mid: rgba(0, 0, 0, 0.58);
+	--voice-edge-gradient-feather: rgba(0, 0, 0, 0.24);
+	--voice-header-gradient: linear-gradient(
+		to bottom,
+		var(--voice-edge-gradient-base) 0%,
+		var(--voice-edge-gradient-mid) 38%,
+		var(--voice-edge-gradient-feather) 70%,
+		transparent 100%
+	);
+	--voice-footer-gradient: linear-gradient(
+		to top,
+		var(--voice-edge-gradient-base) 0%,
+		var(--voice-edge-gradient-mid) 38%,
+		var(--voice-edge-gradient-feather) 70%,
+		transparent 100%
+	);
+}
+
+.lkParticipantTile {
+	--speaking-indicator-width: 0.21875rem;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	container-type: size;
+	overflow: hidden;
+	border-radius: 0.75rem;
+	background-color: var(--voice-surface-2);
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	max-width: 100%;
+}
+
+.lkParticipantTile::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: var(--radius-lg);
+	border: 0 solid var(--voice-status-success);
+	transition-property: border;
+	transition-delay: 0.1s;
+	transition-duration: 0.2s;
+	pointer-events: none;
+}
+
+.pinnedParticipant::after {
+	border-width: 0 !important;
+}
+
+.lkParticipantTile[data-speaking='true']::after {
+	transition-delay: 0s;
+	transition-duration: 0.2s;
+	border-width: var(--speaking-indicator-width);
+}
+
+.lkParticipantTile video {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	background-color: var(--voice-surface-0);
+	border-radius: var(--radius-lg);
+}
+
+.lkParticipantTile[data-source='screen_share'] {
+	background-color: var(--voice-surface-0);
+}
+
+.lkParticipantTile[data-source='screen_share'] video {
+	object-fit: contain;
+}
+
+.lkParticipantPlaceholder {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--voice-surface-3);
+	opacity: 0;
+	transition: none;
+	pointer-events: none;
+	border-radius: var(--radius-lg);
+}
+
+.lkParticipantTile[data-video-muted='true'] .lkParticipantPlaceholder {
+	opacity: 1;
+}
+
+.lkParticipantPlaceholder .avatar {
+	font-size: 3rem;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.lkParticipantMetadata {
+	position: absolute;
+	inset: 0.375rem;
+	display: block;
+	line-height: 1.2;
+	z-index: 10;
+	min-width: 0;
+	pointer-events: none;
+}
+
+.participantMetadataLabel {
+	--participant-metadata-max-width: min(34ch, calc(100cqw - 1rem));
+	display: inline-flex;
+	align-items: center;
+	gap: 0.1875rem;
+	overflow: hidden;
+	white-space: nowrap;
+	max-width: var(--participant-metadata-max-width);
+	margin-left: 0;
+	line-height: 1.2;
+}
+
+.participantName {
+	margin-left: 0.1875rem;
+	line-height: 1.2;
+}
+
+.participantConn {
+	margin-left: 0;
+	line-height: 1.2;
+}
+
+.lkParticipantMetadataItem {
+	display: inline-flex;
+	align-items: center;
+	gap: 0;
+	padding: 0.1875rem 0.375rem;
+	border: 0.0625rem solid var(--voice-hud-material-border);
+	border-radius: 0.5625rem;
+	background: #000;
+	box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.18);
+	color: var(--voice-text-strong);
+	font-size: 0.75rem;
+	font-weight: 500;
+	line-height: 1.2;
+	min-width: 0;
+	pointer-events: auto;
+}
+
+.lkParticipantIcons {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+.participantMetadataMenuButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.25rem;
+	height: 1.25rem;
+	margin: -0.125rem 0.1875rem -0.125rem -0.1875rem;
+	border-radius: 0.4375rem;
+	color: rgba(255, 255, 255, 0.78);
+	cursor: pointer;
+	pointer-events: auto;
+	transition:
+		background-color 80ms linear,
+		color 80ms linear;
+}
+
+.participantMetadataMenuButton:hover,
+.participantMetadataMenuButton:focus-visible,
+.participantMetadataMenuButton[data-context-menu-open='true'] {
+	background-color: #111;
+	color: #fff;
+}
+
+.participantMetadataMenuButton svg {
+	width: 0.9375rem;
+	height: 0.9375rem;
+}
+
+.lkParticipantMetadataItem > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+}
+
+.lkParticipantMetadataItem:first-child {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: min(100%, calc(100cqw - 0.75rem));
+}
+
+.tileControlPill {
+	position: absolute;
+	top: 0.375rem;
+	left: 0.375rem;
+	display: inline-flex;
+	align-items: stretch;
+	height: 1.5rem;
+	background: #000;
+	border-radius: 0.5rem;
+	color: var(--voice-text-strong);
+	opacity: 0;
+	border: 0.0625rem solid var(--voice-hud-material-border);
+	box-shadow: var(--voice-hud-material-shadow);
+	overflow: hidden;
+	z-index: 10;
+	pointer-events: none;
+	transition:
+		opacity 80ms linear,
+		background-color 80ms linear;
+}
+
+.tileControlPill.tileControlPillPersistent {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.tileControlPillSlot {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.5rem;
+	height: 100%;
+	padding: 0;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	transition: background-color 80ms linear;
+}
+
+.tileControlPillSlot + .tileControlPillSlot {
+	border-left: 0.0625rem solid var(--voice-hud-material-border);
+}
+
+.tileControlPillSlot:hover {
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.08) 100%);
+}
+
+.tileControlPillViewerSlot {
+	gap: 0.1875rem;
+	padding: 0 0.375rem;
+	cursor: pointer;
+	font-size: 0.625rem;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.tileControlPillViewerSlot:hover {
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.08) 100%);
+}
+
+.lkParticipantTile:hover .tileControlPill,
+.lkParticipantTile:focus-within .tileControlPill {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.gridLayoutWrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	min-height: 100%;
+	height: 100%;
+	overflow: visible;
+	padding: 1rem 0;
+	box-sizing: border-box;
+}
+
+.gridLayoutWrapperCompact {
+	padding: max(clamp(0.25rem, 1.6cqh, 0.4rem), var(--compact-call-content-safe-top, 0)) 0
+		max(clamp(0.35rem, 2cqh, 0.65rem), var(--compact-call-content-safe-bottom, 0));
+}
+
+.focusLayoutContainer {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+}
+
+.focusLayoutScroller {
+	flex: 1 1 auto;
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+}
+
+.focusLayoutScrollerContent {
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+}
+
+.gridLayoutScroller {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	min-width: 0;
+	min-height: 0;
+}
+
+.gridLayoutStaticViewport {
+	overflow: hidden;
+}
+
+.gridLayoutScrollerContent {
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.gridLayoutScrollBody {
+	min-height: 100%;
+	height: 100%;
+	flex: 1 0 auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 100%;
+}
+
+.gridLayoutScrollBodyCompact {
+	min-height: 100%;
+}
+
+.focusLayoutScrollBody {
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 100%;
+	gap: 1rem;
+	padding-bottom: 0;
+}
+
+.focusExpandedScrollBody {
+	--focus-expanded-mini-columns: 1;
+	--focus-expanded-mini-grid-gap: var(--focus-mini-grid-gap, 0.75rem);
+	--focus-expanded-mini-tile-max-width: var(--focus-mini-tile-max-width, 23.75rem);
+	--focus-expanded-mini-section-width: min(96cqw, 105rem);
+	--focus-expanded-mini-section-padding-inline: clamp(0.5rem, 1.2vw, 1.25rem);
+	--focus-expanded-mini-content-width: max(
+		0,
+		calc(var(--focus-expanded-mini-section-width) - (2 * var(--focus-expanded-mini-section-padding-inline)))
+	);
+	--focus-expanded-mini-column-width: max(
+		0,
+		calc(
+			(
+				var(--focus-expanded-mini-content-width) -
+				((var(--focus-expanded-mini-columns) - 1) * var(--focus-expanded-mini-grid-gap))
+			) /
+			var(--focus-expanded-mini-columns)
+		)
+	);
+	--focus-expanded-mini-row-height: calc(
+		min(var(--focus-expanded-mini-tile-max-width), var(--focus-expanded-mini-column-width)) *
+		9 / 16
+	);
+	--focus-expanded-reserved-bottom-height: calc(44px + 2.5rem + var(--focus-expanded-mini-row-height));
+	--focus-expanded-main-max-height: max(180px, calc(100cqh - var(--focus-expanded-reserved-bottom-height)));
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+	width: 100%;
+	gap: 0.75rem;
+	padding-bottom: 1rem;
+}
+
+.focusExpandedMainSection {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	padding-top: 0.125rem;
+	flex: 0 0 auto;
+}
+
+.focusExpandedMainGridViewport {
+	width: min(100%, calc(var(--focus-expanded-main-max-height) * 16 / 9));
+	max-width: 95rem;
+	aspect-ratio: 16 / 9;
+	min-height: min(180px, var(--focus-expanded-main-max-height));
+	max-height: var(--focus-expanded-main-max-height);
+	overflow: hidden;
+}
+
+.focusExpandedMainGridViewport > * {
+	width: 100%;
+	height: 100%;
+}
+
+.focusExpandedToggleRow {
+	width: min(96%, 105rem);
+	max-width: 105rem;
+	margin-inline: auto;
+	display: flex;
+	justify-content: center;
+	padding-top: 0.125rem;
+	padding-bottom: 0.25rem;
+	flex: 0 0 auto;
+}
+
+.carouselToggleWrap {
+	position: absolute;
+	left: 50%;
+	bottom: var(--voice-participants-toggle-bottom, 0.5rem);
+	transform: translateX(-50%);
+	width: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+	z-index: 60;
+}
+
+.carouselToggle {
+	width: 2.5rem;
+	height: 2.5rem;
+	min-width: 2.5rem;
+	min-height: 2.5rem;
+	padding: 0;
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: #000;
+	color: var(--text-primary);
+	border-radius: 0.9375rem;
+	cursor: pointer;
+	border: 0.0625rem solid var(--voice-hud-material-border);
+	box-shadow: var(--voice-hud-material-shadow);
+	z-index: 1;
+	transition: background-color 80ms linear;
+}
+
+.carouselToggle:hover {
+	background: #111;
+}
+
+.focusLayoutMainWrapper {
+	position: relative;
+	flex: 1 1 auto;
+	min-height: 0;
+	width: 100%;
+	max-width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.focusLayoutMembersRow {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: var(--voice-focus-members-row-bottom, 0);
+	width: 100%;
+	height: var(--voice-focus-members-row-height, 7.25rem);
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.5rem;
+	padding: 0.375rem clamp(0.75rem, 2vw, 1.5rem);
+	box-sizing: border-box;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	z-index: 2;
+	pointer-events: auto;
+}
+
+.focusLayoutMembersRow::-webkit-scrollbar {
+	display: none;
+	width: 0;
+	height: 0;
+}
+
+.focusLayoutMembersRowInner {
+	display: flex;
+	flex: 0 0 auto;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5rem;
+	min-width: max-content;
+	margin-inline: auto;
+}
+
+.focusLayoutMembersRowTile {
+	flex: 0 0 auto;
+	width: min(clamp(7rem, 10vw, 9.75rem), calc((var(--voice-focus-members-row-height, 7rem) - 0.75rem) * 16 / 9));
+	aspect-ratio: 16 / 9;
+}
+
+.focusLayoutMembersRowTile .lkParticipantTile {
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 16 / 9;
+	border-radius: 0.5rem;
+}
+
+.focusMembersToggleWrap {
+	position: absolute;
+	left: 50%;
+	bottom: var(--voice-focus-members-toggle-bottom, var(--voice-focus-control-clearance, 4.5rem));
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: auto;
+	z-index: 40;
+}
+
+.focusLayoutContentFullscreenMembersVisible .focusMembersToggleWrap {
+	--voice-focus-members-toggle-bottom: calc(
+		var(--voice-focus-control-clearance, 4.5rem) +
+		var(--voice-focus-members-row-height, 7.25rem) +
+		0.5rem
+	);
+}
+
+.focusMembersToggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.375rem;
+	height: 2rem;
+	padding: 0 0.75rem;
+	border-radius: 62.4375rem;
+	border: 0.0625rem solid var(--voice-hud-material-border);
+	background: #000;
+	color: var(--voice-text-strong);
+	cursor: pointer;
+	box-shadow: var(--voice-hud-material-shadow);
+	transition: background-color 80ms linear;
+}
+
+.focusMembersToggle:hover {
+	background: #111;
+}
+
+.focusMembersToggleIcon {
+	width: 1rem;
+	height: 1rem;
+}
+
+.focusMembersToggleFocusRing {
+	border-radius: 624.9375rem;
+}
+
+.focusMiniGridSection {
+	width: min(96%, 105rem);
+	max-width: 105rem;
+	margin-inline: auto;
+	padding: 0 var(--focus-expanded-mini-section-padding-inline, clamp(0.5rem, 1.2vw, 1.25rem)) 1rem;
+	box-sizing: border-box;
+	flex: 0 0 auto;
+}
+
+.focusMiniGrid {
+	--focus-mini-columns: 1;
+	--focus-mini-grid-gap: 0.75rem;
+	--focus-mini-tile-max-width: 23.75rem;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-content: flex-start;
+	width: 100%;
+	gap: var(--focus-mini-grid-gap);
+}
+
+.focusMiniGridTile {
+	width: min(
+		calc((100% - (var(--focus-mini-columns) - 1) * var(--focus-mini-grid-gap)) / var(--focus-mini-columns)),
+		var(--focus-mini-tile-max-width)
+	);
+	max-width: min(
+		calc((100% - (var(--focus-mini-columns) - 1) * var(--focus-mini-grid-gap)) / var(--focus-mini-columns)),
+		var(--focus-mini-tile-max-width)
+	);
+	min-width: 0;
+	flex: 0 0 auto;
+	flex-shrink: 0;
+}
+
+.focusMiniGridTile .lkParticipantTile {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 16 / 9;
+}
+
+.focusLayoutMain {
+	position: relative;
+	--focus-main-aspect-ratio-value: 1.7777777778;
+	width: 100%;
+	max-width: min(100%, calc(min(76dvh, calc(100cqh - 3rem)) * var(--focus-main-aspect-ratio-value)));
+	height: auto;
+	max-height: min(76dvh, calc(100cqh - 3rem));
+	aspect-ratio: var(--focus-main-aspect-ratio-value);
+	overflow: hidden;
+	z-index: 1;
+	margin-inline: auto;
+}
+
+.focusLayoutMain .lkParticipantTile {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: 0;
+}
+
+.focusLayoutMain .lkParticipantTile[data-source='screen_share'] {
+	border-radius: 0;
+}
+
+.focusLayoutMain .lkParticipantTile::after {
+	border-radius: 0;
+}
+
+.focusLayoutMain .lkParticipantTile[data-source='screen_share']::after {
+	border-radius: 0;
+}
+
+.focusLayoutMain .lkParticipantTile video {
+	border-radius: 0;
+	object-fit: contain;
+	width: 100%;
+	height: 100%;
+}
+
+.focusLayoutMain .lkParticipantTile[data-source='screen_share'] video {
+	border-radius: 0;
+	object-fit: contain;
+}
+
+.focusLayoutMain .lkParticipantPlaceholder {
+	border-radius: 0;
+}
+
+.focusLayoutMain .lkParticipantTile[data-source='screen_share'] .lkParticipantPlaceholder {
+	border-radius: 0;
+}
+
+.lkParticipantTile[data-source='screen_share'] .lkParticipantPlaceholder {
+	background-color: var(--voice-surface-0) !important;
+}
+
+.focusLayoutContent {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	max-height: 100%;
+	padding: 1rem 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+	gap: 0;
+	box-sizing: border-box;
+	container-type: size;
+
+	--content-padding: 2rem;
+}
+
+.focusLayoutContentCompact {
+	padding: 0;
+	--content-padding: clamp(0.25rem, 1.6cqh, 0.5rem);
+}
+
+.focusLayoutContentCompact .focusLayoutScrollBody {
+	gap: clamp(0.25rem, 1.6cqh, 0.5rem);
+}
+
+.focusLayoutContentCompact .focusLayoutMainWrapper {
+	padding-inline: 0;
+}
+
+.focusLayoutContentCompact .focusLayoutMain {
+	width: 100%;
+	max-width: min(100%, calc(min(90dvh, calc(100cqh - 0.5rem)) * var(--focus-main-aspect-ratio-value)));
+	max-height: min(90dvh, calc(100cqh - 0.5rem));
+	border-radius: 0;
+}
+
+.focusLayoutContentCompact .focusLayoutMain .lkParticipantTile,
+.focusLayoutContentCompact .focusLayoutMain .lkParticipantTile::after,
+.focusLayoutContentCompact .focusLayoutMain .lkParticipantPlaceholder,
+.focusLayoutContentCompact .focusLayoutMain .lkParticipantTile video {
+	border-radius: 0;
+}
+
+.focusLayoutContentCompact .focusMiniGrid {
+	--focus-mini-grid-gap: clamp(0.25rem, 1.6cqh, 0.5rem);
+	--focus-mini-tile-max-width: clamp(9rem, 58cqh, 13.25rem);
+}
+
+.focusLayoutContentCompact .focusMiniGridSection {
+	width: 100%;
+	padding: 0 var(--content-padding) var(--content-padding);
+}
+
+.focusLayoutContentNoParticipants {
+	overflow: hidden;
+}
+
+.focusLayoutContentNoParticipants .focusLayoutScrollBody {
+	height: 100%;
+}
+
+.focusLayoutContentNoParticipants .focusLayoutMain {
+	max-height: 100%;
+}
+
+.focusLayoutContentCompact.focusLayoutContentNoParticipants .focusLayoutMain {
+	max-height: 100%;
+}
+
+.focusLayoutParticipantsExpanded .focusLayoutMain {
+	max-height: min(68dvh, calc(100cqh - 8rem));
+}
+
+.focusLayoutParticipantsExpanded .focusLayoutScroller {
+	min-height: 0;
+}
+
+.focusLayoutContentFullscreen {
+	padding: 0;
+	--content-padding: 0;
+	--voice-focus-control-clearance: 0;
+	--voice-focus-members-row-height: 0;
+	--voice-focus-members-row-bottom: 0;
+}
+
+.focusLayoutContentFullscreen .focusLayoutMainWrapper {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	max-width: none;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+}
+
+.focusLayoutContentFullscreen .focusLayoutMain {
+	position: relative;
+	inset: auto;
+	width: min(100%, calc(100cqh * var(--focus-main-aspect-ratio-value)));
+	height: auto;
+	max-width: none;
+	max-height: 100%;
+	aspect-ratio: var(--focus-main-aspect-ratio-value);
+	margin-inline: 0;
+	box-sizing: border-box;
+	padding-top: 0;
+	padding-bottom: 0;
+	background-color: var(--voice-surface-0);
+}
+
+.focusLayoutContentFullscreen .focusLayoutMain .lkParticipantTile {
+	position: relative;
+	inset: auto;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+}
+
+.focusLayoutContentFullscreen .focusLayoutScrollBody {
+	height: 100%;
+	min-height: 0;
+	gap: 0;
+	padding-bottom: 0;
+	justify-content: stretch;
+	flex: 1 1 auto;
+}
+
+.focusLayoutContentAppFullscreen {
+	--voice-focus-control-clearance: calc(4.5rem + env(safe-area-inset-bottom, 0));
+	--voice-focus-members-row-height: clamp(5.375rem, 13cqh, 7rem);
+	--voice-focus-members-row-bottom: var(--voice-focus-control-clearance);
+	--voice-focus-members-toggle-bottom: calc(var(--voice-focus-control-clearance) + 0.5rem);
+}
+
+.focusLayoutContentAppFullscreen .focusLayoutMain {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.focusLayoutContentAppFullscreen.focusLayoutContentFullscreenMembersVisible {
+	--voice-focus-safe-bottom: calc(
+		var(--voice-focus-members-row-height, 7.25rem) +
+		var(--voice-focus-control-clearance)
+	);
+}
+
+.focusLayoutContentFullscreenMembersVisible::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: calc(var(--voice-focus-members-row-bottom, 0) + var(--voice-focus-members-row-height, 7.25rem) + 2.5rem);
+	z-index: 1;
+	pointer-events: none;
+	background: linear-gradient(to top, rgb(0 0 0 / 0.7) 0%, rgb(0 0 0 / 0.55) 45%, rgb(0 0 0 / 0) 100%);
+}
+
+@container (min-width: 620px) {
+	.focusExpandedScrollBody {
+		--focus-expanded-mini-columns: 2;
+	}
+
+	.focusMiniGrid {
+		--focus-mini-columns: 2;
+	}
+}
+
+@container (min-width: 760px) {
+	.focusExpandedScrollBody {
+		--focus-expanded-mini-columns: 3;
+	}
+
+	.focusMiniGrid {
+		--focus-mini-columns: 3;
+	}
+}
+
+@container (min-width: 1040px) {
+	.focusExpandedScrollBody {
+		--focus-expanded-mini-columns: 4;
+	}
+
+	.focusMiniGrid {
+		--focus-mini-columns: 4;
+	}
+}
+
+.voiceCallFullscreen {
+	position: fixed;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	border: 0;
+	outline: 0;
+	z-index: 39999;
+	background-color: #000;
+}
+
+.voiceCallFullscreen::backdrop {
+	background-color: #000;
+}
+
+:global(:root[data-voice-call-fullscreen='true']),
+:global(:root[data-voice-call-fullscreen='true'] body) {
+	background-color: #000;
+}
+
+.voiceRoot {
+	position: relative;
+	--voice-hud-opacity: 0;
+	--voice-hud-pointer-events: none;
+	--voice-hud-transition-duration: 220ms;
+	--voice-hud-transition-easing: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.voiceRoot.forceHudVisible {
+	--voice-hud-opacity: 1;
+	--voice-hud-pointer-events: auto;
+}
+
+.voiceRoot.pointerActive,
+.voiceRoot:not(.voiceCallFullscreen):focus-within,
+.voiceRoot.contextMenuActive,
+.voiceRoot.keyboardModeActive,
+.voiceRoot.containerResizing,
+.voiceRoot.interactionActive {
+	--voice-hud-opacity: 1;
+	--voice-hud-pointer-events: auto;
+}
+
+.voiceRoot
+	:where(
+		.voiceChrome,
+		.carouselToggleWrap,
+		.focusMembersToggleWrap,
+		.lkParticipantMetadata,
+		.lkParticipantTile .tileControlPill
+	) {
+	opacity: var(--voice-hud-opacity);
+	pointer-events: var(--voice-hud-pointer-events);
+	transition: opacity var(--voice-hud-transition-duration) var(--voice-hud-transition-easing);
+}
+
+.voiceRoot .lkParticipantMetadata {
+	pointer-events: none;
+}
+
+.lkParticipantTile[data-tile-presentation='focus-main'] .lkParticipantMetadataItem,
+.lkParticipantTile[data-tile-presentation='focus-secondary'] .lkParticipantMetadataItem {
+	pointer-events: none;
+}
+
+.voiceRoot .lkParticipantTile .tileControlPill.tileControlPillPersistent {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.voiceRoot .lkParticipantTile:is(:hover, :focus-within) .tileControlPill {
+	opacity: var(--voice-hud-opacity);
+	pointer-events: var(--voice-hud-pointer-events);
+}
+
+.tileContextMenuActive {
+	--voice-hud-opacity: 1;
+	--voice-hud-pointer-events: auto;
+}
+
+@container (max-width: 280px) {
+	.lkParticipantMetadata {
+		inset: 0.3125rem;
+	}
+
+	.lkParticipantMetadataItem {
+		padding: 0.125rem 0.3125rem;
+		border-radius: 0.5rem;
+		font-size: 0.6875rem;
+	}
+
+	.participantMetadataMenuButton {
+		width: 1.125rem;
+		height: 1.125rem;
+		margin-right: 0.125rem;
+	}
+
+	.tileControlPill {
+		top: 0.3125rem;
+		left: 0.3125rem;
+		height: 1.375rem;
+		border-radius: 0.4375rem;
+	}
+
+	.tileControlPillSlot {
+		min-width: 1.375rem;
+	}
+}
+
+@container (max-width: 220px) {
+	.participantMetadataMenuButton {
+		display: none;
+	}
+
+	.lkParticipantIcons {
+		gap: 0.25rem;
+	}
+}
+
+.voiceHeader {
+	grid-area: header;
+	z-index: 25;
+	--channel-header-text-primary: #fff;
+	--channel-header-text-muted: #fff;
+	--channel-header-text-tertiary: #fff;
+	--channel-header-divider-color: #fff;
+	--channel-header-hover-background: rgb(255 255 255 / 0.16);
+	--channel-header-update-icon-color: #fff;
+	--voice-call-header-text: #fff;
+	background: transparent !important;
+	border-bottom: none !important;
+	box-shadow: none !important;
+	color: var(--channel-header-text-primary);
+	position: relative;
+	isolation: isolate;
+}
+
+.voiceEdgeFadeTop,
+.voiceEdgeFadeBottom {
+	isolation: isolate;
+}
+
+.voiceEdgeFadeTop::before,
+.voiceEdgeFadeBottom::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	background: var(--voice-edge-gradient);
+	pointer-events: none;
+}
+
+.voiceEdgeFadeTop::before {
+	--voice-edge-gradient: var(--voice-header-gradient);
+	top: 0;
+	bottom: calc(0 - var(--voice-edge-gradient-extension));
+	z-index: -1;
+}
+
+.voiceEdgeFadeBottom::before {
+	--voice-edge-gradient: var(--voice-footer-gradient);
+	bottom: 0;
+	height: calc(100% + var(--voice-edge-gradient-extension));
+	z-index: 0;
+}
+
+.voiceEdgeFadeBottom > * {
+	position: relative;
+	z-index: 1;
+	pointer-events: auto;
+}
+
+.mobileFocusMembersVisible .voiceEdgeFadeBottom::before {
+	height: calc(100% + clamp(8.25rem, 20dvh, 13.75rem));
+}
+
+.voiceHeaderBackButton,
+.voiceHeaderIconButton {
+	width: 2.125rem;
+	height: 2.125rem;
+	border: 0.0625rem solid rgba(255, 255, 255, 0.08);
+	border-radius: 0.8125rem;
+	background-color: var(--voice-hud-button-bg);
+	box-shadow: inset 0 0.0625rem 0 rgba(255, 255, 255, 0.055);
+	color: rgba(255, 255, 255, 0.84);
+	transition:
+		background-color 80ms linear,
+		border-color 80ms linear,
+		color 80ms linear;
+}
+
+.voiceHeaderBackButton:hover,
+.voiceHeaderIconButton:hover,
+.voiceHeaderIconButton[aria-pressed='true'],
+.voiceHeaderIconButton[aria-expanded='true'] {
+	border-color: rgba(255, 255, 255, 0.14);
+	background-color: var(--voice-hud-button-bg-hover);
+	color: #fff;
+}
+
+.voiceHeaderBackButton > svg,
+.voiceHeaderIconButton > svg {
+	width: 1.25rem;
+	height: 1.25rem;
+}
+
+:global(.lk-pagination-indicator) {
+	position: absolute;
+	left: 50%;
+	bottom: 0.75rem;
+	transform: translateX(-50%);
+	display: flex;
+	gap: 0.375rem;
+	border: 0.0625rem solid var(--voice-hud-material-border);
+	border-radius: 62.4375rem;
+	background: #000;
+	box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.18);
+	padding: 0.25rem 0.5rem;
+}
+
+:global(.lk-pagination-indicator > span) {
+	width: 0.375rem;
+	height: 0.375rem;
+	border-radius: 624.9375rem;
+	background: var(--voice-overlay-light-bold);
+}
+
+:global(.lk-pagination-indicator > span[data-lk-active]) {
+	background: var(--voice-text-strong);
+}
+
+:global(.lk-pagination-control) {
+	position: absolute;
+	left: 50%;
+	bottom: 0.75rem;
+	transform: translateX(-50%);
+	border: 0.0625rem solid var(--voice-hud-material-border);
+	border-radius: 62.4375rem;
+	background: #000;
+	box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.18);
+	padding: 0.25rem 0.5rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--voice-text-strong);
+	pointer-events: auto;
+}
+
+:global(.lk-pagination-control .lk-pagination-count) {
+	display: none;
+}
+
+@media (max-width: 768px) {
+	.mainContent {
+		--voice-call-horizontal-padding: 1rem;
+		padding-left: 1rem;
+		padding-right: 1rem;
+		justify-content: flex-start;
+		align-items: stretch;
+		gap: 0.5rem;
+	}
+
+	.focusLayoutMain {
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+
+	.focusLayoutMain .lkParticipantTile {
+		max-width: 100%;
+	}
+
+	.focusMiniGrid {
+		--focus-mini-tile-size: clamp(var(--focus-mini-tile-min-width), 24vw, var(--focus-mini-tile-max-width));
+		--focus-mini-grid-gap: 0.5rem;
+	}
+
+	.focusMiniGridTile {
+		max-width: var(--focus-mini-tile-max-width);
+	}
+
+	.gridLayoutWrapper {
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+
+	.focusLayoutContent {
+		--content-padding: 1.5rem;
+	}
+
+	.carouselToggleWrap {
+		margin-top: 0.5rem;
+	}
+
+	.voiceRoot {
+		--voice-hud-opacity: 1;
+		--voice-hud-pointer-events: auto;
+	}
+
+	.controlBarContainer {
+		--voice-control-horizontal-padding: 1rem;
+		--voice-control-top-padding: 0.5rem;
+		--voice-control-bottom-padding: calc(0.75rem + env(safe-area-inset-bottom, 0));
+	}
+
+	.fullscreenButtonWrap {
+		bottom: calc(0.75rem + env(safe-area-inset-bottom, 0));
+		right: 1rem;
+	}
+}
+
+.screenshareGridLayout {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
+
+.screenshareGridLayout .lkParticipantTile {
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 16 / 9;
+}
+
+.root {
+	position: relative;
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	grid-template-areas: 'header' 'main' 'footer';
+	height: 100%;
+	width: 100%;
+	background-color: #000;
+	--voice-focus-safe-top: 4rem;
+	--voice-focus-safe-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0));
+}
+
+.rootFocused .mainContent {
+	grid-row: 1 / -1;
+	grid-column: 1 / -1;
+	z-index: 1;
+}
+
+.rootFocused .voiceHeader {
+	grid-area: header;
+	grid-column: 1 / -1;
+	grid-row: 1;
+	z-index: 25;
+}
+
+.rootFocused .controlBarContainer {
+	grid-row: 3;
+	z-index: 30;
+}
+
+.connectionStatusContainer {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	border-radius: 62.4375rem;
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+	border: 0.0625rem solid color-mix(in srgb, currentColor 18%, transparent);
+	background: #000;
+	box-shadow: inset 0 0.0625rem 0 rgba(255, 255, 255, 0.06);
+	font-weight: 600;
+	font-size: 0.75rem;
+	line-height: 1rem;
+}
+
+.statusConnecting {
+	background-color: #000;
+	color: var(--voice-status-warning);
+}
+
+.statusReconnecting {
+	background-color: #000;
+	color: var(--voice-status-warning);
+}
+
+.statusDisconnected {
+	background-color: #000;
+	color: var(--voice-status-danger);
+}
+
+.statusConnected {
+	background-color: #000;
+	color: var(--voice-status-success);
+}
+
+.connectionStatusDot {
+	height: 0.5rem;
+	width: 0.5rem;
+	border-radius: 624.9375rem;
+	background-color: currentColor;
+	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+.mainContent {
+	grid-area: main;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	--voice-call-horizontal-padding: clamp(1rem, 8vw, 14rem);
+	--voice-call-safe-top-padding: max(
+		clamp(1.25rem, 3.5dvh, 2.25rem),
+		calc(var(--voice-edge-gradient-extension) + 0.5rem)
+	);
+	--voice-call-safe-bottom-padding: max(
+		clamp(1.25rem, 3.5dvh, 2.25rem),
+		calc(var(--voice-edge-gradient-extension) + 0.5rem)
+	);
+	padding-left: var(--voice-call-horizontal-padding);
+	padding-right: var(--voice-call-horizontal-padding);
+	padding-top: var(--voice-call-safe-top-padding);
+	padding-bottom: var(--voice-call-safe-bottom-padding);
+	min-height: 0;
+	min-width: 0;
+	box-sizing: border-box;
+	container-type: size;
+}
+
+.mainContentGrid {
+	--voice-call-horizontal-padding: 0;
+}
+
+.mainContentFocusFullscreen {
+	--voice-call-horizontal-padding: 0;
+	--voice-call-safe-top-padding: 0;
+	--voice-call-safe-bottom-padding: 0;
+	position: relative;
+	inset: auto;
+	height: 100%;
+	z-index: 1;
+}
+
+.audioAvatarFallback {
+	flex: 1 1 auto;
+	min-height: 0;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 clamp(1rem, 6vw, 4rem);
+	box-sizing: border-box;
+}
+
+.audioAvatarFallbackList {
+	--avatar-voice-indicator-cutout-surface: #000;
+	max-width: 56rem;
+}
+
+.voiceCallPendingMain {
+	grid-area: main;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	min-height: 0;
+	background: #000;
+	overflow: hidden;
+}
+
+.controlBarContainer {
+	grid-area: footer;
+	position: relative;
+	z-index: 30;
+	display: flex;
+	justify-content: center;
+	background: transparent;
+	--voice-control-horizontal-padding: 1.5rem;
+	--voice-control-top-padding: 0.5rem;
+	--voice-control-bottom-padding: calc(0.75rem + env(safe-area-inset-bottom, 0));
+	padding-left: var(--voice-control-horizontal-padding);
+	padding-right: var(--voice-control-horizontal-padding);
+	padding-top: var(--voice-control-top-padding);
+	padding-bottom: var(--voice-control-bottom-padding);
+	pointer-events: none;
+}
+
+.fullscreenButtonWrap {
+	position: absolute;
+	right: clamp(1rem, 2vw, 2rem);
+	bottom: calc(0.75rem + env(safe-area-inset-bottom, 0));
+	z-index: 35;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing-2);
+	pointer-events: auto;
+}
+
+.fullscreenButtonWrap button,
+.fullscreenButtonWrap button:hover,
+.fullscreenButtonWrap button[aria-pressed='true'],
+.fullscreenButtonWrap button[aria-expanded='true'] {
+	width: 2.625rem;
+	height: 2.625rem;
+	border: 0.0625rem solid rgba(255, 255, 255, 0.12);
+	border-radius: 0.875rem;
+	background-color: #000;
+	box-shadow:
+		0 0.1875rem 0.625rem rgba(0, 0, 0, 0.26),
+		inset 0 0.0625rem 0 rgba(255, 255, 255, 0.08);
+	color: var(--voice-text-strong);
+	transform: none;
+	transition:
+		background-color 140ms linear,
+		border-color 140ms linear,
+		color 140ms linear;
+}
+
+.fullscreenButtonWrap button > svg {
+	width: 1.3rem;
+	height: 1.3rem;
+}
+
+.fullscreenButtonWrap button:hover {
+	border-color: rgba(255, 255, 255, 0.2);
+	background-color: #111;
+	color: #fff;
+}
+
+.srOnly {
+	position: absolute;
+	width: 0.0625rem;
+	height: 0.0625rem;
+	padding: 0;
+	margin: -0.0625rem;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
+.iconMedium {
+	height: 1.25rem;
+	width: 1.25rem;
+}
+
+.carouselToggleFocusRing {
+	border-radius: 624.9375rem;
+}
+
+.voiceCallSheetContent {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.voiceCallSheetCompact {
+	width: 100%;
+	min-height: 0;
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+}
+
+.streamFocusInfo {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	height: 2rem;
+	min-width: 0;
+	flex-shrink: 1;
+	overflow: hidden;
+	-webkit-app-region: no-drag;
+}
+
+.streamFocusStreamer {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	height: 100%;
+	min-width: 0;
+	flex-shrink: 1;
+	overflow: hidden;
+	-webkit-app-region: no-drag;
+}
+
+.streamFocusStreamerName {
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	font-weight: 500;
+	color: var(--voice-call-header-text, var(--text-primary));
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.streamFocusTrackInfo {
+	flex-shrink: 0;
+	transform: scale(0.92);
+	transform-origin: left center;
+}
+
+.streamFocusSpectators {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	height: 2rem;
+	flex-shrink: 0;
+	cursor: pointer;
+	-webkit-app-region: no-drag;
+}
+
+.streamFocusSpectators [data-flx='ui.avatars.avatar-stack.container'] {
+	height: calc(var(--avatar-size) + (2 * var(--avatar-outline, 0.125rem)));
+	padding-block: var(--avatar-outline, 0.125rem);
+	-webkit-app-region: no-drag;
+}
+
+.headerStreamInfo {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-shrink: 0;
+	margin-right: 0.25rem;
+}
+
+:global([data-voice-popout-window='true']) .voiceRoot {
+	--voice-hud-opacity: 1;
+	--voice-hud-pointer-events: auto;
+}
+
+:global([data-voice-popout-window='true']) .lkParticipantTile .tileControlPill {
+	opacity: 1;
+	pointer-events: auto;
+}

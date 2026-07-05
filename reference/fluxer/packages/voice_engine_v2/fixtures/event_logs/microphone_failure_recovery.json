@@ -1,0 +1,58 @@
+{
+	"name": "microphone device failure mutes locally then device hotswap and unmute recover",
+	"events": [
+		{"type": "connection.connectRequested", "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "connection.connectSucceeded", "operationId": 1},
+		{"type": "microphone.publishRequested", "options": {"deviceId": "mic-a"}},
+		{
+			"type": "microphone.publishFailed",
+			"operationId": 2,
+			"error": {"code": "deviceUnavailable", "message": "device unavailable", "capability": "microphoneCapture"}
+		},
+		{"type": "devices.selectAudioInputRequested", "deviceId": "mic-b"},
+		{"type": "command.succeeded", "operationId": 3, "commandType": "devices.selectAudioInput"},
+		{"type": "microphone.publishSucceeded", "operationId": 4},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 5},
+		{"type": "localAudio.muteRequested", "muted": false},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 6}
+	],
+	"expectedCommands": [
+		{"type": "connection.connect", "operationId": 1, "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "microphone.publish", "operationId": 2, "options": {"deviceId": "mic-a"}},
+		{"type": "devices.selectAudioInput", "operationId": 3, "deviceId": "mic-b"},
+		{"type": "microphone.publish", "operationId": 4, "options": {"deviceId": "mic-b"}},
+		{"type": "microphone.setEnabled", "operationId": 5, "enabled": false},
+		{"type": "microphone.setEnabled", "operationId": 6, "enabled": true}
+	],
+	"checkpoints": [
+		{
+			"afterEvent": 4,
+			"microphoneStatus": "failed",
+			"microphoneEnabled": false,
+			"locallyMuted": true,
+			"preferredLocallyMuted": true,
+			"lastFailureCode": "deviceUnavailable"
+		},
+		{
+			"afterEvent": 7,
+			"microphoneStatus": "published",
+			"microphoneEnabled": false,
+			"localSpeakingOverride": false,
+			"publishedDeviceId": "mic-b",
+			"desiredDeviceId": "mic-b"
+		}
+	],
+	"expectedSnapshot": {
+		"nextOperationId": 7,
+		"connectionStatus": "connected",
+		"microphoneStatus": "published",
+		"microphoneEnabled": true,
+		"localSpeakingOverride": null,
+		"locallyMuted": false,
+		"preferredLocallyMuted": false,
+		"publishedDeviceId": "mic-b",
+		"desiredDeviceId": "mic-b",
+		"selectedAudioInputId": "mic-b",
+		"lastFailureCode": "deviceUnavailable"
+	}
+}

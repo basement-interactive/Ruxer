@@ -1,0 +1,9335 @@
+{
+	"user_types": [
+		{
+			"name": "channel_override",
+			"fields": [
+				{
+					"name": "collapsed",
+					"type": "boolean"
+				},
+				{
+					"name": "message_notifications",
+					"type": "int"
+				},
+				{
+					"name": "muted",
+					"type": "boolean"
+				},
+				{
+					"name": "mute_config",
+					"type": "frozen<mute_config>"
+				},
+				{
+					"name": "unread_badges",
+					"type": "int"
+				}
+			]
+		},
+		{
+			"name": "custom_status",
+			"fields": [
+				{
+					"name": "text",
+					"type": "text"
+				},
+				{
+					"name": "emoji_id",
+					"type": "bigint"
+				},
+				{
+					"name": "emoji_name",
+					"type": "text"
+				},
+				{
+					"name": "emoji_animated",
+					"type": "boolean"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				}
+			]
+		},
+		{
+			"name": "guild_folder",
+			"fields": [
+				{
+					"name": "folder_id",
+					"type": "int"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "color",
+					"type": "int"
+				},
+				{
+					"name": "guild_ids",
+					"type": "list<bigint>"
+				},
+				{
+					"name": "flags",
+					"type": "int"
+				},
+				{
+					"name": "icon",
+					"type": "text"
+				}
+			]
+		},
+		{
+			"name": "iar_message_context",
+			"fields": [
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "author_id",
+					"type": "bigint"
+				},
+				{
+					"name": "author_username",
+					"type": "text"
+				},
+				{
+					"name": "author_discriminator",
+					"type": "int"
+				},
+				{
+					"name": "author_avatar_hash",
+					"type": "text"
+				},
+				{
+					"name": "content",
+					"type": "text"
+				},
+				{
+					"name": "timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "edited_timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "type",
+					"type": "int"
+				},
+				{
+					"name": "flags",
+					"type": "int"
+				},
+				{
+					"name": "mention_everyone",
+					"type": "boolean"
+				},
+				{
+					"name": "mention_users",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "mention_roles",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "mention_channels",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "attachments",
+					"type": "frozen<list<message_attachment>>"
+				},
+				{
+					"name": "embeds",
+					"type": "frozen<list<message_embed>>"
+				},
+				{
+					"name": "sticker_items",
+					"type": "frozen<list<message_sticker_item>>"
+				}
+			]
+		},
+		{
+			"name": "message_attachment",
+			"fields": [
+				{
+					"name": "attachment_id",
+					"type": "bigint"
+				},
+				{
+					"name": "filename",
+					"type": "text"
+				},
+				{
+					"name": "size",
+					"type": "bigint"
+				},
+				{
+					"name": "title",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "width",
+					"type": "int"
+				},
+				{
+					"name": "height",
+					"type": "int"
+				},
+				{
+					"name": "duration",
+					"type": "int"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "content_hash",
+					"type": "text"
+				},
+				{
+					"name": "placeholder",
+					"type": "text"
+				},
+				{
+					"name": "flags",
+					"type": "int"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				},
+				{
+					"name": "duration_secs",
+					"type": "int"
+				},
+				{
+					"name": "waveform",
+					"type": "text"
+				}
+			]
+		},
+		{
+			"name": "message_call",
+			"fields": [
+				{
+					"name": "participant_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "ended_timestamp",
+					"type": "timestamp"
+				}
+			]
+		},
+		{
+			"name": "message_embed",
+			"fields": [
+				{
+					"name": "type",
+					"type": "text"
+				},
+				{
+					"name": "title",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "url",
+					"type": "text"
+				},
+				{
+					"name": "timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "color",
+					"type": "int"
+				},
+				{
+					"name": "author",
+					"type": "frozen<message_embed_author>"
+				},
+				{
+					"name": "provider",
+					"type": "frozen<message_embed_provider>"
+				},
+				{
+					"name": "thumbnail",
+					"type": "frozen<message_embed_media>"
+				},
+				{
+					"name": "image",
+					"type": "frozen<message_embed_media>"
+				},
+				{
+					"name": "video",
+					"type": "frozen<message_embed_media>"
+				},
+				{
+					"name": "footer",
+					"type": "frozen<message_embed_footer>"
+				},
+				{
+					"name": "fields",
+					"type": "frozen<list<message_embed_field>>"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				},
+				{
+					"name": "children",
+					"type": "frozen<list<message_embed_child>>"
+				},
+				{
+					"name": "audio",
+					"type": "frozen<message_embed_media>"
+				},
+				{
+					"name": "html",
+					"type": "text"
+				},
+				{
+					"name": "html_width",
+					"type": "int"
+				},
+				{
+					"name": "html_height",
+					"type": "int"
+				}
+			]
+		},
+		{
+			"name": "message_embed_author",
+			"fields": [
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "url",
+					"type": "text"
+				},
+				{
+					"name": "icon_url",
+					"type": "text"
+				}
+			]
+		},
+		{
+			"name": "message_embed_child",
+			"fields": [
+				{
+					"name": "type",
+					"type": "text"
+				},
+				{
+					"name": "title",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "url",
+					"type": "text"
+				},
+				{
+					"name": "timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "color",
+					"type": "int"
+				},
+				{
+					"name": "author",
+					"type": "frozen<message_embed_author>"
+				},
+				{
+					"name": "provider",
+					"type": "frozen<message_embed_provider>"
+				},
+				{
+					"name": "thumbnail",
+					"type": "frozen<message_embed_media>"
+				},
+				{
+					"name": "image",
+					"type": "frozen<message_embed_media>"
+				},
+				{
+					"name": "video",
+					"type": "frozen<message_embed_media>"
+				},
+				{
+					"name": "footer",
+					"type": "frozen<message_embed_footer>"
+				},
+				{
+					"name": "fields",
+					"type": "frozen<list<message_embed_field>>"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				},
+				{
+					"name": "audio",
+					"type": "frozen<message_embed_media>"
+				},
+				{
+					"name": "html",
+					"type": "text"
+				},
+				{
+					"name": "html_width",
+					"type": "int"
+				},
+				{
+					"name": "html_height",
+					"type": "int"
+				}
+			]
+		},
+		{
+			"name": "message_embed_field",
+			"fields": [
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "value",
+					"type": "text"
+				},
+				{
+					"name": "inline",
+					"type": "boolean"
+				}
+			]
+		},
+		{
+			"name": "message_embed_footer",
+			"fields": [
+				{
+					"name": "text",
+					"type": "text"
+				},
+				{
+					"name": "icon_url",
+					"type": "text"
+				}
+			]
+		},
+		{
+			"name": "message_embed_media",
+			"fields": [
+				{
+					"name": "url",
+					"type": "text"
+				},
+				{
+					"name": "width",
+					"type": "int"
+				},
+				{
+					"name": "height",
+					"type": "int"
+				},
+				{
+					"name": "duration",
+					"type": "int"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "content_hash",
+					"type": "text"
+				},
+				{
+					"name": "placeholder",
+					"type": "text"
+				},
+				{
+					"name": "flags",
+					"type": "int"
+				}
+			]
+		},
+		{
+			"name": "message_embed_provider",
+			"fields": [
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "url",
+					"type": "text"
+				}
+			]
+		},
+		{
+			"name": "message_reference",
+			"fields": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "type",
+					"type": "int"
+				}
+			]
+		},
+		{
+			"name": "message_snapshot",
+			"fields": [
+				{
+					"name": "content",
+					"type": "text"
+				},
+				{
+					"name": "timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "edited_timestmap",
+					"type": "timestamp"
+				},
+				{
+					"name": "mention_users",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "mention_roles",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "mention_channels",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "attachments",
+					"type": "frozen<list<message_attachment>>"
+				},
+				{
+					"name": "embeds",
+					"type": "frozen<list<message_embed>>"
+				},
+				{
+					"name": "sticker_items",
+					"type": "frozen<list<message_sticker_item>>"
+				},
+				{
+					"name": "type",
+					"type": "int"
+				},
+				{
+					"name": "flags",
+					"type": "int"
+				},
+				{
+					"name": "edited_timestamp",
+					"type": "timestamp"
+				}
+			]
+		},
+		{
+			"name": "message_sticker_item",
+			"fields": [
+				{
+					"name": "sticker_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "format_type",
+					"type": "int"
+				},
+				{
+					"name": "animated",
+					"type": "boolean"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				}
+			]
+		},
+		{
+			"name": "mute_config",
+			"fields": [
+				{
+					"name": "end_time",
+					"type": "timestamp"
+				},
+				{
+					"name": "selected_time_window",
+					"type": "int"
+				}
+			]
+		},
+		{
+			"name": "permission_overwrite",
+			"fields": [
+				{
+					"name": "type",
+					"type": "int"
+				},
+				{
+					"name": "allow_",
+					"type": "bigint"
+				},
+				{
+					"name": "deny_",
+					"type": "bigint"
+				}
+			]
+		}
+	],
+	"tables": [
+		{
+			"name": "admin_api_keys",
+			"columns": [
+				{
+					"name": "key_id",
+					"type": "bigint"
+				},
+				{
+					"name": "key_hash",
+					"type": "text"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "created_by_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_used_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "acls",
+					"type": "set<text>"
+				}
+			],
+			"primary_key": "((key_id))",
+			"options": ""
+		},
+		{
+			"name": "admin_api_keys_by_creator",
+			"columns": [
+				{
+					"name": "created_by_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "key_id",
+					"type": "bigint"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_used_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "acls",
+					"type": "set<text>"
+				}
+			],
+			"primary_key": "((created_by_user_id), key_id)",
+			"options": "CLUSTERING ORDER BY (key_id DESC)"
+		},
+		{
+			"name": "admin_archives_by_requester",
+			"columns": [
+				{
+					"name": "requested_by",
+					"type": "bigint"
+				},
+				{
+					"name": "archive_id",
+					"type": "bigint"
+				},
+				{
+					"name": "subject_type",
+					"type": "text"
+				},
+				{
+					"name": "subject_id",
+					"type": "bigint"
+				},
+				{
+					"name": "requested_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "started_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "failed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "storage_key",
+					"type": "text"
+				},
+				{
+					"name": "file_size",
+					"type": "bigint"
+				},
+				{
+					"name": "progress_percent",
+					"type": "int"
+				},
+				{
+					"name": "progress_step",
+					"type": "text"
+				},
+				{
+					"name": "error_message",
+					"type": "text"
+				},
+				{
+					"name": "download_url_expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((requested_by), archive_id)",
+			"options": "CLUSTERING ORDER BY (archive_id DESC)"
+		},
+		{
+			"name": "admin_archives_by_subject",
+			"columns": [
+				{
+					"name": "subject_type",
+					"type": "text"
+				},
+				{
+					"name": "subject_id",
+					"type": "bigint"
+				},
+				{
+					"name": "archive_id",
+					"type": "bigint"
+				},
+				{
+					"name": "requested_by",
+					"type": "bigint"
+				},
+				{
+					"name": "requested_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "started_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "failed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "storage_key",
+					"type": "text"
+				},
+				{
+					"name": "file_size",
+					"type": "bigint"
+				},
+				{
+					"name": "progress_percent",
+					"type": "int"
+				},
+				{
+					"name": "progress_step",
+					"type": "text"
+				},
+				{
+					"name": "error_message",
+					"type": "text"
+				},
+				{
+					"name": "download_url_expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((subject_type, subject_id), archive_id)",
+			"options": "CLUSTERING ORDER BY (archive_id DESC)"
+		},
+		{
+			"name": "admin_archives_by_type",
+			"columns": [
+				{
+					"name": "subject_type",
+					"type": "text"
+				},
+				{
+					"name": "archive_id",
+					"type": "bigint"
+				},
+				{
+					"name": "subject_id",
+					"type": "bigint"
+				},
+				{
+					"name": "requested_by",
+					"type": "bigint"
+				},
+				{
+					"name": "requested_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "started_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "failed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "storage_key",
+					"type": "text"
+				},
+				{
+					"name": "file_size",
+					"type": "bigint"
+				},
+				{
+					"name": "progress_percent",
+					"type": "int"
+				},
+				{
+					"name": "progress_step",
+					"type": "text"
+				},
+				{
+					"name": "error_message",
+					"type": "text"
+				},
+				{
+					"name": "download_url_expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((subject_type), archive_id)",
+			"options": "CLUSTERING ORDER BY (archive_id DESC)"
+		},
+		{
+			"name": "admin_audit_logs",
+			"columns": [
+				{
+					"name": "log_id",
+					"type": "bigint"
+				},
+				{
+					"name": "admin_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "target_type",
+					"type": "text"
+				},
+				{
+					"name": "target_id",
+					"type": "bigint"
+				},
+				{
+					"name": "action",
+					"type": "text"
+				},
+				{
+					"name": "audit_log_reason",
+					"type": "text"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text, text>"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(log_id)",
+			"options": ""
+		},
+		{
+			"name": "applications",
+			"columns": [
+				{
+					"name": "application_id",
+					"type": "bigint"
+				},
+				{
+					"name": "owner_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "bot_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "oauth2_redirect_uris",
+					"type": "set<text>"
+				},
+				{
+					"name": "client_secret_hash",
+					"type": "text"
+				},
+				{
+					"name": "bot_token_hash",
+					"type": "text"
+				},
+				{
+					"name": "bot_token_preview",
+					"type": "text"
+				},
+				{
+					"name": "bot_token_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "client_secret_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "bot_is_public",
+					"type": "boolean"
+				},
+				{
+					"name": "bot_require_code_grant",
+					"type": "boolean"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "(application_id)",
+			"options": ""
+		},
+		{
+			"name": "applications_by_owner",
+			"columns": [
+				{
+					"name": "owner_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "application_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((owner_user_id), application_id)",
+			"options": "CLUSTERING ORDER BY (application_id DESC)"
+		},
+		{
+			"name": "attachment_decay_by_expiry",
+			"columns": [
+				{
+					"name": "expiry_bucket",
+					"type": "int"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "attachment_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((expiry_bucket), expires_at, attachment_id)",
+			"options": ""
+		},
+		{
+			"name": "attachment_decay_by_id",
+			"columns": [
+				{
+					"name": "attachment_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "filename",
+					"type": "text"
+				},
+				{
+					"name": "size_bytes",
+					"type": "varint"
+				},
+				{
+					"name": "uploaded_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_accessed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "cost",
+					"type": "double"
+				},
+				{
+					"name": "lifetime_days",
+					"type": "int"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				}
+			],
+			"primary_key": "(attachment_id)",
+			"options": ""
+		},
+		{
+			"name": "attachment_lookup",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "attachment_id",
+					"type": "bigint"
+				},
+				{
+					"name": "filename",
+					"type": "text"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((channel_id), attachment_id, filename)",
+			"options": ""
+		},
+		{
+			"name": "attachment_upload_traces_by_attachment",
+			"columns": [
+				{
+					"name": "attachment_id",
+					"type": "bigint"
+				},
+				{
+					"name": "upload_key",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "filename",
+					"type": "text"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "upload_mode",
+					"type": "text"
+				},
+				{
+					"name": "request_ip",
+					"type": "text"
+				},
+				{
+					"name": "requested_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completion_ip",
+					"type": "text"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(attachment_id)",
+			"options": "default_time_to_live = 2592000 AND gc_grace_seconds = 86400"
+		},
+		{
+			"name": "attachment_upload_traces_by_key",
+			"columns": [
+				{
+					"name": "upload_key",
+					"type": "text"
+				},
+				{
+					"name": "attachment_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "filename",
+					"type": "text"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "upload_mode",
+					"type": "text"
+				},
+				{
+					"name": "request_ip",
+					"type": "text"
+				},
+				{
+					"name": "requested_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completion_ip",
+					"type": "text"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(upload_key)",
+			"options": "default_time_to_live = 2592000 AND gc_grace_seconds = 86400"
+		},
+		{
+			"name": "auth_session_tombstones",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "session_id_hash",
+					"type": "blob"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "approx_last_used_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "client_ip",
+					"type": "text"
+				},
+				{
+					"name": "client_user_agent",
+					"type": "text"
+				},
+				{
+					"name": "client_is_desktop",
+					"type": "boolean"
+				},
+				{
+					"name": "client_os",
+					"type": "text"
+				},
+				{
+					"name": "client_platform",
+					"type": "text"
+				},
+				{
+					"name": "client_country",
+					"type": "text"
+				},
+				{
+					"name": "deleted_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "(user_id, session_id_hash)",
+			"options": "default_time_to_live = 2592000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "auth_sessions",
+			"columns": [
+				{
+					"name": "session_id_hash",
+					"type": "blob"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "approx_last_used_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "client_ip",
+					"type": "text"
+				},
+				{
+					"name": "client_os",
+					"type": "text"
+				},
+				{
+					"name": "client_platform",
+					"type": "text"
+				},
+				{
+					"name": "client_country",
+					"type": "text"
+				},
+				{
+					"name": "client_user_agent",
+					"type": "text"
+				},
+				{
+					"name": "client_is_desktop",
+					"type": "boolean"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((session_id_hash))",
+			"options": ""
+		},
+		{
+			"name": "auth_sessions_by_user_id",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "session_id_hash",
+					"type": "blob"
+				}
+			],
+			"primary_key": "((user_id), session_id_hash)",
+			"options": ""
+		},
+		{
+			"name": "authorized_ip_trust_keys_v1",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "trust_key",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), trust_key)",
+			"options": ""
+		},
+		{
+			"name": "authorized_ips_v2",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "ip",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), ip)",
+			"options": ""
+		},
+		{
+			"name": "banned_avatar_hashes",
+			"columns": [
+				{
+					"name": "hash_short",
+					"type": "text"
+				},
+				{
+					"name": "category",
+					"type": "text"
+				},
+				{
+					"name": "severity",
+					"type": "int"
+				},
+				{
+					"name": "source_url",
+					"type": "text"
+				},
+				{
+					"name": "added_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "added_by",
+					"type": "bigint"
+				},
+				{
+					"name": "notes",
+					"type": "text"
+				}
+			],
+			"primary_key": "((hash_short))",
+			"options": ""
+		},
+		{
+			"name": "banned_emails",
+			"columns": [
+				{
+					"name": "email_lower",
+					"type": "text"
+				}
+			],
+			"primary_key": "(email_lower)",
+			"options": ""
+		},
+		{
+			"name": "banned_file_shas",
+			"columns": [
+				{
+					"name": "sha256_hex",
+					"type": "text"
+				},
+				{
+					"name": "category",
+					"type": "text"
+				},
+				{
+					"name": "severity",
+					"type": "int"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "source_url",
+					"type": "text"
+				},
+				{
+					"name": "added_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "added_by",
+					"type": "bigint"
+				},
+				{
+					"name": "notes",
+					"type": "text"
+				}
+			],
+			"primary_key": "((sha256_hex))",
+			"options": ""
+		},
+		{
+			"name": "banned_ips",
+			"columns": [
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "ban_kind",
+					"type": "text"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(ip)",
+			"options": ""
+		},
+		{
+			"name": "banned_phone_prefixes",
+			"columns": [
+				{
+					"name": "prefix",
+					"type": "text"
+				}
+			],
+			"primary_key": "(prefix)",
+			"options": ""
+		},
+		{
+			"name": "banned_phrases",
+			"columns": [
+				{
+					"name": "phrase",
+					"type": "text"
+				}
+			],
+			"primary_key": "(phrase)",
+			"options": ""
+		},
+		{
+			"name": "banned_profile_substrings",
+			"columns": [
+				{
+					"name": "scope",
+					"type": "text"
+				},
+				{
+					"name": "substring",
+					"type": "text"
+				},
+				{
+					"name": "added_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "added_by",
+					"type": "bigint"
+				},
+				{
+					"name": "notes",
+					"type": "text"
+				}
+			],
+			"primary_key": "((scope), substring)",
+			"options": ""
+		},
+		{
+			"name": "banned_url_domains",
+			"columns": [
+				{
+					"name": "domain",
+					"type": "text"
+				},
+				{
+					"name": "match_subdomains",
+					"type": "boolean"
+				},
+				{
+					"name": "category",
+					"type": "text"
+				},
+				{
+					"name": "severity",
+					"type": "int"
+				},
+				{
+					"name": "source_url",
+					"type": "text"
+				},
+				{
+					"name": "added_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "added_by",
+					"type": "bigint"
+				},
+				{
+					"name": "notes",
+					"type": "text"
+				}
+			],
+			"primary_key": "((domain))",
+			"options": ""
+		},
+		{
+			"name": "banned_urls",
+			"columns": [
+				{
+					"name": "url_canonical",
+					"type": "text"
+				},
+				{
+					"name": "category",
+					"type": "text"
+				},
+				{
+					"name": "severity",
+					"type": "int"
+				},
+				{
+					"name": "source_url",
+					"type": "text"
+				},
+				{
+					"name": "added_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "added_by",
+					"type": "bigint"
+				},
+				{
+					"name": "notes",
+					"type": "text"
+				}
+			],
+			"primary_key": "((url_canonical))",
+			"options": ""
+		},
+		{
+			"name": "billing_action_intents",
+			"columns": [
+				{
+					"name": "intent_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "actor_admin_id",
+					"type": "bigint"
+				},
+				{
+					"name": "action_type",
+					"type": "text"
+				},
+				{
+					"name": "subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "refund_amount",
+					"type": "bigint"
+				},
+				{
+					"name": "refund_reason",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "error_message",
+					"type": "text"
+				},
+				{
+					"name": "started_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "sub_canceled_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "refund_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "refund_id",
+					"type": "text"
+				}
+			],
+			"primary_key": "(intent_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_charges",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				},
+				{
+					"name": "amount_captured",
+					"type": "bigint"
+				},
+				{
+					"name": "amount_refunded",
+					"type": "bigint"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "captured",
+					"type": "boolean"
+				},
+				{
+					"name": "paid",
+					"type": "boolean"
+				},
+				{
+					"name": "refunded",
+					"type": "boolean"
+				},
+				{
+					"name": "disputed",
+					"type": "boolean"
+				},
+				{
+					"name": "payment_method_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_method_type",
+					"type": "text"
+				},
+				{
+					"name": "card_brand",
+					"type": "text"
+				},
+				{
+					"name": "card_last4",
+					"type": "text"
+				},
+				{
+					"name": "card_country",
+					"type": "text"
+				},
+				{
+					"name": "receipt_url",
+					"type": "text"
+				},
+				{
+					"name": "receipt_email",
+					"type": "text"
+				},
+				{
+					"name": "receipt_number",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "failure_code",
+					"type": "text"
+				},
+				{
+					"name": "failure_message",
+					"type": "text"
+				},
+				{
+					"name": "outcome_type",
+					"type": "text"
+				},
+				{
+					"name": "outcome_risk_level",
+					"type": "text"
+				},
+				{
+					"name": "outcome_seller_message",
+					"type": "text"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_charges_by_customer",
+			"columns": [
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				}
+			],
+			"primary_key": "(customer_id, stripe_created_at, provider_id)",
+			"options": "CLUSTERING ORDER BY (stripe_created_at DESC, provider_id ASC)"
+		},
+		{
+			"name": "billing_checkout_sessions",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "mode",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "payment_status",
+					"type": "text"
+				},
+				{
+					"name": "subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "setup_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "success_url",
+					"type": "text"
+				},
+				{
+					"name": "cancel_url",
+					"type": "text"
+				},
+				{
+					"name": "customer_email",
+					"type": "text"
+				},
+				{
+					"name": "amount_subtotal",
+					"type": "bigint"
+				},
+				{
+					"name": "amount_total",
+					"type": "bigint"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "client_reference_id",
+					"type": "text"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_checkout_sessions_by_customer",
+			"columns": [
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "mode",
+					"type": "text"
+				}
+			],
+			"primary_key": "(customer_id, stripe_created_at, provider_id)",
+			"options": "CLUSTERING ORDER BY (stripe_created_at DESC, provider_id ASC)"
+		},
+		{
+			"name": "billing_customers",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "default_payment_method",
+					"type": "text"
+				},
+				{
+					"name": "invoice_prefix",
+					"type": "text"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "delinquent",
+					"type": "boolean"
+				},
+				{
+					"name": "balance",
+					"type": "bigint"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "deleted",
+					"type": "boolean"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_customers_by_user_id",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "(user_id, provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_disputes",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "charge_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "is_charge_refundable",
+					"type": "boolean"
+				},
+				{
+					"name": "evidence_due_by",
+					"type": "timestamp"
+				},
+				{
+					"name": "evidence_submission_count",
+					"type": "int"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_disputes_by_charge",
+			"columns": [
+				{
+					"name": "charge_id",
+					"type": "text"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(charge_id, provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_invoices",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "number",
+					"type": "text"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "amount_due",
+					"type": "bigint"
+				},
+				{
+					"name": "amount_paid",
+					"type": "bigint"
+				},
+				{
+					"name": "amount_remaining",
+					"type": "bigint"
+				},
+				{
+					"name": "subtotal",
+					"type": "bigint"
+				},
+				{
+					"name": "tax",
+					"type": "bigint"
+				},
+				{
+					"name": "total",
+					"type": "bigint"
+				},
+				{
+					"name": "starting_balance",
+					"type": "bigint"
+				},
+				{
+					"name": "ending_balance",
+					"type": "bigint"
+				},
+				{
+					"name": "application_fee_amount",
+					"type": "bigint"
+				},
+				{
+					"name": "attempt_count",
+					"type": "int"
+				},
+				{
+					"name": "attempted",
+					"type": "boolean"
+				},
+				{
+					"name": "auto_advance",
+					"type": "boolean"
+				},
+				{
+					"name": "billing_reason",
+					"type": "text"
+				},
+				{
+					"name": "collection_method",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "hosted_invoice_url",
+					"type": "text"
+				},
+				{
+					"name": "invoice_pdf",
+					"type": "text"
+				},
+				{
+					"name": "receipt_number",
+					"type": "text"
+				},
+				{
+					"name": "statement_descriptor",
+					"type": "text"
+				},
+				{
+					"name": "period_start",
+					"type": "timestamp"
+				},
+				{
+					"name": "period_end",
+					"type": "timestamp"
+				},
+				{
+					"name": "due_date",
+					"type": "timestamp"
+				},
+				{
+					"name": "finalized_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "paid_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "voided_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "marked_uncollectible_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "next_payment_attempt",
+					"type": "timestamp"
+				},
+				{
+					"name": "payment_ids",
+					"type": "list<text>"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_invoices_by_customer",
+			"columns": [
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "total",
+					"type": "bigint"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				}
+			],
+			"primary_key": "(customer_id, stripe_created_at, provider_id)",
+			"options": "CLUSTERING ORDER BY (stripe_created_at DESC, provider_id ASC)"
+		},
+		{
+			"name": "billing_invoices_by_subscription",
+			"columns": [
+				{
+					"name": "subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "total",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(subscription_id, stripe_created_at, provider_id)",
+			"options": "CLUSTERING ORDER BY (stripe_created_at DESC, provider_id ASC)"
+		},
+		{
+			"name": "billing_payment_intents",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				},
+				{
+					"name": "amount_received",
+					"type": "bigint"
+				},
+				{
+					"name": "amount_capturable",
+					"type": "bigint"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "capture_method",
+					"type": "text"
+				},
+				{
+					"name": "confirmation_method",
+					"type": "text"
+				},
+				{
+					"name": "payment_method_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_method_types",
+					"type": "list<text>"
+				},
+				{
+					"name": "setup_future_usage",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "receipt_email",
+					"type": "text"
+				},
+				{
+					"name": "statement_descriptor",
+					"type": "text"
+				},
+				{
+					"name": "canceled_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "cancellation_reason",
+					"type": "text"
+				},
+				{
+					"name": "last_charge_id",
+					"type": "text"
+				},
+				{
+					"name": "last_payment_error_code",
+					"type": "text"
+				},
+				{
+					"name": "last_payment_error_message",
+					"type": "text"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_payment_intents_by_customer",
+			"columns": [
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(customer_id, stripe_created_at, provider_id)",
+			"options": "CLUSTERING ORDER BY (stripe_created_at DESC, provider_id ASC)"
+		},
+		{
+			"name": "billing_payment_methods",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "type",
+					"type": "text"
+				},
+				{
+					"name": "card_brand",
+					"type": "text"
+				},
+				{
+					"name": "card_last4",
+					"type": "text"
+				},
+				{
+					"name": "card_exp_month",
+					"type": "int"
+				},
+				{
+					"name": "card_exp_year",
+					"type": "int"
+				},
+				{
+					"name": "card_funding",
+					"type": "text"
+				},
+				{
+					"name": "card_country",
+					"type": "text"
+				},
+				{
+					"name": "card_fingerprint",
+					"type": "text"
+				},
+				{
+					"name": "card_wallet_type",
+					"type": "text"
+				},
+				{
+					"name": "bank_last4",
+					"type": "text"
+				},
+				{
+					"name": "bank_routing",
+					"type": "text"
+				},
+				{
+					"name": "billing_email",
+					"type": "text"
+				},
+				{
+					"name": "billing_name",
+					"type": "text"
+				},
+				{
+					"name": "billing_country",
+					"type": "text"
+				},
+				{
+					"name": "billing_postal_code",
+					"type": "text"
+				},
+				{
+					"name": "is_default",
+					"type": "boolean"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_payment_methods_by_customer",
+			"columns": [
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "is_default",
+					"type": "boolean"
+				},
+				{
+					"name": "type",
+					"type": "text"
+				},
+				{
+					"name": "card_brand",
+					"type": "text"
+				},
+				{
+					"name": "card_last4",
+					"type": "text"
+				}
+			],
+			"primary_key": "(customer_id, provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_payments",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "charge_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "is_default",
+					"type": "boolean"
+				},
+				{
+					"name": "amount_paid",
+					"type": "bigint"
+				},
+				{
+					"name": "amount_requested",
+					"type": "bigint"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "paid_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "canceled_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_payments_by_invoice",
+			"columns": [
+				{
+					"name": "invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "charge_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				}
+			],
+			"primary_key": "(invoice_id, stripe_created_at, provider_id)",
+			"options": "CLUSTERING ORDER BY (stripe_created_at ASC, provider_id ASC)"
+		},
+		{
+			"name": "billing_prices",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "product_id",
+					"type": "text"
+				},
+				{
+					"name": "nickname",
+					"type": "text"
+				},
+				{
+					"name": "active",
+					"type": "boolean"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "unit_amount",
+					"type": "bigint"
+				},
+				{
+					"name": "billing_scheme",
+					"type": "text"
+				},
+				{
+					"name": "type",
+					"type": "text"
+				},
+				{
+					"name": "interval",
+					"type": "text"
+				},
+				{
+					"name": "interval_count",
+					"type": "int"
+				},
+				{
+					"name": "usage_type",
+					"type": "text"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "lookup_key",
+					"type": "text"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "tax_behavior",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_products",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "active",
+					"type": "boolean"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "statement_descriptor",
+					"type": "text"
+				},
+				{
+					"name": "unit_label",
+					"type": "text"
+				},
+				{
+					"name": "tax_code",
+					"type": "text"
+				},
+				{
+					"name": "images",
+					"type": "list<text>"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_refunds",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "charge_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "receipt_number",
+					"type": "text"
+				},
+				{
+					"name": "failure_reason",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_refunds_by_charge",
+			"columns": [
+				{
+					"name": "charge_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(charge_id, stripe_created_at, provider_id)",
+			"options": "CLUSTERING ORDER BY (stripe_created_at DESC, provider_id ASC)"
+		},
+		{
+			"name": "billing_refunds_by_invoice",
+			"columns": [
+				{
+					"name": "invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(invoice_id, stripe_created_at, provider_id)",
+			"options": "CLUSTERING ORDER BY (stripe_created_at DESC, provider_id ASC)"
+		},
+		{
+			"name": "billing_refunds_by_payment_intent",
+			"columns": [
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "amount",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(payment_intent_id, stripe_created_at, provider_id)",
+			"options": "CLUSTERING ORDER BY (stripe_created_at DESC, provider_id ASC)"
+		},
+		{
+			"name": "billing_subscriptions",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "cancel_at_period_end",
+					"type": "boolean"
+				},
+				{
+					"name": "cancel_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "canceled_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "cancellation_reason",
+					"type": "text"
+				},
+				{
+					"name": "cancellation_comment",
+					"type": "text"
+				},
+				{
+					"name": "current_period_start",
+					"type": "timestamp"
+				},
+				{
+					"name": "current_period_end",
+					"type": "timestamp"
+				},
+				{
+					"name": "trial_start",
+					"type": "timestamp"
+				},
+				{
+					"name": "trial_end",
+					"type": "timestamp"
+				},
+				{
+					"name": "started_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "ended_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "primary_price_id",
+					"type": "text"
+				},
+				{
+					"name": "primary_product_id",
+					"type": "text"
+				},
+				{
+					"name": "quantity",
+					"type": "int"
+				},
+				{
+					"name": "item_count",
+					"type": "int"
+				},
+				{
+					"name": "items",
+					"type": "list<frozen<tuple<text,text,int,bigint>>>"
+				},
+				{
+					"name": "default_payment_method",
+					"type": "text"
+				},
+				{
+					"name": "latest_invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "pending_update_expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "pending_update_subtotal",
+					"type": "bigint"
+				},
+				{
+					"name": "collection_method",
+					"type": "text"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata",
+					"type": "map<text,text>"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "stripe_updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mirrored_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_subscriptions_by_customer",
+			"columns": [
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "current_period_end",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(customer_id, provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_subscriptions_by_user",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "customer_id",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "current_period_end",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(user_id, provider_id)",
+			"options": ""
+		},
+		{
+			"name": "billing_webhook_events",
+			"columns": [
+				{
+					"name": "event_id",
+					"type": "text"
+				},
+				{
+					"name": "event_type",
+					"type": "text"
+				},
+				{
+					"name": "api_version",
+					"type": "text"
+				},
+				{
+					"name": "livemode",
+					"type": "boolean"
+				},
+				{
+					"name": "stripe_created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "received_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "processed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "attempts",
+					"type": "int"
+				},
+				{
+					"name": "error_message",
+					"type": "text"
+				},
+				{
+					"name": "object_type",
+					"type": "text"
+				},
+				{
+					"name": "object_id",
+					"type": "text"
+				},
+				{
+					"name": "raw_payload",
+					"type": "text"
+				}
+			],
+			"primary_key": "(event_id)",
+			"options": "default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "channel_empty_buckets",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "bucket",
+					"type": "int"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((channel_id), bucket)",
+			"options": "CLUSTERING ORDER BY (bucket DESC)"
+		},
+		{
+			"name": "channel_message_buckets",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "bucket",
+					"type": "int"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((channel_id), bucket)",
+			"options": "CLUSTERING ORDER BY (bucket DESC)"
+		},
+		{
+			"name": "channel_pins",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "pinned_timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((channel_id), pinned_timestamp, message_id)",
+			"options": "CLUSTERING ORDER BY (pinned_timestamp DESC, message_id DESC)"
+		},
+		{
+			"name": "channel_state",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "created_bucket",
+					"type": "int"
+				},
+				{
+					"name": "has_messages",
+					"type": "boolean"
+				},
+				{
+					"name": "last_message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "last_message_bucket",
+					"type": "int"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(channel_id)",
+			"options": ""
+		},
+		{
+			"name": "channels",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "soft_deleted",
+					"type": "boolean"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "type",
+					"type": "int"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "topic",
+					"type": "text"
+				},
+				{
+					"name": "icon_hash",
+					"type": "text"
+				},
+				{
+					"name": "url",
+					"type": "text"
+				},
+				{
+					"name": "parent_id",
+					"type": "bigint"
+				},
+				{
+					"name": "position",
+					"type": "int"
+				},
+				{
+					"name": "owner_id",
+					"type": "bigint"
+				},
+				{
+					"name": "recipient_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				},
+				{
+					"name": "rate_limit_per_user",
+					"type": "int"
+				},
+				{
+					"name": "bitrate",
+					"type": "int"
+				},
+				{
+					"name": "user_limit",
+					"type": "int"
+				},
+				{
+					"name": "voice_connection_limit",
+					"type": "int"
+				},
+				{
+					"name": "rtc_region",
+					"type": "text"
+				},
+				{
+					"name": "last_message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "last_pin_timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "permission_overwrites",
+					"type": "frozen<map<bigint, permission_overwrite>>"
+				},
+				{
+					"name": "nicks",
+					"type": "map<text, text>"
+				},
+				{
+					"name": "indexed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "content_warning_level",
+					"type": "int"
+				},
+				{
+					"name": "content_warning_text",
+					"type": "text"
+				}
+			],
+			"primary_key": "((channel_id, soft_deleted))",
+			"options": ""
+		},
+		{
+			"name": "channels_by_guild_id",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((guild_id), channel_id)",
+			"options": ""
+		},
+		{
+			"name": "data_service_search_index_files",
+			"columns": [
+				{
+					"name": "shard_id",
+					"type": "int"
+				},
+				{
+					"name": "index_name",
+					"type": "text"
+				},
+				{
+					"name": "generation",
+					"type": "bigint"
+				},
+				{
+					"name": "path",
+					"type": "text"
+				},
+				{
+					"name": "payload",
+					"type": "blob"
+				},
+				{
+					"name": "checksum",
+					"type": "text"
+				},
+				{
+					"name": "size_bytes",
+					"type": "bigint"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((shard_id, index_name, generation), path)",
+			"options": ""
+		},
+		{
+			"name": "data_service_search_index_manifests",
+			"columns": [
+				{
+					"name": "shard_id",
+					"type": "int"
+				},
+				{
+					"name": "index_name",
+					"type": "text"
+				},
+				{
+					"name": "schema_version",
+					"type": "int"
+				},
+				{
+					"name": "generation",
+					"type": "bigint"
+				},
+				{
+					"name": "committed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "file_count",
+					"type": "int"
+				},
+				{
+					"name": "total_bytes",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((shard_id), index_name)",
+			"options": ""
+		},
+		{
+			"name": "disposable_email_domains",
+			"columns": [
+				{
+					"name": "domain",
+					"type": "text"
+				}
+			],
+			"primary_key": "(domain)",
+			"options": ""
+		},
+		{
+			"name": "dm_states",
+			"columns": [
+				{
+					"name": "hi_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "lo_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((hi_user_id, lo_user_id), channel_id)",
+			"options": ""
+		},
+		{
+			"name": "donor_magic_link_tokens",
+			"columns": [
+				{
+					"name": "token_",
+					"type": "text"
+				},
+				{
+					"name": "donor_email",
+					"type": "text"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "used_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((token_))",
+			"options": "default_time_to_live = 900 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "donor_magic_link_tokens_by_email",
+			"columns": [
+				{
+					"name": "donor_email",
+					"type": "text"
+				},
+				{
+					"name": "token_",
+					"type": "text"
+				}
+			],
+			"primary_key": "((donor_email), token_)",
+			"options": "default_time_to_live = 900 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "donors",
+			"columns": [
+				{
+					"name": "email",
+					"type": "text"
+				},
+				{
+					"name": "stripe_customer_id",
+					"type": "text"
+				},
+				{
+					"name": "business_name",
+					"type": "text"
+				},
+				{
+					"name": "tax_id",
+					"type": "text"
+				},
+				{
+					"name": "tax_id_type",
+					"type": "text"
+				},
+				{
+					"name": "stripe_subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "subscription_amount_cents",
+					"type": "int"
+				},
+				{
+					"name": "subscription_currency",
+					"type": "text"
+				},
+				{
+					"name": "subscription_interval",
+					"type": "text"
+				},
+				{
+					"name": "subscription_current_period_end",
+					"type": "timestamp"
+				},
+				{
+					"name": "subscription_cancel_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((email))",
+			"options": ""
+		},
+		{
+			"name": "donors_by_stripe_customer_id",
+			"columns": [
+				{
+					"name": "stripe_customer_id",
+					"type": "text"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				}
+			],
+			"primary_key": "((stripe_customer_id), email)",
+			"options": ""
+		},
+		{
+			"name": "donors_by_stripe_subscription_id",
+			"columns": [
+				{
+					"name": "stripe_subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				}
+			],
+			"primary_key": "((stripe_subscription_id), email)",
+			"options": ""
+		},
+		{
+			"name": "dsa_report_email_verifications",
+			"columns": [
+				{
+					"name": "email_lower",
+					"type": "text"
+				},
+				{
+					"name": "code_hash",
+					"type": "text"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_sent_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((email_lower))",
+			"options": ""
+		},
+		{
+			"name": "dsa_report_tickets",
+			"columns": [
+				{
+					"name": "ticket",
+					"type": "text"
+				},
+				{
+					"name": "email_lower",
+					"type": "text"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((ticket))",
+			"options": ""
+		},
+		{
+			"name": "email_change_tickets",
+			"columns": [
+				{
+					"name": "ticket",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "require_original",
+					"type": "boolean"
+				},
+				{
+					"name": "original_email",
+					"type": "text"
+				},
+				{
+					"name": "original_verified",
+					"type": "boolean"
+				},
+				{
+					"name": "original_code",
+					"type": "text"
+				},
+				{
+					"name": "original_code_sent_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "original_code_expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "new_email",
+					"type": "text"
+				},
+				{
+					"name": "new_code",
+					"type": "text"
+				},
+				{
+					"name": "new_code_sent_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "new_code_expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "original_proof",
+					"type": "text"
+				}
+			],
+			"primary_key": "(ticket)",
+			"options": ""
+		},
+		{
+			"name": "email_change_tokens",
+			"columns": [
+				{
+					"name": "token_",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "new_email",
+					"type": "text"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(token_)",
+			"options": ""
+		},
+		{
+			"name": "email_revert_tokens",
+			"columns": [
+				{
+					"name": "token_",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				}
+			],
+			"primary_key": "((token_), user_id)",
+			"options": "default_time_to_live = 172800 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '2'}"
+		},
+		{
+			"name": "email_verification_tokens",
+			"columns": [
+				{
+					"name": "token_",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				}
+			],
+			"primary_key": "((token_), user_id)",
+			"options": "default_time_to_live = 86400 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "expression_packs",
+			"columns": [
+				{
+					"name": "pack_id",
+					"type": "bigint"
+				},
+				{
+					"name": "pack_type",
+					"type": "text"
+				},
+				{
+					"name": "creator_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "(pack_id)",
+			"options": ""
+		},
+		{
+			"name": "expression_packs_by_creator",
+			"columns": [
+				{
+					"name": "creator_id",
+					"type": "bigint"
+				},
+				{
+					"name": "pack_id",
+					"type": "bigint"
+				},
+				{
+					"name": "pack_type",
+					"type": "text"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((creator_id), pack_id)",
+			"options": ""
+		},
+		{
+			"name": "favorite_memes",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "meme_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "alt_text",
+					"type": "text"
+				},
+				{
+					"name": "tags",
+					"type": "list<text>"
+				},
+				{
+					"name": "attachment_id",
+					"type": "bigint"
+				},
+				{
+					"name": "filename",
+					"type": "text"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "content_hash",
+					"type": "text"
+				},
+				{
+					"name": "size",
+					"type": "bigint"
+				},
+				{
+					"name": "width",
+					"type": "int"
+				},
+				{
+					"name": "height",
+					"type": "int"
+				},
+				{
+					"name": "duration",
+					"type": "int"
+				},
+				{
+					"name": "is_gifv",
+					"type": "boolean"
+				},
+				{
+					"name": "tenor_id_str",
+					"type": "text"
+				},
+				{
+					"name": "klipy_slug",
+					"type": "text"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "media_formats",
+					"type": "text"
+				},
+				{
+					"name": "placeholder",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), meme_id)",
+			"options": "CLUSTERING ORDER BY (meme_id DESC)"
+		},
+		{
+			"name": "favorite_memes_by_meme_id",
+			"columns": [
+				{
+					"name": "meme_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((meme_id), user_id)",
+			"options": ""
+		},
+		{
+			"name": "forensic_identifier_by_key_day",
+			"columns": [
+				{
+					"name": "request_id",
+					"type": "text"
+				},
+				{
+					"name": "occurrence_index",
+					"type": "int"
+				},
+				{
+					"name": "identifier_key",
+					"type": "text"
+				},
+				{
+					"name": "day",
+					"type": "text"
+				},
+				{
+					"name": "route_id",
+					"type": "text"
+				},
+				{
+					"name": "shard",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "actor_user_key",
+					"type": "text"
+				},
+				{
+					"name": "direction",
+					"type": "text"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				},
+				{
+					"name": "identifier_type",
+					"type": "text"
+				},
+				{
+					"name": "value_kind",
+					"type": "text"
+				},
+				{
+					"name": "field_path",
+					"type": "text"
+				},
+				{
+					"name": "relation",
+					"type": "text"
+				},
+				{
+					"name": "hash_key_version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((identifier_key, day), created_at, request_id, occurrence_index)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, request_id ASC, occurrence_index ASC) AND default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "forensic_identifier_by_request",
+			"columns": [
+				{
+					"name": "request_id",
+					"type": "text"
+				},
+				{
+					"name": "occurrence_index",
+					"type": "int"
+				},
+				{
+					"name": "identifier_key",
+					"type": "text"
+				},
+				{
+					"name": "day",
+					"type": "text"
+				},
+				{
+					"name": "route_id",
+					"type": "text"
+				},
+				{
+					"name": "shard",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "actor_user_key",
+					"type": "text"
+				},
+				{
+					"name": "direction",
+					"type": "text"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				},
+				{
+					"name": "identifier_type",
+					"type": "text"
+				},
+				{
+					"name": "value_kind",
+					"type": "text"
+				},
+				{
+					"name": "field_path",
+					"type": "text"
+				},
+				{
+					"name": "relation",
+					"type": "text"
+				},
+				{
+					"name": "hash_key_version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((request_id), occurrence_index)",
+			"options": "CLUSTERING ORDER BY (occurrence_index ASC) AND default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "forensic_request_meta_by_actor_day",
+			"columns": [
+				{
+					"name": "request_id",
+					"type": "text"
+				},
+				{
+					"name": "day",
+					"type": "text"
+				},
+				{
+					"name": "route_id",
+					"type": "text"
+				},
+				{
+					"name": "shard",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "actor_user_key",
+					"type": "text"
+				},
+				{
+					"name": "admin_api_key_key",
+					"type": "text"
+				},
+				{
+					"name": "auth_token_type",
+					"type": "text"
+				},
+				{
+					"name": "auth_via_cookie",
+					"type": "boolean"
+				},
+				{
+					"name": "method",
+					"type": "text"
+				},
+				{
+					"name": "path_shape",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "int"
+				},
+				{
+					"name": "duration_ms",
+					"type": "int"
+				},
+				{
+					"name": "client_ip_hash",
+					"type": "text"
+				},
+				{
+					"name": "client_ip_prefix",
+					"type": "text"
+				},
+				{
+					"name": "client_ip_source",
+					"type": "text"
+				},
+				{
+					"name": "host",
+					"type": "text"
+				},
+				{
+					"name": "origin_host",
+					"type": "text"
+				},
+				{
+					"name": "referer_host",
+					"type": "text"
+				},
+				{
+					"name": "ua_family",
+					"type": "text"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "content_length",
+					"type": "bigint"
+				},
+				{
+					"name": "response_content_length",
+					"type": "bigint"
+				},
+				{
+					"name": "query_keys",
+					"type": "set<text>"
+				},
+				{
+					"name": "request_identifier_count",
+					"type": "int"
+				},
+				{
+					"name": "response_identifier_count",
+					"type": "int"
+				},
+				{
+					"name": "model_identifier_count",
+					"type": "int"
+				},
+				{
+					"name": "resource_exposure_count",
+					"type": "int"
+				},
+				{
+					"name": "error_name",
+					"type": "text"
+				},
+				{
+					"name": "error_code",
+					"type": "text"
+				},
+				{
+					"name": "hash_key_version",
+					"type": "int"
+				},
+				{
+					"name": "redaction_policy_version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((actor_user_key, day), created_at, request_id)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, request_id ASC) AND default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "forensic_request_meta_by_id",
+			"columns": [
+				{
+					"name": "request_id",
+					"type": "text"
+				},
+				{
+					"name": "day",
+					"type": "text"
+				},
+				{
+					"name": "route_id",
+					"type": "text"
+				},
+				{
+					"name": "shard",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "actor_user_key",
+					"type": "text"
+				},
+				{
+					"name": "admin_api_key_key",
+					"type": "text"
+				},
+				{
+					"name": "auth_token_type",
+					"type": "text"
+				},
+				{
+					"name": "auth_via_cookie",
+					"type": "boolean"
+				},
+				{
+					"name": "method",
+					"type": "text"
+				},
+				{
+					"name": "path_shape",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "int"
+				},
+				{
+					"name": "duration_ms",
+					"type": "int"
+				},
+				{
+					"name": "client_ip_hash",
+					"type": "text"
+				},
+				{
+					"name": "client_ip_prefix",
+					"type": "text"
+				},
+				{
+					"name": "client_ip_source",
+					"type": "text"
+				},
+				{
+					"name": "host",
+					"type": "text"
+				},
+				{
+					"name": "origin_host",
+					"type": "text"
+				},
+				{
+					"name": "referer_host",
+					"type": "text"
+				},
+				{
+					"name": "ua_family",
+					"type": "text"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "content_length",
+					"type": "bigint"
+				},
+				{
+					"name": "response_content_length",
+					"type": "bigint"
+				},
+				{
+					"name": "query_keys",
+					"type": "set<text>"
+				},
+				{
+					"name": "request_identifier_count",
+					"type": "int"
+				},
+				{
+					"name": "response_identifier_count",
+					"type": "int"
+				},
+				{
+					"name": "model_identifier_count",
+					"type": "int"
+				},
+				{
+					"name": "resource_exposure_count",
+					"type": "int"
+				},
+				{
+					"name": "error_name",
+					"type": "text"
+				},
+				{
+					"name": "error_code",
+					"type": "text"
+				},
+				{
+					"name": "hash_key_version",
+					"type": "int"
+				},
+				{
+					"name": "redaction_policy_version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((request_id))",
+			"options": "default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "forensic_request_meta_by_route_day_shard",
+			"columns": [
+				{
+					"name": "request_id",
+					"type": "text"
+				},
+				{
+					"name": "day",
+					"type": "text"
+				},
+				{
+					"name": "route_id",
+					"type": "text"
+				},
+				{
+					"name": "shard",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "actor_user_key",
+					"type": "text"
+				},
+				{
+					"name": "admin_api_key_key",
+					"type": "text"
+				},
+				{
+					"name": "auth_token_type",
+					"type": "text"
+				},
+				{
+					"name": "auth_via_cookie",
+					"type": "boolean"
+				},
+				{
+					"name": "method",
+					"type": "text"
+				},
+				{
+					"name": "path_shape",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "int"
+				},
+				{
+					"name": "duration_ms",
+					"type": "int"
+				},
+				{
+					"name": "client_ip_hash",
+					"type": "text"
+				},
+				{
+					"name": "client_ip_prefix",
+					"type": "text"
+				},
+				{
+					"name": "client_ip_source",
+					"type": "text"
+				},
+				{
+					"name": "host",
+					"type": "text"
+				},
+				{
+					"name": "origin_host",
+					"type": "text"
+				},
+				{
+					"name": "referer_host",
+					"type": "text"
+				},
+				{
+					"name": "ua_family",
+					"type": "text"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "content_length",
+					"type": "bigint"
+				},
+				{
+					"name": "response_content_length",
+					"type": "bigint"
+				},
+				{
+					"name": "query_keys",
+					"type": "set<text>"
+				},
+				{
+					"name": "request_identifier_count",
+					"type": "int"
+				},
+				{
+					"name": "response_identifier_count",
+					"type": "int"
+				},
+				{
+					"name": "model_identifier_count",
+					"type": "int"
+				},
+				{
+					"name": "resource_exposure_count",
+					"type": "int"
+				},
+				{
+					"name": "error_name",
+					"type": "text"
+				},
+				{
+					"name": "error_code",
+					"type": "text"
+				},
+				{
+					"name": "hash_key_version",
+					"type": "int"
+				},
+				{
+					"name": "redaction_policy_version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((route_id, day, shard), created_at, request_id)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, request_id ASC) AND default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "forensic_resource_exposure_by_request",
+			"columns": [
+				{
+					"name": "request_id",
+					"type": "text"
+				},
+				{
+					"name": "exposure_index",
+					"type": "int"
+				},
+				{
+					"name": "day",
+					"type": "text"
+				},
+				{
+					"name": "route_id",
+					"type": "text"
+				},
+				{
+					"name": "shard",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "actor_user_key",
+					"type": "text"
+				},
+				{
+					"name": "subject_user_key",
+					"type": "text"
+				},
+				{
+					"name": "resource_type",
+					"type": "text"
+				},
+				{
+					"name": "resource_key",
+					"type": "text"
+				},
+				{
+					"name": "container_type",
+					"type": "text"
+				},
+				{
+					"name": "container_key",
+					"type": "text"
+				},
+				{
+					"name": "relationship",
+					"type": "text"
+				},
+				{
+					"name": "actor_relationship",
+					"type": "text"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				},
+				{
+					"name": "hash_key_version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((request_id), exposure_index)",
+			"options": "CLUSTERING ORDER BY (exposure_index ASC) AND default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "forensic_resource_exposure_by_route_day_shard",
+			"columns": [
+				{
+					"name": "request_id",
+					"type": "text"
+				},
+				{
+					"name": "exposure_index",
+					"type": "int"
+				},
+				{
+					"name": "day",
+					"type": "text"
+				},
+				{
+					"name": "route_id",
+					"type": "text"
+				},
+				{
+					"name": "shard",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "actor_user_key",
+					"type": "text"
+				},
+				{
+					"name": "subject_user_key",
+					"type": "text"
+				},
+				{
+					"name": "resource_type",
+					"type": "text"
+				},
+				{
+					"name": "resource_key",
+					"type": "text"
+				},
+				{
+					"name": "container_type",
+					"type": "text"
+				},
+				{
+					"name": "container_key",
+					"type": "text"
+				},
+				{
+					"name": "relationship",
+					"type": "text"
+				},
+				{
+					"name": "actor_relationship",
+					"type": "text"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				},
+				{
+					"name": "hash_key_version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((route_id, day, shard), created_at, request_id, exposure_index)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, request_id ASC, exposure_index ASC) AND default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "forensic_resource_exposure_by_subject_day",
+			"columns": [
+				{
+					"name": "request_id",
+					"type": "text"
+				},
+				{
+					"name": "exposure_index",
+					"type": "int"
+				},
+				{
+					"name": "day",
+					"type": "text"
+				},
+				{
+					"name": "route_id",
+					"type": "text"
+				},
+				{
+					"name": "shard",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "actor_user_key",
+					"type": "text"
+				},
+				{
+					"name": "subject_user_key",
+					"type": "text"
+				},
+				{
+					"name": "resource_type",
+					"type": "text"
+				},
+				{
+					"name": "resource_key",
+					"type": "text"
+				},
+				{
+					"name": "container_type",
+					"type": "text"
+				},
+				{
+					"name": "container_key",
+					"type": "text"
+				},
+				{
+					"name": "relationship",
+					"type": "text"
+				},
+				{
+					"name": "actor_relationship",
+					"type": "text"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				},
+				{
+					"name": "hash_key_version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((subject_user_key, day), created_at, request_id, exposure_index)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, request_id ASC, exposure_index ASC) AND default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "gift_codes",
+			"columns": [
+				{
+					"name": "code",
+					"type": "text"
+				},
+				{
+					"name": "duration_months",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_by_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "redeemed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "redeemed_by_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "stripe_payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "visionary_sequence_number",
+					"type": "int"
+				},
+				{
+					"name": "checkout_session_id",
+					"type": "text"
+				},
+				{
+					"name": "duration_type",
+					"type": "text"
+				},
+				{
+					"name": "duration_quantity",
+					"type": "int"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((code))",
+			"options": ""
+		},
+		{
+			"name": "gift_codes_by_creator",
+			"columns": [
+				{
+					"name": "created_by_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "code",
+					"type": "text"
+				}
+			],
+			"primary_key": "((created_by_user_id), code)",
+			"options": ""
+		},
+		{
+			"name": "gift_codes_by_payment_intent",
+			"columns": [
+				{
+					"name": "stripe_payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "code",
+					"type": "text"
+				}
+			],
+			"primary_key": "((stripe_payment_intent_id), code)",
+			"options": ""
+		},
+		{
+			"name": "gift_codes_by_redeemer",
+			"columns": [
+				{
+					"name": "redeemed_by_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "code",
+					"type": "text"
+				}
+			],
+			"primary_key": "((redeemed_by_user_id), code)",
+			"options": ""
+		},
+		{
+			"name": "guild_audit_logs_v2",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "log_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "target_id",
+					"type": "text"
+				},
+				{
+					"name": "action_type",
+					"type": "int"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "options",
+					"type": "map<text, text>"
+				},
+				{
+					"name": "changes",
+					"type": "text"
+				}
+			],
+			"primary_key": "((guild_id), log_id)",
+			"options": "CLUSTERING ORDER BY (log_id DESC) AND default_time_to_live = 3888000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '2'}"
+		},
+		{
+			"name": "guild_audit_logs_v2_by_action",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "action_type",
+					"type": "int"
+				},
+				{
+					"name": "log_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "target_id",
+					"type": "text"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "options",
+					"type": "map<text, text>"
+				},
+				{
+					"name": "changes",
+					"type": "text"
+				}
+			],
+			"primary_key": "((guild_id, action_type), log_id)",
+			"options": "CLUSTERING ORDER BY (log_id DESC) AND default_time_to_live = 3888000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '2'}"
+		},
+		{
+			"name": "guild_audit_logs_v2_by_user",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "log_id",
+					"type": "bigint"
+				},
+				{
+					"name": "target_id",
+					"type": "text"
+				},
+				{
+					"name": "action_type",
+					"type": "int"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "options",
+					"type": "map<text, text>"
+				},
+				{
+					"name": "changes",
+					"type": "text"
+				}
+			],
+			"primary_key": "((guild_id, user_id), log_id)",
+			"options": "CLUSTERING ORDER BY (log_id DESC) AND default_time_to_live = 3888000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '2'}"
+		},
+		{
+			"name": "guild_audit_logs_v2_by_user_action",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "action_type",
+					"type": "int"
+				},
+				{
+					"name": "log_id",
+					"type": "bigint"
+				},
+				{
+					"name": "target_id",
+					"type": "text"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "options",
+					"type": "map<text, text>"
+				},
+				{
+					"name": "changes",
+					"type": "text"
+				}
+			],
+			"primary_key": "((guild_id, user_id, action_type), log_id)",
+			"options": "CLUSTERING ORDER BY (log_id DESC) AND default_time_to_live = 3888000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '2'}"
+		},
+		{
+			"name": "guild_bans",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "moderator_id",
+					"type": "bigint"
+				},
+				{
+					"name": "banned_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				}
+			],
+			"primary_key": "((guild_id), user_id)",
+			"options": ""
+		},
+		{
+			"name": "guild_bans_by_email",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((guild_id, email))",
+			"options": ""
+		},
+		{
+			"name": "guild_bans_by_user_id",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), guild_id)",
+			"options": ""
+		},
+		{
+			"name": "guild_discovery",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "category_type",
+					"type": "int"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "applied_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "reviewed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "reviewed_by",
+					"type": "bigint"
+				},
+				{
+					"name": "review_reason",
+					"type": "text"
+				},
+				{
+					"name": "removed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "removed_by",
+					"type": "bigint"
+				},
+				{
+					"name": "removal_reason",
+					"type": "text"
+				},
+				{
+					"name": "primary_language",
+					"type": "text"
+				},
+				{
+					"name": "custom_tags",
+					"type": "list<text>"
+				}
+			],
+			"primary_key": "((guild_id))",
+			"options": ""
+		},
+		{
+			"name": "guild_discovery_by_status",
+			"columns": [
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "applied_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((status), applied_at, guild_id)",
+			"options": "CLUSTERING ORDER BY (applied_at DESC, guild_id DESC)"
+		},
+		{
+			"name": "guild_emojis",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "emoji_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "creator_id",
+					"type": "bigint"
+				},
+				{
+					"name": "animated",
+					"type": "boolean"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((guild_id), emoji_id)",
+			"options": ""
+		},
+		{
+			"name": "guild_emojis_by_emoji_id",
+			"columns": [
+				{
+					"name": "emoji_id",
+					"type": "bigint"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "creator_id",
+					"type": "bigint"
+				},
+				{
+					"name": "animated",
+					"type": "boolean"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((emoji_id))",
+			"options": ""
+		},
+		{
+			"name": "guild_members",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "joined_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "nick",
+					"type": "text"
+				},
+				{
+					"name": "avatar_hash",
+					"type": "text"
+				},
+				{
+					"name": "banner_hash",
+					"type": "text"
+				},
+				{
+					"name": "join_source_type",
+					"type": "int"
+				},
+				{
+					"name": "source_invite_code",
+					"type": "text"
+				},
+				{
+					"name": "inviter_id",
+					"type": "bigint"
+				},
+				{
+					"name": "deaf",
+					"type": "boolean"
+				},
+				{
+					"name": "mute",
+					"type": "boolean"
+				},
+				{
+					"name": "communication_disabled_until",
+					"type": "timestamp"
+				},
+				{
+					"name": "role_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "is_premium_sanitized",
+					"type": "boolean"
+				},
+				{
+					"name": "bio",
+					"type": "text"
+				},
+				{
+					"name": "accent_color",
+					"type": "int"
+				},
+				{
+					"name": "pronouns",
+					"type": "text"
+				},
+				{
+					"name": "temporary",
+					"type": "boolean"
+				},
+				{
+					"name": "profile_flags",
+					"type": "int"
+				},
+				{
+					"name": "mention_flags",
+					"type": "int"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((guild_id), user_id)",
+			"options": ""
+		},
+		{
+			"name": "guild_members_by_user_id",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((user_id), guild_id)",
+			"options": ""
+		},
+		{
+			"name": "guild_membership_metadata",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "communication_disabled_until",
+					"type": "timestamp"
+				},
+				{
+					"name": "first_joined_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_left_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(guild_id, user_id)",
+			"options": "default_time_to_live = 0"
+		},
+		{
+			"name": "guild_roles",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "role_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "permissions",
+					"type": "bigint"
+				},
+				{
+					"name": "position",
+					"type": "int"
+				},
+				{
+					"name": "color",
+					"type": "int"
+				},
+				{
+					"name": "icon_hash",
+					"type": "text"
+				},
+				{
+					"name": "unicode_emoji",
+					"type": "text"
+				},
+				{
+					"name": "hoist",
+					"type": "boolean"
+				},
+				{
+					"name": "mentionable",
+					"type": "boolean"
+				},
+				{
+					"name": "hoist_position",
+					"type": "int"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((guild_id), role_id)",
+			"options": ""
+		},
+		{
+			"name": "guild_stickers",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "sticker_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "tags",
+					"type": "list<text>"
+				},
+				{
+					"name": "creator_id",
+					"type": "bigint"
+				},
+				{
+					"name": "animated",
+					"type": "boolean"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((guild_id), sticker_id)",
+			"options": ""
+		},
+		{
+			"name": "guild_stickers_by_sticker_id",
+			"columns": [
+				{
+					"name": "sticker_id",
+					"type": "bigint"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "description",
+					"type": "text"
+				},
+				{
+					"name": "tags",
+					"type": "list<text>"
+				},
+				{
+					"name": "creator_id",
+					"type": "bigint"
+				},
+				{
+					"name": "animated",
+					"type": "boolean"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((sticker_id))",
+			"options": ""
+		},
+		{
+			"name": "guilds",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "owner_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "vanity_url_code",
+					"type": "text"
+				},
+				{
+					"name": "icon_hash",
+					"type": "text"
+				},
+				{
+					"name": "banner_hash",
+					"type": "text"
+				},
+				{
+					"name": "banner_height",
+					"type": "int"
+				},
+				{
+					"name": "banner_width",
+					"type": "int"
+				},
+				{
+					"name": "splash_hash",
+					"type": "text"
+				},
+				{
+					"name": "splash_width",
+					"type": "int"
+				},
+				{
+					"name": "splash_height",
+					"type": "int"
+				},
+				{
+					"name": "splash_card_alignment",
+					"type": "int"
+				},
+				{
+					"name": "embed_splash_hash",
+					"type": "text"
+				},
+				{
+					"name": "embed_splash_width",
+					"type": "int"
+				},
+				{
+					"name": "embed_splash_height",
+					"type": "int"
+				},
+				{
+					"name": "features",
+					"type": "set<text>"
+				},
+				{
+					"name": "verification_level",
+					"type": "int"
+				},
+				{
+					"name": "mfa_level",
+					"type": "int"
+				},
+				{
+					"name": "nsfw_level",
+					"type": "int"
+				},
+				{
+					"name": "explicit_content_filter",
+					"type": "int"
+				},
+				{
+					"name": "default_message_notifications",
+					"type": "int"
+				},
+				{
+					"name": "system_channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "system_channel_flags",
+					"type": "int"
+				},
+				{
+					"name": "rules_channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "afk_channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "afk_timeout",
+					"type": "int"
+				},
+				{
+					"name": "disabled_operations",
+					"type": "int"
+				},
+				{
+					"name": "member_count",
+					"type": "int"
+				},
+				{
+					"name": "audit_logs_indexed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "members_indexed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "message_history_cutoff",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "nsfw",
+					"type": "boolean"
+				},
+				{
+					"name": "content_warning_level",
+					"type": "int"
+				},
+				{
+					"name": "content_warning_text",
+					"type": "text"
+				}
+			],
+			"primary_key": "((guild_id))",
+			"options": ""
+		},
+		{
+			"name": "iar_submissions",
+			"columns": [
+				{
+					"name": "report_id",
+					"type": "bigint"
+				},
+				{
+					"name": "reporter_id",
+					"type": "bigint"
+				},
+				{
+					"name": "reported_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "status",
+					"type": "int"
+				},
+				{
+					"name": "report_type",
+					"type": "int"
+				},
+				{
+					"name": "category",
+					"type": "text"
+				},
+				{
+					"name": "additional_info",
+					"type": "text"
+				},
+				{
+					"name": "reported_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "reported_user_avatar_hash",
+					"type": "text"
+				},
+				{
+					"name": "reported_guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "reported_guild_name",
+					"type": "text"
+				},
+				{
+					"name": "reported_guild_icon_hash",
+					"type": "text"
+				},
+				{
+					"name": "reported_message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "reported_channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "reported_channel_name",
+					"type": "text"
+				},
+				{
+					"name": "message_context",
+					"type": "frozen<list<iar_message_context>>"
+				},
+				{
+					"name": "guild_context_id",
+					"type": "bigint"
+				},
+				{
+					"name": "resolved_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "resolved_by_admin_id",
+					"type": "bigint"
+				},
+				{
+					"name": "public_comment",
+					"type": "text"
+				},
+				{
+					"name": "audit_log_reason",
+					"type": "text"
+				},
+				{
+					"name": "reporter_email",
+					"type": "text"
+				},
+				{
+					"name": "reporter_full_legal_name",
+					"type": "text"
+				},
+				{
+					"name": "reporter_country_of_residence",
+					"type": "text"
+				},
+				{
+					"name": "reported_guild_invite_code",
+					"type": "text"
+				},
+				{
+					"name": "reported_guild_nsfw",
+					"type": "boolean"
+				},
+				{
+					"name": "reported_guild_content_warning_level",
+					"type": "int"
+				},
+				{
+					"name": "reported_guild_content_warning_text",
+					"type": "text"
+				},
+				{
+					"name": "reported_channel_nsfw_override",
+					"type": "boolean"
+				},
+				{
+					"name": "reported_channel_content_warning_level",
+					"type": "int"
+				},
+				{
+					"name": "reported_channel_content_warning_text",
+					"type": "text"
+				},
+				{
+					"name": "reported_channel_effective_nsfw",
+					"type": "boolean"
+				},
+				{
+					"name": "reported_channel_effective_content_warning_level",
+					"type": "int"
+				},
+				{
+					"name": "reported_channel_effective_content_warning_text",
+					"type": "text"
+				}
+			],
+			"primary_key": "((report_id))",
+			"options": ""
+		},
+		{
+			"name": "inbound_sms_challenges",
+			"columns": [
+				{
+					"name": "challenge_code",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "our_number",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "consumed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "consumed_from_phone",
+					"type": "text"
+				}
+			],
+			"primary_key": "(challenge_code)",
+			"options": "default_time_to_live = 900 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "inbound_sms_challenges_by_user",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "challenge_code",
+					"type": "text"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(user_id, created_at)",
+			"options": "CLUSTERING ORDER BY (created_at DESC) AND default_time_to_live = 900 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "instance_configuration",
+			"columns": [
+				{
+					"name": "key",
+					"type": "text"
+				},
+				{
+					"name": "value",
+					"type": "text"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(key)",
+			"options": ""
+		},
+		{
+			"name": "invites",
+			"columns": [
+				{
+					"name": "code",
+					"type": "text"
+				},
+				{
+					"name": "type",
+					"type": "int"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "inviter_id",
+					"type": "bigint"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "uses",
+					"type": "int"
+				},
+				{
+					"name": "max_uses",
+					"type": "int"
+				},
+				{
+					"name": "max_age",
+					"type": "int"
+				},
+				{
+					"name": "temporary",
+					"type": "boolean"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((code))",
+			"options": ""
+		},
+		{
+			"name": "invites_by_channel_id",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "code",
+					"type": "text"
+				}
+			],
+			"primary_key": "((channel_id), code)",
+			"options": ""
+		},
+		{
+			"name": "invites_by_guild_id",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "code",
+					"type": "text"
+				}
+			],
+			"primary_key": "((guild_id), code)",
+			"options": ""
+		},
+		{
+			"name": "ip_authorization_tokens",
+			"columns": [
+				{
+					"name": "token_",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				}
+			],
+			"primary_key": "((token_), user_id)",
+			"options": "default_time_to_live = 1800 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "ipinfo_cache",
+			"columns": [
+				{
+					"name": "cache_key",
+					"type": "text"
+				},
+				{
+					"name": "payload",
+					"type": "text"
+				}
+			],
+			"primary_key": "(cache_key)",
+			"options": "default_time_to_live = 1209600 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '12'}"
+		},
+		{
+			"name": "ipinfo_requests_by_hour",
+			"columns": [
+				{
+					"name": "bucket_date",
+					"type": "text"
+				},
+				{
+					"name": "bucket_hour",
+					"type": "tinyint"
+				},
+				{
+					"name": "requested_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "event_id",
+					"type": "uuid"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "cache_key",
+					"type": "text"
+				},
+				{
+					"name": "request_url",
+					"type": "text"
+				},
+				{
+					"name": "http_status",
+					"type": "int"
+				},
+				{
+					"name": "outcome",
+					"type": "text"
+				},
+				{
+					"name": "available",
+					"type": "boolean"
+				},
+				{
+					"name": "risk_note",
+					"type": "text"
+				},
+				{
+					"name": "latency_ms",
+					"type": "int"
+				},
+				{
+					"name": "response_ip",
+					"type": "text"
+				},
+				{
+					"name": "country_code",
+					"type": "text"
+				},
+				{
+					"name": "asn",
+					"type": "int"
+				},
+				{
+					"name": "is_anonymous",
+					"type": "boolean"
+				},
+				{
+					"name": "is_tor",
+					"type": "boolean"
+				},
+				{
+					"name": "is_vpn",
+					"type": "boolean"
+				},
+				{
+					"name": "is_proxy",
+					"type": "boolean"
+				},
+				{
+					"name": "is_residential_proxy",
+					"type": "boolean"
+				},
+				{
+					"name": "metadata_json",
+					"type": "text"
+				}
+			],
+			"primary_key": "((bucket_date, bucket_hour), requested_at, event_id)",
+			"options": "CLUSTERING ORDER BY (requested_at DESC, event_id ASC) AND default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "jobs_active",
+			"columns": [
+				{
+					"name": "job_id",
+					"type": "bigint"
+				},
+				{
+					"name": "task_type",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "requested_by_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "started_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(job_id)",
+			"options": ""
+		},
+		{
+			"name": "jobs_by_day_bucket",
+			"columns": [
+				{
+					"name": "bucket_day",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "job_id",
+					"type": "bigint"
+				},
+				{
+					"name": "task_type",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "requested_by_user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(bucket_day, created_at, job_id)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, job_id DESC)"
+		},
+		{
+			"name": "jobs_by_id",
+			"columns": [
+				{
+					"name": "job_id",
+					"type": "bigint"
+				},
+				{
+					"name": "task_type",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "progress_current",
+					"type": "bigint"
+				},
+				{
+					"name": "progress_total",
+					"type": "bigint"
+				},
+				{
+					"name": "progress_message",
+					"type": "text"
+				},
+				{
+					"name": "payload",
+					"type": "text"
+				},
+				{
+					"name": "result",
+					"type": "text"
+				},
+				{
+					"name": "error_message",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "started_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "requested_by_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "audit_log_reason",
+					"type": "text"
+				},
+				{
+					"name": "jet_stream_seq",
+					"type": "text"
+				},
+				{
+					"name": "jet_stream_lane",
+					"type": "text"
+				},
+				{
+					"name": "attempts",
+					"type": "int"
+				},
+				{
+					"name": "max_attempts",
+					"type": "int"
+				},
+				{
+					"name": "run_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "cancel_requested",
+					"type": "boolean"
+				},
+				{
+					"name": "context_link",
+					"type": "text"
+				}
+			],
+			"primary_key": "(job_id)",
+			"options": ""
+		},
+		{
+			"name": "latest_risk_context_by_user",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "subnet",
+					"type": "text"
+				},
+				{
+					"name": "email_domain",
+					"type": "text"
+				},
+				{
+					"name": "asn",
+					"type": "int"
+				}
+			],
+			"primary_key": "(user_id)",
+			"options": ""
+		},
+		{
+			"name": "message_reactions",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "bucket",
+					"type": "int"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "emoji_id",
+					"type": "bigint"
+				},
+				{
+					"name": "emoji_name",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "emoji_animated",
+					"type": "boolean"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((channel_id, bucket), message_id, emoji_id, emoji_name, user_id)",
+			"options": ""
+		},
+		{
+			"name": "message_report_submissions_by_reporter",
+			"columns": [
+				{
+					"name": "reporter_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "report_id",
+					"type": "bigint"
+				},
+				{
+					"name": "reported_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((reporter_id), channel_id, message_id)",
+			"options": ""
+		},
+		{
+			"name": "messages",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "bucket",
+					"type": "int"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "author_id",
+					"type": "bigint"
+				},
+				{
+					"name": "type",
+					"type": "int"
+				},
+				{
+					"name": "webhook_id",
+					"type": "bigint"
+				},
+				{
+					"name": "webhook_name",
+					"type": "text"
+				},
+				{
+					"name": "webhook_avatar_hash",
+					"type": "text"
+				},
+				{
+					"name": "content",
+					"type": "text"
+				},
+				{
+					"name": "edited_timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "pinned_timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "flags",
+					"type": "int"
+				},
+				{
+					"name": "mention_everyone",
+					"type": "boolean"
+				},
+				{
+					"name": "mention_users",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "mention_roles",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "mention_channels",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "attachments",
+					"type": "frozen<list<message_attachment>>"
+				},
+				{
+					"name": "embeds",
+					"type": "frozen<list<message_embed>>"
+				},
+				{
+					"name": "sticker_items",
+					"type": "frozen<list<message_sticker_item>>"
+				},
+				{
+					"name": "message_reference",
+					"type": "frozen<message_reference>"
+				},
+				{
+					"name": "call",
+					"type": "frozen<message_call>"
+				},
+				{
+					"name": "message_snapshots",
+					"type": "frozen<list<message_snapshot>>"
+				},
+				{
+					"name": "has_reaction",
+					"type": "boolean"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "nsfw_emojis",
+					"type": "set<bigint>"
+				}
+			],
+			"primary_key": "((channel_id, bucket), message_id)",
+			"options": "CLUSTERING ORDER BY (message_id DESC)"
+		},
+		{
+			"name": "messages_by_author_id_v2",
+			"columns": [
+				{
+					"name": "author_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((author_id), message_id)",
+			"options": "CLUSTERING ORDER BY (message_id DESC)"
+		},
+		{
+			"name": "mfa_backup_codes",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "code",
+					"type": "text"
+				},
+				{
+					"name": "consumed",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((user_id), code)",
+			"options": ""
+		},
+		{
+			"name": "ncmec_attachment_submissions",
+			"columns": [
+				{
+					"name": "attachment_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "filename",
+					"type": "text"
+				},
+				{
+					"name": "source_report_id",
+					"type": "bigint"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "ncmec_report_id",
+					"type": "text"
+				},
+				{
+					"name": "ncmec_file_id",
+					"type": "text"
+				},
+				{
+					"name": "submitted_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "submitted_by_admin_id",
+					"type": "bigint"
+				},
+				{
+					"name": "reporter_full_name",
+					"type": "text"
+				},
+				{
+					"name": "failure_reason",
+					"type": "text"
+				},
+				{
+					"name": "archive_completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "content_deleted_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(attachment_id)",
+			"options": ""
+		},
+		{
+			"name": "ncmec_user_workflows",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "deleted_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "deleted_by_admin_id",
+					"type": "bigint"
+				},
+				{
+					"name": "deletion_private_reason",
+					"type": "text"
+				},
+				{
+					"name": "deletion_ncmec_report_id",
+					"type": "text"
+				},
+				{
+					"name": "archive_id",
+					"type": "bigint"
+				},
+				{
+					"name": "archive_requested_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "archive_requested_by_admin_id",
+					"type": "bigint"
+				},
+				{
+					"name": "archive_audit_log_reason",
+					"type": "text"
+				},
+				{
+					"name": "archive_completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "deletion_job_queued_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "previous_report_ids",
+					"type": "set<text>"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(user_id)",
+			"options": ""
+		},
+		{
+			"name": "notes",
+			"columns": [
+				{
+					"name": "source_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "target_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "note",
+					"type": "text"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((source_user_id), target_user_id)",
+			"options": ""
+		},
+		{
+			"name": "oauth2_access_tokens",
+			"columns": [
+				{
+					"name": "token_",
+					"type": "text"
+				},
+				{
+					"name": "application_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "scope",
+					"type": "set<text>"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(token_)",
+			"options": "default_time_to_live = 604800 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '6'}"
+		},
+		{
+			"name": "oauth2_access_tokens_by_user",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "token_",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), token_)",
+			"options": "CLUSTERING ORDER BY (token_ DESC) AND default_time_to_live = 604800 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '6'}"
+		},
+		{
+			"name": "oauth2_authorization_codes",
+			"columns": [
+				{
+					"name": "code",
+					"type": "text"
+				},
+				{
+					"name": "application_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "redirect_uri",
+					"type": "text"
+				},
+				{
+					"name": "scope",
+					"type": "set<text>"
+				},
+				{
+					"name": "code_challenge",
+					"type": "text"
+				},
+				{
+					"name": "code_challenge_method",
+					"type": "text"
+				},
+				{
+					"name": "nonce",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(code)",
+			"options": "default_time_to_live = 600 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "oauth2_refresh_tokens",
+			"columns": [
+				{
+					"name": "token_",
+					"type": "text"
+				},
+				{
+					"name": "application_id",
+					"type": "bigint"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "scope",
+					"type": "set<text>"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(token_)",
+			"options": "default_time_to_live = 2592000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "oauth2_refresh_tokens_by_user",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "token_",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), token_)",
+			"options": "CLUSTERING ORDER BY (token_ DESC) AND default_time_to_live = 2592000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "pack_installations",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "pack_id",
+					"type": "bigint"
+				},
+				{
+					"name": "pack_type",
+					"type": "text"
+				},
+				{
+					"name": "installed_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((user_id), pack_id)",
+			"options": ""
+		},
+		{
+			"name": "password_change_tickets",
+			"columns": [
+				{
+					"name": "ticket",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "code",
+					"type": "text"
+				},
+				{
+					"name": "code_sent_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "code_expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "verified",
+					"type": "boolean"
+				},
+				{
+					"name": "verification_proof",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(ticket)",
+			"options": ""
+		},
+		{
+			"name": "password_reset_tokens",
+			"columns": [
+				{
+					"name": "token_",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				}
+			],
+			"primary_key": "((token_), user_id)",
+			"options": "default_time_to_live = 86400 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "password_reset_tokens_by_user_id",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "token_",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), token_)",
+			"options": "default_time_to_live = 86400 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "payments",
+			"columns": [
+				{
+					"name": "checkout_session_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "stripe_customer_id",
+					"type": "text"
+				},
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "invoice_id",
+					"type": "text"
+				},
+				{
+					"name": "price_id",
+					"type": "text"
+				},
+				{
+					"name": "product_type",
+					"type": "text"
+				},
+				{
+					"name": "amount_cents",
+					"type": "int"
+				},
+				{
+					"name": "currency",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "is_gift",
+					"type": "boolean"
+				},
+				{
+					"name": "gift_code",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "purchase_geoip_country_code",
+					"type": "text"
+				},
+				{
+					"name": "purchase_client_country_code",
+					"type": "text"
+				},
+				{
+					"name": "eu_withdrawal_waiver_required",
+					"type": "boolean"
+				},
+				{
+					"name": "eu_withdrawal_waiver_accepted",
+					"type": "boolean"
+				},
+				{
+					"name": "eu_withdrawal_waiver_accepted_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "eu_withdrawal_waiver_text_version",
+					"type": "text"
+				}
+			],
+			"primary_key": "((checkout_session_id))",
+			"options": ""
+		},
+		{
+			"name": "payments_by_payment_intent",
+			"columns": [
+				{
+					"name": "payment_intent_id",
+					"type": "text"
+				},
+				{
+					"name": "checkout_session_id",
+					"type": "text"
+				}
+			],
+			"primary_key": "((payment_intent_id))",
+			"options": ""
+		},
+		{
+			"name": "payments_by_subscription",
+			"columns": [
+				{
+					"name": "subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "checkout_session_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "price_id",
+					"type": "text"
+				},
+				{
+					"name": "product_type",
+					"type": "text"
+				}
+			],
+			"primary_key": "((subscription_id))",
+			"options": ""
+		},
+		{
+			"name": "payments_by_user",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "checkout_session_id",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), created_at)",
+			"options": "CLUSTERING ORDER BY (created_at DESC)"
+		},
+		{
+			"name": "phone_lookup_cache",
+			"columns": [
+				{
+					"name": "phone",
+					"type": "text"
+				},
+				{
+					"name": "looked_up_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "valid",
+					"type": "boolean"
+				},
+				{
+					"name": "line_type",
+					"type": "text"
+				},
+				{
+					"name": "country_code",
+					"type": "text"
+				},
+				{
+					"name": "carrier_name",
+					"type": "text"
+				},
+				{
+					"name": "sms_pumping_risk_score",
+					"type": "int"
+				}
+			],
+			"primary_key": "(phone)",
+			"options": "default_time_to_live = 604800 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '6'}"
+		},
+		{
+			"name": "phone_tokens",
+			"columns": [
+				{
+					"name": "token_",
+					"type": "text"
+				},
+				{
+					"name": "phone",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(token_)",
+			"options": "default_time_to_live = 2592000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "phone_verification_attempts",
+			"columns": [
+				{
+					"name": "attempt_id",
+					"type": "uuid"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "phone",
+					"type": "text"
+				},
+				{
+					"name": "country_code",
+					"type": "text"
+				},
+				{
+					"name": "line_type",
+					"type": "text"
+				},
+				{
+					"name": "carrier_name",
+					"type": "text"
+				},
+				{
+					"name": "sms_pumping_risk_score",
+					"type": "int"
+				},
+				{
+					"name": "verdict",
+					"type": "text"
+				},
+				{
+					"name": "reject_reason",
+					"type": "text"
+				},
+				{
+					"name": "lookup_cache_hit",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "(attempt_id)",
+			"options": "default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "pinned_dms",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "sort_order",
+					"type": "int"
+				}
+			],
+			"primary_key": "((user_id), channel_id)",
+			"options": ""
+		},
+		{
+			"name": "private_channels",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "is_gdm",
+					"type": "boolean"
+				},
+				{
+					"name": "channel_type",
+					"type": "int"
+				},
+				{
+					"name": "channel_name",
+					"type": "text"
+				},
+				{
+					"name": "channel_icon_hash",
+					"type": "text"
+				},
+				{
+					"name": "channel_owner_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_recipient_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "channel_last_message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_last_pin_timestamp",
+					"type": "timestamp"
+				},
+				{
+					"name": "channel_nicks",
+					"type": "map<text, text>"
+				},
+				{
+					"name": "channel_rate_limit_per_user",
+					"type": "int"
+				},
+				{
+					"name": "channel_nsfw",
+					"type": "boolean"
+				},
+				{
+					"name": "channel_version",
+					"type": "int"
+				},
+				{
+					"name": "snapshot_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((user_id), channel_id)",
+			"options": ""
+		},
+		{
+			"name": "push_subscriptions",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "auth_session_id_hash",
+					"type": "text"
+				},
+				{
+					"name": "endpoint",
+					"type": "text"
+				},
+				{
+					"name": "p256dh_key",
+					"type": "text"
+				},
+				{
+					"name": "auth_key",
+					"type": "text"
+				},
+				{
+					"name": "user_agent",
+					"type": "text"
+				},
+				{
+					"name": "platform",
+					"type": "text"
+				},
+				{
+					"name": "app_id",
+					"type": "text"
+				},
+				{
+					"name": "provider_environment",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), subscription_id)",
+			"options": "default_time_to_live = 7776000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '3'}"
+		},
+		{
+			"name": "read_states",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "mention_count",
+					"type": "int"
+				},
+				{
+					"name": "last_pin_timestamp",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((user_id), channel_id)",
+			"options": ""
+		},
+		{
+			"name": "recent_mentions",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "is_everyone",
+					"type": "boolean"
+				},
+				{
+					"name": "is_role",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((user_id), message_id)",
+			"options": "CLUSTERING ORDER BY (message_id DESC) AND default_time_to_live = 604800 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '6'}"
+		},
+		{
+			"name": "recent_mentions_by_guild",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "is_everyone",
+					"type": "boolean"
+				},
+				{
+					"name": "is_role",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((user_id, guild_id), message_id)",
+			"options": "CLUSTERING ORDER BY (message_id DESC) AND default_time_to_live = 604800 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'HOURS', 'compaction_window_size': '6'}"
+		},
+		{
+			"name": "registration_events_by_email_domain",
+			"columns": [
+				{
+					"name": "email_domain",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				},
+				{
+					"name": "locale",
+					"type": "text"
+				}
+			],
+			"primary_key": "(email_domain, created_at, user_id)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, user_id ASC) AND default_time_to_live = 2592000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "registration_events_by_ip",
+			"columns": [
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				},
+				{
+					"name": "email_domain",
+					"type": "text"
+				},
+				{
+					"name": "locale",
+					"type": "text"
+				}
+			],
+			"primary_key": "(ip, created_at, user_id)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, user_id ASC) AND default_time_to_live = 2592000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "registration_events_by_plus_address_base",
+			"columns": [
+				{
+					"name": "plus_address_base",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				},
+				{
+					"name": "locale",
+					"type": "text"
+				}
+			],
+			"primary_key": "(plus_address_base, created_at, user_id)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, user_id ASC) AND default_time_to_live = 2592000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "registration_events_by_subnet",
+			"columns": [
+				{
+					"name": "subnet",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				},
+				{
+					"name": "email_domain",
+					"type": "text"
+				},
+				{
+					"name": "locale",
+					"type": "text"
+				}
+			],
+			"primary_key": "(subnet, created_at, user_id)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, user_id ASC) AND default_time_to_live = 2592000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '1'}"
+		},
+		{
+			"name": "relationships",
+			"columns": [
+				{
+					"name": "source_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "target_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "type",
+					"type": "int"
+				},
+				{
+					"name": "nickname",
+					"type": "text"
+				},
+				{
+					"name": "since",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "share_voice_activity",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((source_user_id), target_user_id, type)",
+			"options": ""
+		},
+		{
+			"name": "relationships_by_target",
+			"columns": [
+				{
+					"name": "target_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "source_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "type",
+					"type": "int"
+				},
+				{
+					"name": "nickname",
+					"type": "text"
+				},
+				{
+					"name": "since",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "share_voice_activity",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((target_user_id), source_user_id, type)",
+			"options": "CLUSTERING ORDER BY (source_user_id ASC, type ASC)"
+		},
+		{
+			"name": "risk_assessments",
+			"columns": [
+				{
+					"name": "assessment_id",
+					"type": "uuid"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				},
+				{
+					"name": "locale",
+					"type": "text"
+				},
+				{
+					"name": "risk_level",
+					"type": "text"
+				},
+				{
+					"name": "risk_score",
+					"type": "int"
+				},
+				{
+					"name": "suspicious",
+					"type": "boolean"
+				},
+				{
+					"name": "method",
+					"type": "text"
+				},
+				{
+					"name": "recommended_action",
+					"type": "text"
+				},
+				{
+					"name": "reasoning",
+					"type": "text"
+				},
+				{
+					"name": "signals_json",
+					"type": "text"
+				},
+				{
+					"name": "model_used",
+					"type": "text"
+				}
+			],
+			"primary_key": "(assessment_id)",
+			"options": ""
+		},
+		{
+			"name": "risk_assessments_by_user",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "assessment_id",
+					"type": "uuid"
+				},
+				{
+					"name": "risk_level",
+					"type": "text"
+				},
+				{
+					"name": "risk_score",
+					"type": "int"
+				}
+			],
+			"primary_key": "(user_id, created_at)",
+			"options": "CLUSTERING ORDER BY (created_at DESC)"
+		},
+		{
+			"name": "risk_outcomes_by_asn",
+			"columns": [
+				{
+					"name": "asn",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "outcome_code",
+					"type": "text"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				}
+			],
+			"primary_key": "(asn, created_at, user_id, outcome_code)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, user_id ASC, outcome_code ASC) AND default_time_to_live = 15552000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '7'}"
+		},
+		{
+			"name": "risk_outcomes_by_email_domain",
+			"columns": [
+				{
+					"name": "email_domain",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "outcome_code",
+					"type": "text"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				}
+			],
+			"primary_key": "(email_domain, created_at, user_id, outcome_code)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, user_id ASC, outcome_code ASC) AND default_time_to_live = 15552000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '7'}"
+		},
+		{
+			"name": "risk_outcomes_by_ip",
+			"columns": [
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "outcome_code",
+					"type": "text"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				}
+			],
+			"primary_key": "(ip, created_at, user_id, outcome_code)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, user_id ASC, outcome_code ASC) AND default_time_to_live = 15552000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '7'}"
+		},
+		{
+			"name": "risk_outcomes_by_subnet",
+			"columns": [
+				{
+					"name": "subnet",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "outcome_code",
+					"type": "text"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				}
+			],
+			"primary_key": "(subnet, created_at, user_id, outcome_code)",
+			"options": "CLUSTERING ORDER BY (created_at DESC, user_id ASC, outcome_code ASC) AND default_time_to_live = 15552000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '7'}"
+		},
+		{
+			"name": "saved_messages",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "saved_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((user_id), message_id)",
+			"options": "CLUSTERING ORDER BY (message_id DESC)"
+		},
+		{
+			"name": "scheduled_messages",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "scheduled_message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "payload",
+					"type": "text"
+				},
+				{
+					"name": "scheduled_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "scheduled_local_at",
+					"type": "text"
+				},
+				{
+					"name": "timezone",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "status_reason",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "invalidated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((user_id), scheduled_message_id)",
+			"options": "CLUSTERING ORDER BY (scheduled_message_id DESC)"
+		},
+		{
+			"name": "suspicious_email_domains",
+			"columns": [
+				{
+					"name": "domain",
+					"type": "text"
+				}
+			],
+			"primary_key": "(domain)",
+			"options": ""
+		},
+		{
+			"name": "suspicious_ips",
+			"columns": [
+				{
+					"name": "ip",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "expires_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "source",
+					"type": "text"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "source_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "deletion_reason_code",
+					"type": "int"
+				},
+				{
+					"name": "provider_name",
+					"type": "text"
+				},
+				{
+					"name": "asn",
+					"type": "int"
+				},
+				{
+					"name": "asn_name",
+					"type": "text"
+				},
+				{
+					"name": "asn_type",
+					"type": "text"
+				},
+				{
+					"name": "risk_note",
+					"type": "text"
+				}
+			],
+			"primary_key": "(ip)",
+			"options": "default_time_to_live = 15552000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '7'}"
+		},
+		{
+			"name": "pneumatic_post_deliveries",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "dispatch_key",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "claimed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "sent_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_id",
+					"type": "bigint"
+				},
+				{
+					"name": "locale",
+					"type": "text"
+				},
+				{
+					"name": "error_message",
+					"type": "text"
+				}
+			],
+			"primary_key": "((user_id), dispatch_key)",
+			"options": "CLUSTERING ORDER BY (dispatch_key ASC)"
+		},
+		{
+			"name": "user_connections",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "connection_type",
+					"type": "text"
+				},
+				{
+					"name": "connection_id",
+					"type": "text"
+				},
+				{
+					"name": "identifier",
+					"type": "text"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "verified",
+					"type": "boolean"
+				},
+				{
+					"name": "visibility_flags",
+					"type": "int"
+				},
+				{
+					"name": "sort_order",
+					"type": "int"
+				},
+				{
+					"name": "verification_token",
+					"type": "text"
+				},
+				{
+					"name": "verified_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_verified_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((user_id), connection_type, connection_id)",
+			"options": "CLUSTERING ORDER BY (connection_type ASC, connection_id DESC)"
+		},
+		{
+			"name": "user_contact_change_logs",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "event_id",
+					"type": "timeuuid"
+				},
+				{
+					"name": "field",
+					"type": "text"
+				},
+				{
+					"name": "old_value",
+					"type": "text"
+				},
+				{
+					"name": "new_value",
+					"type": "text"
+				},
+				{
+					"name": "reason",
+					"type": "text"
+				},
+				{
+					"name": "actor_user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "event_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((user_id), event_id)",
+			"options": "CLUSTERING ORDER BY (event_id DESC)"
+		},
+		{
+			"name": "user_country_history",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "country",
+					"type": "text"
+				},
+				{
+					"name": "first_seen_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_seen_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(user_id, country)",
+			"options": "default_time_to_live = 31536000 AND gc_grace_seconds = 864000 AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': '14'}"
+		},
+		{
+			"name": "user_dm_history",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((user_id), channel_id)",
+			"options": ""
+		},
+		{
+			"name": "user_email_owners",
+			"columns": [
+				{
+					"name": "email_lower",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "claimed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "claimed",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "(email_lower)",
+			"options": ""
+		},
+		{
+			"name": "user_sso_identities",
+			"columns": [
+				{
+					"name": "provider_id",
+					"type": "text"
+				},
+				{
+					"name": "subject",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "claimed_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((provider_id), subject)",
+			"options": ""
+		},
+		{
+			"name": "user_entrance_sound",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "sound_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "hash",
+					"type": "text"
+				},
+				{
+					"name": "extension",
+					"type": "text"
+				},
+				{
+					"name": "content_type",
+					"type": "text"
+				},
+				{
+					"name": "duration_ms",
+					"type": "int"
+				},
+				{
+					"name": "size_bytes",
+					"type": "int"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((user_id), sound_id)",
+			"options": "CLUSTERING ORDER BY (sound_id DESC)"
+		},
+		{
+			"name": "user_entrance_sound_selection",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "scope_id",
+					"type": "text"
+				},
+				{
+					"name": "sound_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((user_id), scope_id)",
+			"options": ""
+		},
+		{
+			"name": "user_guild_settings",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "message_notifications",
+					"type": "int"
+				},
+				{
+					"name": "muted",
+					"type": "boolean"
+				},
+				{
+					"name": "mute_config",
+					"type": "frozen<mute_config>"
+				},
+				{
+					"name": "mobile_push",
+					"type": "boolean"
+				},
+				{
+					"name": "suppress_everyone",
+					"type": "boolean"
+				},
+				{
+					"name": "suppress_roles",
+					"type": "boolean"
+				},
+				{
+					"name": "hide_muted_channels",
+					"type": "boolean"
+				},
+				{
+					"name": "channel_overrides",
+					"type": "frozen<map<bigint, channel_override>>"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "unread_badges",
+					"type": "int"
+				}
+			],
+			"primary_key": "((user_id), guild_id)",
+			"options": ""
+		},
+		{
+			"name": "user_harvests",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "harvest_id",
+					"type": "bigint"
+				},
+				{
+					"name": "requested_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "started_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "completed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "failed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "storage_key",
+					"type": "text"
+				},
+				{
+					"name": "file_size",
+					"type": "bigint"
+				},
+				{
+					"name": "progress_percent",
+					"type": "int"
+				},
+				{
+					"name": "progress_step",
+					"type": "text"
+				},
+				{
+					"name": "error_message",
+					"type": "text"
+				},
+				{
+					"name": "download_url_expires_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((user_id), harvest_id)",
+			"options": "CLUSTERING ORDER BY (harvest_id DESC)"
+		},
+		{
+			"name": "user_settings",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "locale",
+					"type": "text"
+				},
+				{
+					"name": "theme",
+					"type": "text"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "custom_status",
+					"type": "frozen<custom_status>"
+				},
+				{
+					"name": "developer_mode",
+					"type": "boolean"
+				},
+				{
+					"name": "message_display_compact",
+					"type": "boolean"
+				},
+				{
+					"name": "animate_emoji",
+					"type": "boolean"
+				},
+				{
+					"name": "animate_stickers",
+					"type": "int"
+				},
+				{
+					"name": "gif_auto_play",
+					"type": "boolean"
+				},
+				{
+					"name": "render_embeds",
+					"type": "boolean"
+				},
+				{
+					"name": "render_reactions",
+					"type": "boolean"
+				},
+				{
+					"name": "render_spoilers",
+					"type": "int"
+				},
+				{
+					"name": "inline_attachment_media",
+					"type": "boolean"
+				},
+				{
+					"name": "inline_embed_media",
+					"type": "boolean"
+				},
+				{
+					"name": "explicit_content_filter",
+					"type": "int"
+				},
+				{
+					"name": "friend_source_flags",
+					"type": "int"
+				},
+				{
+					"name": "default_guilds_restricted",
+					"type": "boolean"
+				},
+				{
+					"name": "restricted_guilds",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "guild_positions",
+					"type": "list<bigint>"
+				},
+				{
+					"name": "guild_folders",
+					"type": "frozen<list<guild_folder>>"
+				},
+				{
+					"name": "afk_timeout",
+					"type": "int"
+				},
+				{
+					"name": "time_format",
+					"type": "int"
+				},
+				{
+					"name": "incoming_call_flags",
+					"type": "int"
+				},
+				{
+					"name": "group_dm_add_permission_flags",
+					"type": "int"
+				},
+				{
+					"name": "status_resets_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "status_resets_to",
+					"type": "text"
+				},
+				{
+					"name": "bot_default_guilds_restricted",
+					"type": "boolean"
+				},
+				{
+					"name": "bot_restricted_guilds",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "trusted_domains",
+					"type": "set<text>"
+				},
+				{
+					"name": "default_hide_muted_channels",
+					"type": "boolean"
+				},
+				{
+					"name": "sensitive_content_friend_dm_filter",
+					"type": "int"
+				},
+				{
+					"name": "sensitive_content_non_friend_dm_filter",
+					"type": "int"
+				},
+				{
+					"name": "sensitive_content_guild_filter",
+					"type": "int"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "suppress_unprivileged_self_mentions",
+					"type": "boolean"
+				},
+				{
+					"name": "suppress_unprivileged_self_mentions_bypass_user_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "staff_dm_access_user_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "synced_preferences",
+					"type": "text"
+				},
+				{
+					"name": "profile_privacy",
+					"type": "int"
+				},
+				{
+					"name": "default_share_voice_activity",
+					"type": "boolean"
+				}
+			],
+			"primary_key": "((user_id))",
+			"options": ""
+		},
+		{
+			"name": "users",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "username",
+					"type": "text"
+				},
+				{
+					"name": "discriminator",
+					"type": "int"
+				},
+				{
+					"name": "bot",
+					"type": "boolean"
+				},
+				{
+					"name": "system",
+					"type": "boolean"
+				},
+				{
+					"name": "email",
+					"type": "text"
+				},
+				{
+					"name": "email_verified",
+					"type": "boolean"
+				},
+				{
+					"name": "email_bounced",
+					"type": "boolean"
+				},
+				{
+					"name": "password_hash",
+					"type": "text"
+				},
+				{
+					"name": "totp_secret",
+					"type": "text"
+				},
+				{
+					"name": "authenticator_types",
+					"type": "set<int>"
+				},
+				{
+					"name": "avatar_hash",
+					"type": "text"
+				},
+				{
+					"name": "avatar_color",
+					"type": "int"
+				},
+				{
+					"name": "banner_hash",
+					"type": "text"
+				},
+				{
+					"name": "banner_color",
+					"type": "int"
+				},
+				{
+					"name": "bio",
+					"type": "text"
+				},
+				{
+					"name": "accent_color",
+					"type": "int"
+				},
+				{
+					"name": "date_of_birth",
+					"type": "date"
+				},
+				{
+					"name": "locale",
+					"type": "text"
+				},
+				{
+					"name": "flags",
+					"type": "bigint"
+				},
+				{
+					"name": "premium_flags",
+					"type": "int"
+				},
+				{
+					"name": "global_name",
+					"type": "text"
+				},
+				{
+					"name": "pronouns",
+					"type": "text"
+				},
+				{
+					"name": "traits",
+					"type": "set<text>"
+				},
+				{
+					"name": "premium_type",
+					"type": "int"
+				},
+				{
+					"name": "premium_since",
+					"type": "timestamp"
+				},
+				{
+					"name": "premium_until",
+					"type": "timestamp"
+				},
+				{
+					"name": "premium_gift_extension_ends_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "premium_lifetime_sequence",
+					"type": "int"
+				},
+				{
+					"name": "premium_billing_cycle",
+					"type": "text"
+				},
+				{
+					"name": "premium_will_cancel",
+					"type": "boolean"
+				},
+				{
+					"name": "premium_onboarding_dismissed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "has_ever_purchased",
+					"type": "boolean"
+				},
+				{
+					"name": "stripe_subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "stripe_customer_id",
+					"type": "text"
+				},
+				{
+					"name": "gift_inventory_server_seq",
+					"type": "int"
+				},
+				{
+					"name": "gift_inventory_client_seq",
+					"type": "int"
+				},
+				{
+					"name": "suspicious_activity_flags",
+					"type": "int"
+				},
+				{
+					"name": "terms_agreed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "privacy_agreed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_active_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_active_ip",
+					"type": "text"
+				},
+				{
+					"name": "temp_banned_until",
+					"type": "timestamp"
+				},
+				{
+					"name": "pending_deletion_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "pending_bulk_message_deletion_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "pending_bulk_message_deletion_channel_count",
+					"type": "int"
+				},
+				{
+					"name": "pending_bulk_message_deletion_message_count",
+					"type": "int"
+				},
+				{
+					"name": "password_last_changed_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "acls",
+					"type": "set<text>"
+				},
+				{
+					"name": "deletion_reason_code",
+					"type": "int"
+				},
+				{
+					"name": "deletion_public_reason",
+					"type": "text"
+				},
+				{
+					"name": "deletion_audit_log_reason",
+					"type": "text"
+				},
+				{
+					"name": "first_refund_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				},
+				{
+					"name": "has_verified_phone",
+					"type": "boolean"
+				},
+				{
+					"name": "premium_grace_ends_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "mention_flags",
+					"type": "int"
+				},
+				{
+					"name": "last_voice_activity_sharing_change_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "timezone",
+					"type": "text"
+				},
+				{
+					"name": "timezone_privacy_flags",
+					"type": "int"
+				}
+			],
+			"primary_key": "((user_id))",
+			"options": ""
+		},
+		{
+			"name": "users_by_email",
+			"columns": [
+				{
+					"name": "email_lower",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((email_lower), user_id)",
+			"options": ""
+		},
+		{
+			"name": "users_by_last_active_ip",
+			"columns": [
+				{
+					"name": "last_active_ip",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "last_active_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((last_active_ip), user_id)",
+			"options": ""
+		},
+		{
+			"name": "users_by_last_active_ip_trust_key_v1",
+			"columns": [
+				{
+					"name": "last_active_ip_trust_key",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "last_active_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "((last_active_ip_trust_key), user_id)",
+			"options": ""
+		},
+		{
+			"name": "users_by_stripe_customer_id",
+			"columns": [
+				{
+					"name": "stripe_customer_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((stripe_customer_id), user_id)",
+			"options": ""
+		},
+		{
+			"name": "users_by_stripe_subscription_id",
+			"columns": [
+				{
+					"name": "stripe_subscription_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((stripe_subscription_id), user_id)",
+			"options": ""
+		},
+		{
+			"name": "users_by_username",
+			"columns": [
+				{
+					"name": "username",
+					"type": "text"
+				},
+				{
+					"name": "discriminator",
+					"type": "int"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((username), discriminator, user_id)",
+			"options": ""
+		},
+		{
+			"name": "users_pending_deletion",
+			"columns": [
+				{
+					"name": "deletion_date",
+					"type": "date"
+				},
+				{
+					"name": "pending_deletion_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "deletion_reason_code",
+					"type": "int"
+				}
+			],
+			"primary_key": "((deletion_date), pending_deletion_at, user_id)",
+			"options": "CLUSTERING ORDER BY (pending_deletion_at ASC, user_id ASC)"
+		},
+		{
+			"name": "visionary_slots",
+			"columns": [
+				{
+					"name": "slot_index",
+					"type": "int"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((slot_index))",
+			"options": ""
+		},
+		{
+			"name": "voice_regions",
+			"columns": [
+				{
+					"name": "id",
+					"type": "text"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "emoji",
+					"type": "text"
+				},
+				{
+					"name": "latitude",
+					"type": "double"
+				},
+				{
+					"name": "longitude",
+					"type": "double"
+				},
+				{
+					"name": "is_default",
+					"type": "boolean"
+				},
+				{
+					"name": "vip_only",
+					"type": "boolean"
+				},
+				{
+					"name": "required_guild_features",
+					"type": "set<text>"
+				},
+				{
+					"name": "allowed_guild_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "allowed_user_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				}
+			],
+			"primary_key": "(id)",
+			"options": ""
+		},
+		{
+			"name": "voice_servers",
+			"columns": [
+				{
+					"name": "region_id",
+					"type": "text"
+				},
+				{
+					"name": "server_id",
+					"type": "text"
+				},
+				{
+					"name": "endpoint",
+					"type": "text"
+				},
+				{
+					"name": "api_key",
+					"type": "text"
+				},
+				{
+					"name": "api_secret",
+					"type": "text"
+				},
+				{
+					"name": "is_active",
+					"type": "boolean"
+				},
+				{
+					"name": "vip_only",
+					"type": "boolean"
+				},
+				{
+					"name": "required_guild_features",
+					"type": "set<text>"
+				},
+				{
+					"name": "allowed_guild_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "allowed_user_ids",
+					"type": "set<bigint>"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "updated_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "latitude",
+					"type": "double"
+				},
+				{
+					"name": "longitude",
+					"type": "double"
+				}
+			],
+			"primary_key": "((region_id), server_id)",
+			"options": ""
+		},
+		{
+			"name": "webauthn_credential_lookup",
+			"columns": [
+				{
+					"name": "credential_id",
+					"type": "text"
+				},
+				{
+					"name": "user_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "(credential_id)",
+			"options": ""
+		},
+		{
+			"name": "webauthn_credentials",
+			"columns": [
+				{
+					"name": "user_id",
+					"type": "bigint"
+				},
+				{
+					"name": "credential_id",
+					"type": "text"
+				},
+				{
+					"name": "public_key",
+					"type": "blob"
+				},
+				{
+					"name": "counter",
+					"type": "bigint"
+				},
+				{
+					"name": "transports",
+					"type": "set<text>"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "last_used_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((user_id), credential_id)",
+			"options": ""
+		},
+		{
+			"name": "webhooks",
+			"columns": [
+				{
+					"name": "webhook_id",
+					"type": "bigint"
+				},
+				{
+					"name": "webhook_token",
+					"type": "text"
+				},
+				{
+					"name": "type",
+					"type": "int"
+				},
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "creator_id",
+					"type": "bigint"
+				},
+				{
+					"name": "name",
+					"type": "text"
+				},
+				{
+					"name": "avatar_hash",
+					"type": "text"
+				},
+				{
+					"name": "version",
+					"type": "int"
+				}
+			],
+			"primary_key": "((webhook_id), webhook_token)",
+			"options": ""
+		},
+		{
+			"name": "webhooks_by_channel_id",
+			"columns": [
+				{
+					"name": "channel_id",
+					"type": "bigint"
+				},
+				{
+					"name": "webhook_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((channel_id), webhook_id)",
+			"options": ""
+		},
+		{
+			"name": "webhooks_by_guild_id",
+			"columns": [
+				{
+					"name": "guild_id",
+					"type": "bigint"
+				},
+				{
+					"name": "webhook_id",
+					"type": "bigint"
+				}
+			],
+			"primary_key": "((guild_id), webhook_id)",
+			"options": ""
+		},
+		{
+			"name": "gateway_hotpatch_events_by_build",
+			"columns": [
+				{
+					"name": "build_sha",
+					"type": "text"
+				},
+				{
+					"name": "event_id",
+					"type": "timeuuid"
+				},
+				{
+					"name": "schema_version",
+					"type": "int"
+				},
+				{
+					"name": "kind",
+					"type": "text"
+				},
+				{
+					"name": "created_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "created_by",
+					"type": "text"
+				},
+				{
+					"name": "signer_key_id",
+					"type": "text"
+				},
+				{
+					"name": "bundle_sha256",
+					"type": "blob"
+				},
+				{
+					"name": "signature",
+					"type": "blob"
+				},
+				{
+					"name": "bundle",
+					"type": "blob"
+				}
+			],
+			"primary_key": "((build_sha), event_id)",
+			"options": "CLUSTERING ORDER BY (event_id ASC)"
+		},
+		{
+			"name": "gateway_hotpatch_applied_by_node",
+			"columns": [
+				{
+					"name": "build_sha",
+					"type": "text"
+				},
+				{
+					"name": "node_name",
+					"type": "text"
+				},
+				{
+					"name": "event_id",
+					"type": "timeuuid"
+				},
+				{
+					"name": "applied_at",
+					"type": "timestamp"
+				},
+				{
+					"name": "module_count",
+					"type": "int"
+				},
+				{
+					"name": "bundle_sha256",
+					"type": "blob"
+				},
+				{
+					"name": "status",
+					"type": "text"
+				},
+				{
+					"name": "error",
+					"type": "text"
+				}
+			],
+			"primary_key": "((build_sha, node_name), event_id)",
+			"options": "CLUSTERING ORDER BY (event_id ASC)"
+		}
+	],
+	"indexes": [
+		{
+			"name": "billing_action_intents_by_status",
+			"table": "billing_action_intents",
+			"expression": "status"
+		}
+	]
+}

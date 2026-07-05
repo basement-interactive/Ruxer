@@ -1,0 +1,21 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.ignoreDeviceLink {
+	display: inline;
+	align-self: flex-start;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--text-link);
+	font: inherit;
+	font-size: 0.875rem;
+	line-height: 1.4;
+	text-align: left;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.ignoreDeviceLink:hover {
+	text-decoration: underline;
+}

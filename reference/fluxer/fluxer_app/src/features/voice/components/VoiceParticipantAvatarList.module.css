@@ -1,0 +1,135 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.stackAvatar {
+	border-radius: 624.9375rem;
+	transition:
+		box-shadow 120ms ease,
+		outline-color 120ms ease;
+	box-shadow: 0 0 0 0 transparent;
+}
+
+.stackAvatarSpeaking {
+	box-shadow: 0 0 0 0.1875rem var(--voice-status-success, var(--status-online));
+}
+
+.wrapContainer {
+	--voice-participant-avatar-size: 4rem;
+	--voice-participant-avatar-gap: 0.75rem;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	align-content: center;
+	justify-content: center;
+	column-gap: 0;
+	row-gap: var(--voice-participant-avatar-gap);
+	width: calc(100% + var(--voice-participant-avatar-gap));
+	max-width: calc(100% + var(--voice-participant-avatar-gap));
+	margin-inline: calc(var(--voice-participant-avatar-gap) / -2);
+	min-height: 0;
+}
+
+.wrapAvatarSlot {
+	width: calc(var(--voice-participant-avatar-size) + var(--voice-participant-avatar-gap));
+	height: var(--voice-participant-avatar-size);
+	flex: 0 0 calc(var(--voice-participant-avatar-size) + var(--voice-participant-avatar-gap));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	padding-inline: calc(var(--voice-participant-avatar-gap) / 2);
+	overflow: visible;
+	transform-origin: center;
+}
+
+.wrapAvatarSlotAnimated {
+	will-change: width, flex-basis;
+}
+
+.wrapAvatar {
+	width: var(--voice-participant-avatar-size);
+	height: var(--voice-participant-avatar-size);
+	flex: 0 0 var(--voice-participant-avatar-size);
+}
+
+.wrapAvatarAnimated {
+	will-change: opacity, transform;
+}
+
+.remainingCount {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	border: var(--avatar-outline, 0.125rem) solid var(--background-tertiary);
+	background: var(--background-tertiary);
+	color: var(--text-secondary);
+	font-size: var(--font-size-xxs, 0.625rem);
+	font-weight: 600;
+	width: var(--avatar-size);
+	height: var(--avatar-size);
+	grid-row: 1;
+	position: relative;
+	z-index: 1;
+	cursor: pointer;
+}
+
+.popoutContainer {
+	display: flex;
+	flex-direction: column;
+	min-width: 11.25rem;
+	max-width: 17.5rem;
+	max-height: 20rem;
+	background-color: var(--form-surface-background);
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 0.5rem;
+	box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.24);
+	overflow: hidden;
+}
+
+:global(.theme-light) .popoutContainer {
+	box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.14);
+}
+
+.popoutList {
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 0.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.popoutRow {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.375rem 0.5rem;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	background: transparent;
+	border: none;
+	width: 100%;
+	text-align: left;
+	transition: background-color 100ms ease;
+}
+
+.popoutRow:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.popoutRowAvatar {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.popoutRowName {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}

@@ -1,0 +1,69 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.neko {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 32px;
+	height: 32px;
+	background-repeat: no-repeat;
+	background-position: -96px -96px;
+	image-rendering: pixelated;
+	cursor: grab;
+	touch-action: none;
+	z-index: 1;
+	will-change: left, top;
+}
+
+.neko:active {
+	cursor: grabbing;
+}
+
+.heart {
+	position: absolute;
+	left: 50%;
+	top: -0.25rem;
+	color: #ff5c8a;
+	font-size: 0.75rem;
+	line-height: 1;
+	pointer-events: none;
+	user-select: none;
+	animation: nekoHeartFloat 1s ease-out forwards;
+}
+
+@keyframes nekoHeartFloat {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, 0) scale(0.6);
+	}
+	20% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translate(-50%, -1.5rem) scale(1.1);
+	}
+}
+
+:global(html.reduced-motion) .neko {
+	will-change: auto;
+}
+
+:global(html.reduced-motion) .heart {
+	animation: nekoHeartFade 0.8s ease-out forwards;
+}
+
+@keyframes nekoHeartFade {
+	0% {
+		opacity: 0;
+		transform: translateX(-50%);
+	}
+	20% {
+		opacity: 1;
+		transform: translateX(-50%);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(-50%);
+	}
+}

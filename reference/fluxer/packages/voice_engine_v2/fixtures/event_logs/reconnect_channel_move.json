@@ -1,0 +1,160 @@
+{
+	"name": "reconnect_channel_move",
+	"description": "A channel move writes the new gateway voice state, disconnects the old media session, then reconnects to the new room.",
+	"steps": [
+		{
+			"name": "connect first room",
+			"event": {
+				"type": "connection.connectRequested",
+				"options": {
+					"url": "wss://voice-one.example.test",
+					"token": "token-1"
+				}
+			},
+			"commands": [
+				{
+					"type": "connection.connect",
+					"operationId": 1,
+					"options": {
+						"url": "wss://voice-one.example.test",
+						"token": "token-1"
+					}
+				}
+			]
+		},
+		{
+			"name": "first room connected",
+			"event": {
+				"type": "connection.connectSucceeded",
+				"operationId": 1
+			},
+			"commands": []
+		},
+		{
+			"name": "old gateway channel observed",
+			"event": {
+				"type": "gateway.voiceStateUpdated",
+				"voiceState": {
+					"guildId": "guild-1",
+					"channelId": "channel-1",
+					"userId": "user-1",
+					"sessionId": "session-1",
+					"selfMute": false,
+					"selfDeaf": false,
+					"selfVideo": false,
+					"selfStream": false,
+					"suppress": false,
+					"requestToSpeakTimestamp": null
+				}
+			},
+			"commands": []
+		},
+		{
+			"name": "write moved gateway channel",
+			"event": {
+				"type": "gateway.voiceStateWriteRequested",
+				"options": {
+					"guildId": "guild-1",
+					"channelId": "channel-2",
+					"selfMute": false,
+					"selfDeaf": false
+				}
+			},
+			"commands": [
+				{
+					"type": "gateway.voiceState.write",
+					"operationId": 2,
+					"options": {
+						"guildId": "guild-1",
+						"channelId": "channel-2",
+						"selfMute": false,
+						"selfDeaf": false
+					}
+				}
+			]
+		},
+		{
+			"name": "moved gateway write succeeds",
+			"event": {
+				"type": "gateway.voiceStateWriteSucceeded",
+				"operationId": 2
+			},
+			"commands": []
+		},
+		{
+			"name": "new gateway channel observed",
+			"event": {
+				"type": "gateway.voiceStateUpdated",
+				"voiceState": {
+					"guildId": "guild-1",
+					"channelId": "channel-2",
+					"userId": "user-1",
+					"sessionId": "session-2",
+					"selfMute": false,
+					"selfDeaf": false,
+					"selfVideo": false,
+					"selfStream": false,
+					"suppress": false,
+					"requestToSpeakTimestamp": null
+				}
+			},
+			"commands": []
+		},
+		{
+			"name": "request second media connection",
+			"event": {
+				"type": "connection.connectRequested",
+				"options": {
+					"url": "wss://voice-two.example.test",
+					"token": "token-2"
+				}
+			},
+			"commands": [
+				{
+					"type": "connection.disconnect",
+					"operationId": 3,
+					"reason": "replaced"
+				}
+			]
+		},
+		{
+			"name": "old media connection disconnects",
+			"event": {
+				"type": "connection.disconnectSucceeded",
+				"operationId": 3
+			},
+			"commands": [
+				{
+					"type": "connection.connect",
+					"operationId": 4,
+					"options": {
+						"url": "wss://voice-two.example.test",
+						"token": "token-2"
+					}
+				}
+			]
+		},
+		{
+			"name": "second media connection succeeds",
+			"event": {
+				"type": "connection.connectSucceeded",
+				"operationId": 4
+			},
+			"commands": []
+		}
+	],
+	"expected": {
+		"nextOperationId": 5,
+		"connectionStatus": "connected",
+		"activeUrl": "wss://voice-two.example.test",
+		"desiredUrl": "wss://voice-two.example.test",
+		"gatewayChannelId": "channel-2",
+		"lifecycleTearingDown": false,
+		"operationStatuses": {
+			"1": "succeeded",
+			"2": "succeeded",
+			"3": "succeeded",
+			"4": "succeeded"
+		}
+	}
+}

@@ -1,0 +1,12 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.tooltip {
+	max-width: 20rem;
+}
+
+.text {
+	display: block;
+	white-space: pre-wrap;
+	hyphens: auto;
+	user-select: text;
+}

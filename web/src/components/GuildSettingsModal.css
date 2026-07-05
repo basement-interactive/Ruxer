@@ -1,0 +1,467 @@
+.gs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 410;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gs-modal {
+  width: min(900px, calc(100vw - 64px));
+  max-height: min(680px, calc(100vh - 64px));
+  background: var(--bg-panel);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-popout);
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  position: relative;
+}
+
+.gs-nav {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-3) 0;
+}
+.gs-nav-header {
+  padding: 0 var(--sp-3) var(--sp-3);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-bright);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gs-nav-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--sp-2) 0;
+}
+.gs-nav-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  color: var(--text-muted);
+  text-align: left;
+  font-size: var(--font-size-md);
+  position: relative;
+}
+.gs-nav-item:hover {
+  background: var(--bg-modifier-hover);
+  color: var(--text-bright);
+}
+.gs-nav-item.selected {
+  background: var(--bg-modifier-selected);
+  color: var(--text-bright);
+}
+.gs-nav-item.selected::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: var(--r-full);
+  background: var(--brand);
+}
+
+.gs-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg-panel);
+}
+.gs-close {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  z-index: 2;
+  color: var(--text-muted);
+  font-size: 18px;
+}
+.gs-close:hover {
+  color: var(--text-bright);
+}
+.gs-pane {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.gs-pane-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.gs-pane-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-bright);
+  margin: 0;
+}
+.gs-pane-help {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+.gs-link {
+  color: var(--brand);
+  text-decoration: none;
+}
+.gs-link:hover {
+  text-decoration: underline;
+}
+
+.gs-overview-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--bg-elevated);
+  border-radius: var(--r-sm);
+}
+.gs-overview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.gs-overview-name {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.gs-input {
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--r-sm);
+  color: var(--text-normal);
+  font-size: var(--font-size-md);
+}
+
+.gs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.gs-list-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--bg-elevated);
+}
+.gs-list-name {
+  flex: 1 1 auto;
+  color: var(--text-normal);
+  font-size: var(--font-size-md);
+}
+.gs-list-name.mono {
+  font-family: monospace;
+}
+.gs-list-reason {
+  flex-shrink: 0;
+  color: var(--text-faint);
+}
+.gs-list-action {
+  flex-shrink: 0;
+  padding: var(--sp-1) var(--sp-2);
+  color: var(--red);
+  font-size: var(--font-size-sm);
+  border-radius: var(--r-sm);
+}
+.gs-list-action:hover {
+  background: rgba(231, 130, 132, 0.15);
+}
+.gs-empty {
+  padding: var(--sp-3);
+  text-align: center;
+}
+
+.gs-submit {
+  align-self: flex-start;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+  border-radius: var(--r-sm);
+}
+.gs-submit:hover {
+  background: var(--brand-hover);
+}
+.gs-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gs-danger-zone {
+  margin-top: var(--sp-5);
+  padding: var(--sp-3);
+  border: 1px solid var(--red);
+  border-radius: var(--r-sm);
+}
+.gs-danger-title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--red);
+  margin-bottom: var(--sp-2);
+}
+.gs-danger-btn {
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--red);
+  color: #fff;
+  font-weight: 600;
+  border-radius: var(--r-sm);
+}
+.gs-danger-btn:hover {
+  opacity: 0.9;
+}
+.gs-danger-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.gs-confirm {
+  margin-top: var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.gs-confirm-row {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: center;
+}
+.gs-cancel-btn {
+  color: var(--text-muted);
+}
+/* Roles pane */
+.gs-role-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+/* Emoji pane */
+.gs-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+.gs-emoji-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--background-secondary, rgba(0, 0, 0, 0.2));
+}
+.gs-emoji-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.gs-emoji-name {
+  font-size: 12px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Audit log pane */
+.gs-audit-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--background-modifier-accent, rgba(255, 255, 255, 0.06));
+}
+.gs-audit-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.gs-audit-actor {
+  font-weight: 600;
+}
+.gs-audit-action {
+  color: var(--text-normal);
+}
+.gs-audit-reason {
+  font-style: italic;
+}
+.gs-audit-changes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.gs-audit-change {
+  padding: 0 6px;
+  border-radius: 4px;
+  background: var(--background-secondary, rgba(0, 0, 0, 0.2));
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+}
+
+/* Roles editor */
+.gs-roles-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gs-roles-split {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  margin-top: 12px;
+  min-height: 0;
+}
+.gs-roles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-right: 1px solid var(--background-modifier-accent, rgba(255, 255, 255, 0.06));
+  padding-right: 8px;
+  overflow-y: auto;
+}
+.gs-role-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  border: none;
+  color: var(--text-normal);
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+}
+.gs-role-item:hover {
+  background: var(--background-modifier-hover, rgba(255, 255, 255, 0.04));
+}
+.gs-role-item.selected {
+  background: var(--background-modifier-selected, rgba(255, 255, 255, 0.08));
+}
+.gs-role-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gs-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.gs-color-input {
+  width: 56px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  cursor: pointer;
+}
+.gs-perm-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 16px;
+}
+.gs-role-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Emoji pane actions */
+.gs-emoji-action {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1;
+}
+.gs-emoji-action:hover {
+  background: var(--background-modifier-hover, rgba(255, 255, 255, 0.06));
+  color: var(--text-normal);
+}
+.gs-emoji-action.danger:hover {
+  color: var(--status-danger, #f23f43);
+}
+
+/* Webhook create row */
+.gs-webhook-create {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 12px;
+  flex-wrap: wrap;
+}
+.gs-webhook-create .gs-input {
+  flex: 1 1 160px;
+}
+
+/* Member role management */
+.gs-member-row {
+  display: flex;
+  flex-direction: column;
+}
+.gs-member-rolecount {
+  margin-left: auto;
+  margin-right: 8px;
+}
+.gs-member-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 4px 10px;
+}
+.gs-member-role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: var(--background-secondary, rgba(0, 0, 0, 0.2));
+  font-size: 13px;
+  cursor: pointer;
+}
+.gs-member-role-chip input {
+  margin: 0;
+}
+
+/* Sticker preview (larger than emoji) */
+.gs-sticker-img {
+  width: 48px;
+  height: 48px;
+}

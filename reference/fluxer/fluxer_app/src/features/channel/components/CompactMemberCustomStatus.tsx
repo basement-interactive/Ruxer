@@ -1,0 +1,161 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import sharedStyles from '@app/features/app/components/shared/custom_status_display/CustomStatusDisplay.module.css';
+import {getEmojiURL as getUnicodeEmojiURL} from '@app/features/expressions/utils/EmojiUtils';
+import {usePresenceCustomStatus} from '@app/features/presence/hooks/usePresenceCustomStatus';
+import {useTextOverflow} from '@app/features/ui/hooks/useTextOverflow';
+import {Tooltip} from '@app/features/ui/tooltip/Tooltip';
+import type {CustomStatus} from '@app/features/user/state/CustomStatus';
+import {getCustomStatusText, isCustomStatusExpired, normalizeCustomStatus} from '@app/features/user/state/CustomStatus';
+import * as AvatarUtils from '@app/features/user/utils/AvatarUtils';
+import clsx from 'clsx';
+import {type ReactNode, useEffect, useMemo, useRef, useState} from 'react';
+
+interface CompactMemberCustomStatusProps {
+	className?: string;
+	customStatus?: CustomStatus | null;
+	userId?: string;
+	showText?: boolean;
+	deferMediaLoad?: boolean;
+}
+
+function sanitizeText(text: string): string {
+	return text.replace(/[\r\n]+/g, ' ').trim();
+}
+
+function getStatusExpiryDelay(status: CustomStatus | null): number | null {
+	if (!status?.expiresAt) {
+		return null;
+	}
+	const expiresAtMs = Date.parse(status.expiresAt);
+	if (Number.isNaN(expiresAtMs)) {
+		return null;
+	}
+	return Math.max(0, expiresAtMs - Date.now());
+}
+
+const loadedStatusMediaUrls = new Set<string>();
+
+function markStatusMediaLoaded(url: string): void {
+	loadedStatusMediaUrls.add(url);
+}
+
+function renderEmoji(status: CustomStatus, deferMediaLoad: boolean): ReactNode {
+	if (status.emojiId) {
+		const emojiUrl = AvatarUtils.getEmojiURL({id: status.emojiId, animated: false});
+		if (deferMediaLoad && !loadedStatusMediaUrls.has(emojiUrl)) {
+			return (
+				<span
+					className={sharedStyles.statusEmojiWrapper}
+					aria-hidden={true}
+					data-flx="channel.compact-member-custom-status.emoji-placeholder"
+				/>
+			);
+		}
+		return (
+			<img
+				src={emojiUrl}
+				alt={status.emojiName ?? undefined}
+				draggable={false}
+				className={sharedStyles.statusEmoji}
+				loading="lazy"
+				decoding="async"
+				onLoad={() => markStatusMediaLoaded(emojiUrl)}
+				data-flx="channel.compact-member-custom-status.emoji"
+			/>
+		);
+	}
+	if (!status.emojiName) {
+		return null;
+	}
+	const twemojiUrl = getUnicodeEmojiURL(status.emojiName);
+	if (!twemojiUrl) {
+		return null;
+	}
+	if (deferMediaLoad && !loadedStatusMediaUrls.has(twemojiUrl)) {
+		return (
+			<span
+				className={sharedStyles.statusEmojiWrapper}
+				aria-hidden={true}
+				data-flx="channel.compact-member-custom-status.unicode-emoji-placeholder"
+			/>
+		);
+	}
+	return (
+		<img
+			src={twemojiUrl}
+			alt={status.emojiName}
+			draggable={false}
+			className={sharedStyles.statusEmoji}
+			loading="lazy"
+			decoding="async"
+			onLoad={() => markStatusMediaLoaded(twemojiUrl)}
+			data-flx="channel.compact-member-custom-status.unicode-emoji"
+		/>
+	);
+}
+
+export function CompactMemberCustomStatus({
+	className,
+	customStatus,
+	userId,
+	showText = true,
+	deferMediaLoad = false,
+}: CompactMemberCustomStatusProps) {
+	const containerRef = useRef<HTMLDivElement>(null);
+	const shouldFetchFromPresence = customStatus === undefined && userId !== undefined;
+	const presenceStatus = usePresenceCustomStatus({
+		userId: userId ?? '',
+		enabled: shouldFetchFromPresence,
+	});
+	const status = shouldFetchFromPresence ? presenceStatus : (customStatus ?? null);
+	const [, setExpiryTick] = useState(0);
+	useEffect(() => {
+		const normalized = normalizeCustomStatus(status);
+		const delay = getStatusExpiryDelay(normalized);
+		if (delay == null) {
+			return;
+		}
+		const timer = window.setTimeout(() => setExpiryTick((tick) => tick + 1), delay);
+		return () => window.clearTimeout(timer);
+	}, [status]);
+	const normalized = useMemo(() => {
+		const nextStatus = normalizeCustomStatus(status);
+		if (!nextStatus || isCustomStatusExpired(nextStatus)) {
+			return null;
+		}
+		return nextStatus;
+	}, [status]);
+	const fullText = normalized ? getCustomStatusText(normalized) : null;
+	const isOverflowing = useTextOverflow(containerRef, {content: fullText, measureTextRange: true});
+	if (!normalized) {
+		return null;
+	}
+	const text = normalized.text ? sanitizeText(normalized.text) : null;
+	const emoji = renderEmoji(normalized, deferMediaLoad);
+	if (!emoji && (!showText || !text)) {
+		return null;
+	}
+	const content = (
+		<div
+			ref={containerRef}
+			className={clsx(sharedStyles.content, sharedStyles.singleLine, sharedStyles.constrained, className)}
+			data-flx="channel.compact-member-custom-status.content"
+		>
+			{emoji}
+			{showText && text && (
+				<span className={sharedStyles.truncatedText} data-flx="channel.compact-member-custom-status.text">
+					{text}
+				</span>
+			)}
+		</div>
+	);
+	if (fullText && isOverflowing) {
+		return (
+			<Tooltip text={fullText} data-flx="channel.compact-member-custom-status.tooltip">
+				{content}
+			</Tooltip>
+		);
+	}
+	return content;
+}

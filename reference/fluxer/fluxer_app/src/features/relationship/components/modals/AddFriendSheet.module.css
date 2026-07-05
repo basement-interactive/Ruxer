@@ -1,0 +1,54 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.scroller {
+	flex: 1;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1rem;
+	padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
+}
+
+.description {
+	color: var(--text-primary-muted);
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+}
+
+.requestsSection {
+	margin-top: 1rem;
+}
+
+.requestsGroup {
+	margin-bottom: 1.5rem;
+}
+
+.requestsHeader {
+	margin-bottom: 0.75rem;
+	font-weight: 600;
+	font-size: 0.875rem;
+	color: var(--text-primary-muted);
+}
+
+.requestsList {
+	overflow: hidden;
+	border-radius: 0.75rem;
+	background: var(--background-tertiary);
+}
+
+.requestDivider {
+	margin: 0 1rem;
+	height: 0.0625rem;
+	background: var(--background-header-secondary);
+	opacity: 0.3;
+}

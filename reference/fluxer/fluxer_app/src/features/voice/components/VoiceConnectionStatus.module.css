@@ -1,0 +1,762 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.voiceConnectionContainer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-3);
+	margin: 0;
+	padding: var(--voice-connection-padding-y) var(--user-area-padding-x);
+	background-color: transparent;
+	border: none;
+	width: 100%;
+	min-width: 0;
+	flex-shrink: 0;
+}
+
+.statusRow {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-2);
+	min-width: 0;
+}
+
+.channelAvatarStack {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	flex-shrink: 1;
+	align-self: flex-start;
+	overflow: visible;
+}
+
+.signalIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 1.5rem;
+	width: 1.5rem;
+	color: var(--text-tertiary);
+	flex-shrink: 0;
+}
+
+.statusButton {
+	cursor: pointer;
+	border: none;
+	background: transparent;
+	padding: 0;
+	text-align: left;
+	font-weight: 600;
+	font-size: 0.875rem;
+	line-height: 1.125rem;
+	color: var(--text-primary);
+	user-select: none;
+	-webkit-user-select: none;
+	flex: 1;
+	min-width: 0;
+}
+
+.statusConnected {
+	color: var(--status-online);
+}
+
+.statusConnecting {
+	color: var(--status-idle);
+}
+
+.statusDisconnected {
+	color: var(--status-danger);
+}
+
+.controls {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-2);
+	flex-shrink: 0;
+}
+
+.controlButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 2rem;
+	width: 2rem;
+	background-color: transparent;
+	color: var(--control-button-normal-text);
+	border: none;
+	border-radius: var(--radius-md);
+	cursor: pointer;
+	position: relative;
+	padding: 0;
+	flex-shrink: 0;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.controlButton:hover {
+	background-color: color-mix(in srgb, var(--control-button-normal-text) 10%, transparent);
+	color: var(--control-button-hover-text);
+}
+
+.controlButton.selected {
+	background-color: var(--background-modifier-selected);
+	color: var(--surface-interactive-selected-color);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.controlButton.selected:hover {
+	background-color: color-mix(in srgb, var(--text-primary) 12%, transparent);
+	color: var(--surface-interactive-selected-color);
+}
+
+.icon {
+	height: 1.25rem;
+	width: 1.25rem;
+}
+
+.connectionInfo {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-2);
+}
+
+.channelSourceRow {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+}
+
+.channelSourceLink {
+	display: inline-flex;
+	align-items: center;
+	min-width: 0;
+	max-width: 100%;
+	border: none;
+	background: transparent;
+	padding: 0;
+	font-size: 0.75rem;
+	line-height: 1rem;
+	color: var(--text-secondary);
+	text-decoration: none;
+	text-decoration-color: currentColor;
+	cursor: pointer;
+}
+
+.channelSourceLink:visited {
+	color: var(--text-secondary);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.channelSourceLink:hover {
+	color: var(--text-secondary);
+	text-decoration: underline;
+	text-decoration-color: currentColor;
+}
+
+.channelSourceLink:active {
+	color: var(--text-secondary);
+}
+
+.channelSourceText {
+	display: inline-flex;
+	align-items: center;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: inherit;
+}
+
+.channelSourceChannel {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+	color: inherit;
+}
+
+.channelSourceSeparator {
+	margin: 0 0.125rem;
+	flex-shrink: 0;
+	color: inherit;
+}
+
+.channelSourceGuild {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: inherit;
+}
+
+.connectionIdRow {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-2);
+	min-width: 0;
+	font-size: 0.75rem;
+	line-height: 1rem;
+	color: var(--text-secondary);
+}
+
+.connectionIdValue {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+}
+
+.connectionIdValueText {
+	display: inline-block;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.connectionIdIcon {
+	height: 1rem;
+	width: 1rem;
+	color: var(--text-tertiary);
+	flex-shrink: 0;
+}
+
+.mediaSection {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: var(--spacing-1);
+}
+
+.mediaButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 2rem;
+	width: 100%;
+	background-color: color-mix(in srgb, var(--background-modifier-hover) 70%, transparent);
+	color: var(--control-button-normal-text);
+	border: 0.0625rem solid var(--background-modifier-hover);
+	border-radius: var(--radius-md);
+	cursor: pointer;
+	position: relative;
+	padding: 0;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.mediaButton:hover:not(:disabled),
+.mediaButton[data-context-menu-open='true']:not(:disabled) {
+	background-color: color-mix(in srgb, var(--control-button-normal-text) 10%, transparent);
+	color: var(--control-button-hover-text);
+	border-color: var(--background-modifier-selected);
+}
+
+.mediaButton:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.mediaButton.cameraActive,
+.mediaButton.screenShareActive {
+	background-color: color-mix(in srgb, var(--status-online) 15%, transparent);
+	color: var(--status-online);
+	border-color: color-mix(in srgb, var(--status-online) 30%, transparent);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.mediaButton.cameraActive:hover:not(:disabled),
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.mediaButton.screenShareActive:hover:not(:disabled),
+.mediaButton.cameraActive[data-context-menu-open='true']:not(:disabled),
+.mediaButton.screenShareActive[data-context-menu-open='true']:not(:disabled) {
+	background-color: color-mix(in srgb, var(--status-online) 20%, transparent);
+	color: var(--status-online);
+}
+
+.mediaIcon {
+	height: 1.25rem;
+	width: 1.25rem;
+}
+
+.popoutContainer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-3);
+	width: var(--layout-sidebar-width);
+	max-height: calc(100vh - 5rem);
+	box-sizing: border-box;
+	padding: var(--spacing-3);
+	background-color: var(--form-surface-background);
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 0.5rem;
+	color: var(--text-primary);
+	overflow: hidden;
+}
+
+.popoutBodyScroller {
+	max-height: calc(100vh - 5rem - 1.5rem - var(--spacing-3) - var(--spacing-3) - var(--spacing-3) - 0.125rem);
+}
+
+.popoutBodyContent {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-3);
+	min-width: 0;
+}
+
+.popoutHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--spacing-1);
+}
+
+.popoutTitle {
+	font-weight: 600;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.popoutCloseButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 1.5rem;
+	width: 1.5rem;
+	background-color: transparent;
+	color: var(--text-primary-muted);
+	border: none;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast);
+	padding: 0;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.popoutCloseButton:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.popoutStats {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-3);
+}
+
+.popoutStatsSection {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-2);
+	min-width: 0;
+}
+
+.popoutStatsSectionTitle {
+	font-weight: 700;
+	font-size: 0.6875rem;
+	line-height: 0.875rem;
+	color: var(--text-tertiary);
+	letter-spacing: 0;
+}
+
+.popoutStatsSectionRows {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-1);
+	min-width: 0;
+}
+
+.advancedStatsAccordion {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-2);
+	min-width: 0;
+	padding-top: var(--spacing-3);
+	border-top: 0.0625rem solid var(--background-modifier-accent);
+}
+
+.advancedStatsButton {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--spacing-2);
+	width: 100%;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--text-tertiary);
+	cursor: pointer;
+	text-align: left;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.advancedStatsButton:hover {
+	color: var(--text-secondary);
+}
+
+.advancedStatsButtonText {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 700;
+	font-size: 0.6875rem;
+	line-height: 0.875rem;
+	letter-spacing: 0;
+	color: inherit;
+}
+
+.advancedStatsCaret {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	color: inherit;
+}
+
+.advancedStatsContent {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.advancedStatsInner {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-3);
+	min-width: 0;
+	padding-top: var(--spacing-1);
+}
+
+.popoutStatRow {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--spacing-2);
+	min-width: 0;
+}
+
+.popoutStatLabel {
+	font-size: 0.75rem;
+	color: var(--text-secondary);
+	white-space: nowrap;
+	flex: 0 0 auto;
+}
+
+.popoutStatValue {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 600;
+	font-size: 0.75rem;
+	color: var(--text-primary);
+	margin-left: auto;
+	flex: 1 1 auto;
+	text-align: right;
+}
+
+.popoutStatTextValue {
+	display: block;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.deviceBadge {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-1);
+	min-width: 0;
+	justify-content: flex-end;
+	flex: 1 1 auto;
+}
+
+.deviceBadgeText {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 600;
+	font-size: 0.75rem;
+	color: var(--text-primary);
+}
+
+.endpointBadge {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-1);
+	min-width: 0;
+	justify-content: flex-end;
+	flex: 1 1 auto;
+	max-width: 100%;
+	cursor: pointer;
+	padding: 0.125rem 0.25rem;
+	border-radius: var(--radius-sm);
+}
+
+.endpointBadgeText {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 700;
+	font-size: 0.75rem;
+	color: var(--status-online);
+	min-width: 0;
+	max-width: 100%;
+	text-align: right;
+}
+
+.chartContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.chartSvg {
+	display: block;
+	overflow: visible;
+	width: 100%;
+}
+
+.gridLine {
+	stroke: currentColor;
+	stroke-width: 0.0625rem;
+}
+
+.gridLineHorizontal {
+	opacity: 0.3;
+}
+
+.gridLineVertical {
+	stroke-width: 0.0625rem;
+}
+
+.gridText {
+	fill: var(--text-tertiary);
+	font-size: 0.625rem;
+	text-anchor: end;
+	dominant-baseline: middle;
+}
+
+.chartLine {
+	stroke: currentColor;
+	stroke-width: 0.125rem;
+	fill: none;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.chartPoint {
+	fill: currentColor;
+}
+
+.textGreen {
+	color: var(--voice-status-success, var(--status-online));
+}
+
+.textBackgroundModifierHover {
+	color: var(--background-modifier-hover);
+}
+
+.textTextTertiary {
+	fill: var(--text-tertiary);
+}
+
+.flexShrink0 {
+	flex-shrink: 0;
+}
+
+.iconSmall {
+	height: 1rem;
+	width: 1rem;
+}
+
+.deviceIcon {
+	height: 0.875rem;
+	width: 0.875rem;
+	flex-shrink: 0;
+}
+
+.lockIcon {
+	height: 0.75rem;
+	width: 0.75rem;
+	flex-shrink: 0;
+	color: var(--status-online);
+}
+
+.regionSelectorContainer {
+	position: relative;
+	margin-left: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+.regionButton {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-1);
+	padding: 0.25rem 0.5rem;
+	background-color: var(--background-secondary);
+	border: 0.0625rem solid var(--background-modifier-hover);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	transition:
+		background-color var(--transition-fast),
+		border-color var(--transition-fast);
+	font-size: 0.75rem;
+	color: var(--text-primary);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.regionButton:hover:not(:disabled) {
+	background-color: var(--background-modifier-hover);
+	border-color: var(--background-modifier-selected);
+}
+
+.regionButton:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.regionIcon {
+	height: 0.875rem;
+	width: 0.875rem;
+	color: var(--text-secondary);
+	flex-shrink: 0;
+}
+
+.regionButtonText {
+	font-weight: 600;
+	color: var(--text-primary);
+	white-space: nowrap;
+}
+
+.regionCaret {
+	height: 0.75rem;
+	width: 0.75rem;
+	color: var(--text-secondary);
+	flex-shrink: 0;
+	transition: transform var(--transition-fast);
+}
+
+.regionCaretOpen {
+	transform: rotate(180deg);
+}
+
+.regionDropdown {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	margin-top: 0.25rem;
+	min-width: 10rem;
+	max-height: 12.5rem;
+	overflow-y: auto;
+	background-color: var(--background-tertiary);
+	border: 0.0625rem solid var(--background-modifier-hover);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	z-index: 100;
+	display: flex;
+	flex-direction: column;
+	padding: 0.25rem;
+}
+
+.regionOption {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-2);
+	padding: 0.5rem 0.75rem;
+	background-color: transparent;
+	border: none;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	transition: background-color var(--transition-fast);
+	font-size: 0.875rem;
+	color: var(--text-primary);
+	text-align: left;
+	width: 100%;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.regionOption:hover:not(:disabled) {
+	background-color: var(--background-modifier-hover);
+}
+
+.regionOption:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.regionOptionSelected {
+	background-color: var(--background-modifier-selected);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.regionOptionSelected:hover:not(:disabled) {
+	background-color: color-mix(in srgb, var(--background-modifier-selected) 80%, var(--background-modifier-hover));
+}
+
+.regionEmoji {
+	font-size: 1rem;
+	flex-shrink: 0;
+}
+
+.regionName {
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+.nsModalContent {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-4);
+}
+
+.nsMainToggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--spacing-3);
+}
+
+.nsToggleLabel {
+	font-weight: 600;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.nsOptions {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-4);
+	padding-top: var(--spacing-3);
+	border-top: 0.0625rem solid var(--background-modifier-hover);
+}
+
+.nsSliderSection {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-2);
+}
+
+.nsSliderLabel {
+	min-width: 0;
+	font-weight: 500;
+	font-size: 0.8125rem;
+	color: var(--text-secondary);
+}
+
+.nsSliderTitleRow {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-2);
+	min-width: 0;
+	min-height: 1.5rem;
+}
+
+.nsSliderTitleRow .nsSliderLabel {
+	flex: 1;
+}

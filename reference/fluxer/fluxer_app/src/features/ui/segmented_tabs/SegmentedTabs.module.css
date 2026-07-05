@@ -1,0 +1,51 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	padding: 0.25rem 1rem 0.5rem;
+}
+
+.tabList {
+	position: relative;
+	display: flex;
+	border-radius: 0.625rem;
+	background: var(--background-tertiary);
+	padding: 0.1875rem;
+}
+
+.tab {
+	position: relative;
+	z-index: 10;
+	flex: 1;
+	border: none;
+	border-radius: 0.5rem;
+	padding: 0.375rem 0.75rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.125rem;
+	text-align: center;
+	background: transparent;
+	transition: color 150ms ease;
+	cursor: pointer;
+}
+
+.tabInactive {
+	color: var(--text-secondary);
+}
+
+.tabInactive:active {
+	color: var(--text-primary);
+}
+
+.tabActive {
+	color: var(--text-primary);
+}
+
+.tabBackground {
+	position: absolute;
+	top: 0.1875rem;
+	bottom: 0.1875rem;
+	height: calc(100% - 0.375rem);
+	border-radius: 0.5rem;
+	background: var(--background-secondary);
+	box-shadow: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.08);
+}

@@ -1,0 +1,33 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.svg {
+	display: block;
+}
+
+.primaryMuted {
+	color: var(--text-primary-muted);
+}
+
+.green {
+	color: var(--status-online);
+}
+
+.yellow {
+	color: var(--status-idle);
+}
+
+.orange {
+	color: var(--status-idle);
+}
+
+.red {
+	color: var(--status-danger);
+}
+
+.tertiary {
+	color: var(--text-tertiary);
+}
+
+.tertiaryMuted {
+	color: var(--text-tertiary-muted);
+}

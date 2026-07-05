@@ -1,0 +1,202 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+name: build image (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: "Image name under ghcr.io/<owner>/ (for example fluxer-api)"
+        type: string
+        required: true
+      dockerfile:
+        description: "Path to the Dockerfile to build"
+        type: string
+        required: true
+      context:
+        description: "Docker build context"
+        type: string
+        required: false
+        default: "."
+      build-version:
+        description: "Explicit Fluxer CalVer build version (YYYY.MDD.MICRO, UTC HHMMSS without leading zeroes) to use instead of automatic UTC clock allocation"
+        type: string
+        required: false
+        default: ""
+      moving-tags:
+        description: "Comma-separated moving tags to repoint at this build"
+        type: string
+        required: false
+        default: "v1,latest"
+      extra-build-args:
+        description: "Additional Docker build args, one KEY=VALUE entry per line"
+        type: string
+        required: false
+        default: ""
+      finalise-release:
+        description: "Publish the GitHub Release after this image fragment is uploaded. Set false when an orchestrator will finalise the release."
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  actions: read
+  contents: write
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  GHCR_OWNER: ${{ github.repository_owner }}
+
+jobs:
+  meta:
+    name: resolve metadata
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      build_version: ${{ steps.vars.outputs.build_version }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}/gitconfig
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+      - name: set variables
+        id: vars
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FLUXER_BUILD_VERSION: ${{ inputs['build-version'] }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- resolve-calver
+          --github-output
+
+  build:
+    name: build ${{ matrix.platform }}
+    needs: meta
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: amd64
+            runner: blacksmith-4vcpu-ubuntu-2404
+          - platform: arm64
+            runner: blacksmith-4vcpu-ubuntu-2404-arm
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}/gitconfig
+      - uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
+      - uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.dockerfile }}
+          push: true
+          provenance: false
+          platforms: linux/${{ matrix.platform }}
+          tags: ghcr.io/${{ env.GHCR_OWNER }}/${{ inputs.image }}:${{ needs.meta.outputs.build_version }}-${{ matrix.platform }}
+          build-args: |
+            BUILD_VERSION=${{ needs.meta.outputs.build_version }}
+            ${{ inputs.extra-build-args }}
+          cache-from: type=gha,scope=${{ inputs.image }}-${{ matrix.platform }}
+          cache-to: type=gha,scope=${{ inputs.image }}-${{ matrix.platform }},mode=max,ignore-error=true
+        env:
+          DOCKER_BUILD_SUMMARY: false
+          DOCKER_BUILD_RECORD_UPLOAD: false
+
+  merge:
+    name: merge multi-arch manifest
+    needs: [meta, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}/gitconfig
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+      - uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
+      - uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: create and push multi-arch manifest
+        env:
+          IMAGE: ghcr.io/${{ env.GHCR_OWNER }}/${{ inputs.image }}
+          VERSION: ${{ needs.meta.outputs.build_version }}
+          MOVING_TAGS: ${{ inputs.moving-tags }}
+        run: |
+          set -euo pipefail
+          tag_args=( "-t" "${IMAGE}:${VERSION}" )
+          IFS=',' read -ra moving <<< "${MOVING_TAGS}"
+          for raw in "${moving[@]}"; do
+            t="$(echo "$raw" | xargs)"
+            [ -n "$t" ] && tag_args+=( "-t" "${IMAGE}:${t}" )
+          done
+          docker buildx imagetools create "${tag_args[@]}" \
+            "${IMAGE}:${VERSION}-amd64" \
+            "${IMAGE}:${VERSION}-arm64"
+          docker buildx imagetools inspect "${IMAGE}:${VERSION}"
+
+      - name: Write GitHub release image fragment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMAGE_REF: ghcr.io/${{ env.GHCR_OWNER }}/${{ inputs.image }}:${{ needs.meta.outputs.build_version }}
+          VERSION: ${{ needs.meta.outputs.build_version }}
+          MOVING_TAGS: ${{ inputs.moving-tags }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- release
+          publish-image
+          --build-version "${VERSION}"
+          --image "${{ inputs.image }}"
+          --image-ref "${IMAGE_REF}"
+          --moving-tags "${MOVING_TAGS}"
+      - name: Upload GitHub release fragment
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-fragment-${{ inputs.image }}
+          path: release-out/fragments/fluxer-release-fragment-image-${{ inputs.image }}.json
+          if-no-files-found: error
+          retention-days: 14
+
+  finalise:
+    name: finalise GitHub release
+    if: ${{ inputs['finalise-release'] }}
+    needs: [meta, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}/gitconfig
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+      - name: Download GitHub release fragments
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: release-fragment-*
+          path: release-out/fragments
+          merge-multiple: true
+      - name: finalise GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.meta.outputs.build_version }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- release
+          finalise
+          --build-version "${VERSION}"

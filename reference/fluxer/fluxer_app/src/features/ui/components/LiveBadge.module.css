@@ -1,0 +1,28 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.liveBadge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 624.9375rem;
+	background-color: rgb(220 38 38);
+	padding-left: 0.375rem;
+	padding-right: 0.375rem;
+	padding-top: 0.125rem;
+	padding-bottom: 0.125rem;
+	font-weight: 600;
+	font-size: 0.625rem;
+	color: white;
+	text-transform: uppercase;
+	line-height: 1;
+}
+
+.liveBadgeOnVoiceTile {
+	box-sizing: border-box;
+	height: 1.25rem;
+	padding: 0 0.375rem;
+	border: 0.0625rem solid var(--voice-hud-material-border);
+	border-radius: 0.4375rem;
+	box-shadow: var(--voice-hud-material-shadow);
+	font-size: 0.625rem;
+}

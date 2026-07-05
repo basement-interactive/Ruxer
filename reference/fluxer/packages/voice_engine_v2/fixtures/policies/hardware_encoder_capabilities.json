@@ -1,0 +1,134 @@
+[
+	{
+		"name": "invalid native addon result is unavailable",
+		"input": null,
+		"codec": "h265",
+		"expectedCapabilities": {
+			"available": false,
+			"backend": "none",
+			"compiled": false,
+			"runtime": false,
+			"codecs": [],
+			"zeroCopy": false,
+			"nativeInputs": [],
+			"reason": "query-failed",
+			"detail": "Native addon returned an invalid result"
+		},
+		"expectedNativeNvenc": false
+	},
+	{
+		"name": "zero-copy native NVENC H265 is usable",
+		"input": {
+			"available": true,
+			"backend": "nvenc",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["h264", "h265"],
+			"zeroCopy": true,
+			"nativeInputs": ["dmabuf"]
+		},
+		"codec": "h265",
+		"expectedCapabilities": {
+			"available": true,
+			"backend": "nvenc",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["h264", "h265"],
+			"zeroCopy": true,
+			"nativeInputs": ["dmabuf"]
+		},
+		"expectedNativeNvenc": true
+	},
+	{
+		"name": "HEVC codec alias enables H265 when zero-copy NVENC is available",
+		"input": {
+			"available": true,
+			"backend": "nvenc",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["hevc"],
+			"zeroCopy": true,
+			"nativeInputs": ["d3d11-texture"]
+		},
+		"codec": "h265",
+		"expectedCapabilities": {
+			"available": true,
+			"backend": "nvenc",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["hevc"],
+			"zeroCopy": true,
+			"nativeInputs": ["d3d11-texture"]
+		},
+		"expectedNativeNvenc": true
+	},
+	{
+		"name": "native NVENC without zero-copy is not supported",
+		"input": {
+			"available": true,
+			"backend": "nvenc",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["h264", "h265"],
+			"zeroCopy": false,
+			"nativeInputs": ["dmabuf"]
+		},
+		"codec": "h265",
+		"expectedCapabilities": {
+			"available": true,
+			"backend": "nvenc",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["h264", "h265"],
+			"zeroCopy": false,
+			"nativeInputs": ["dmabuf"]
+		},
+		"expectedNativeNvenc": false
+	},
+	{
+		"name": "native NVENC without native zero-copy input handles is not supported",
+		"input": {
+			"available": true,
+			"backend": "nvenc",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["h264", "h265"],
+			"zeroCopy": true,
+			"nativeInputs": []
+		},
+		"codec": "h264",
+		"expectedCapabilities": {
+			"available": true,
+			"backend": "nvenc",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["h264", "h265"],
+			"zeroCopy": true,
+			"nativeInputs": []
+		},
+		"expectedNativeNvenc": false
+	},
+	{
+		"name": "non-NVENC backends are not selected by NVENC policy",
+		"input": {
+			"available": true,
+			"backend": "videotoolbox",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["h264", "h265"],
+			"zeroCopy": true,
+			"nativeInputs": ["cvPixelBuffer"]
+		},
+		"codec": "h265",
+		"expectedCapabilities": {
+			"available": true,
+			"backend": "videotoolbox",
+			"compiled": true,
+			"runtime": true,
+			"codecs": ["h264", "h265"],
+			"zeroCopy": true,
+			"nativeInputs": ["cvPixelBuffer"]
+		},
+		"expectedNativeNvenc": false
+	}
+]

@@ -1,0 +1,82 @@
+{
+	"name": "local media mute unmute deafen undeafen and microphone publish lifecycle",
+	"events": [
+		{"type": "connection.connectRequested", "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "connection.connectSucceeded", "operationId": 1},
+		{"type": "microphone.publishRequested", "options": {"deviceId": "mic-a"}},
+		{"type": "microphone.publishSucceeded", "operationId": 2},
+		{"type": "connection.reconnectRequested"},
+		{"type": "connection.disconnectSucceeded", "operationId": 3},
+		{"type": "connection.connectSucceeded", "operationId": 4},
+		{"type": "microphone.publishSucceeded", "operationId": 5},
+		{"type": "localAudio.muteRequested", "muted": true},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 6},
+		{"type": "localAudio.muteRequested", "muted": false},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 7},
+		{"type": "localAudio.deafenRequested", "deafened": true},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 8},
+		{"type": "localAudio.deafenRequested", "deafened": false},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 9},
+		{"type": "microphone.unpublishRequested"},
+		{"type": "microphone.unpublishSucceeded", "operationId": 10}
+	],
+	"expectedCommands": [
+		{"type": "connection.connect", "operationId": 1, "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "microphone.publish", "operationId": 2, "options": {"deviceId": "mic-a"}},
+		{"type": "connection.disconnect", "operationId": 3, "reason": "network"},
+		{"type": "connection.connect", "operationId": 4, "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "microphone.publish", "operationId": 5, "options": {"deviceId": "mic-a"}},
+		{"type": "microphone.setEnabled", "operationId": 6, "enabled": false},
+		{"type": "microphone.setEnabled", "operationId": 7, "enabled": true},
+		{"type": "microphone.setEnabled", "operationId": 8, "enabled": false},
+		{"type": "microphone.setEnabled", "operationId": 9, "enabled": true},
+		{"type": "microphone.unpublish", "operationId": 10}
+	],
+	"checkpoints": [
+		{
+			"afterEvent": 5,
+			"connectionStatus": "reconnecting",
+			"microphoneStatus": "idle",
+			"desiredDeviceId": "mic-a",
+			"publishedDeviceId": null
+		},
+		{
+			"afterEvent": 9,
+			"microphoneStatus": "published",
+			"microphoneEnabled": false,
+			"localSpeakingOverride": false,
+			"locallyMuted": true,
+			"locallyDeafened": false
+		},
+		{
+			"afterEvent": 13,
+			"microphoneStatus": "published",
+			"microphoneEnabled": false,
+			"localSpeakingOverride": false,
+			"locallyMuted": true,
+			"locallyDeafened": true,
+			"shouldUnmuteOnUndeafen": true
+		},
+		{
+			"afterEvent": 15,
+			"microphoneStatus": "published",
+			"microphoneEnabled": true,
+			"localSpeakingOverride": null,
+			"locallyMuted": false,
+			"locallyDeafened": false
+		}
+	],
+	"expectedSnapshot": {
+		"nextOperationId": 11,
+		"connectionStatus": "connected",
+		"microphoneStatus": "idle",
+		"microphoneEnabled": true,
+		"localSpeakingOverride": false,
+		"locallyMuted": false,
+		"locallyDeafened": false,
+		"mutedByPermission": false,
+		"publishedDeviceId": null,
+		"desiredDeviceId": null,
+		"lastFailureCode": null
+	}
+}

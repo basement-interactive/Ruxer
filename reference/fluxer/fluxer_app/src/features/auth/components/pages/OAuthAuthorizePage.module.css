@@ -1,0 +1,391 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	width: 100%;
+	max-width: 100%;
+	margin: 0 auto;
+}
+
+.loadingContainer {
+	display: flex;
+	min-height: 100%;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.errorContainer {
+	display: flex;
+	min-height: 100%;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.errorContent {
+	text-align: center;
+}
+
+.errorTitle {
+	margin-bottom: 0.5rem;
+	text-align: center;
+	font-weight: 600;
+	color: var(--text-primary);
+	font-size: 1.25rem;
+	letter-spacing: 0.025em;
+}
+
+.errorText {
+	text-align: center;
+	font-size: 0.875rem;
+	color: var(--text-tertiary);
+}
+
+.heroCard {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	justify-content: center;
+	padding: 0 0 0.2rem;
+	background: none;
+	border: none;
+}
+
+.heroCopy {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.35rem;
+	width: 100%;
+	text-align: center;
+}
+
+.heroTitle {
+	margin: 0;
+	font-size: 1.125rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	letter-spacing: 0.025em;
+}
+
+.heroDescription {
+	margin: 0;
+	color: var(--text-tertiary);
+	font-size: 0.875rem;
+	line-height: 1.45;
+}
+
+.cardGrid {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.accountList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+}
+
+.sectionDivider {
+	height: 0.0625rem;
+	width: 100%;
+	background: color-mix(in srgb, var(--background-modifier-accent) 70%, transparent);
+	margin: 0.15rem 0;
+	border-radius: 62.4375rem;
+}
+
+.panel {
+	background: transparent;
+	border: none;
+	border-radius: 0.85rem;
+	padding: 0.25rem 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.65rem;
+}
+
+.sectionHeader {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.sectionTitle {
+	margin: 0;
+	font-weight: 700;
+	font-size: 1rem;
+	color: var(--text-primary);
+}
+
+.sectionDescription {
+	margin: 0;
+	color: var(--text-secondary);
+	font-size: 0.875rem;
+	line-height: 1.4;
+}
+
+.inlineStatus {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2rem;
+	color: var(--text-secondary);
+}
+
+.scopeList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.permissionScrollContainer {
+	max-height: 15rem;
+	border-radius: 0.5rem;
+	background: var(--background-secondary);
+	border: 0.0625rem solid var(--background-modifier-accent);
+}
+
+.permissionScroller {
+	max-height: 15rem;
+	padding: 0.5rem 0;
+}
+
+.permissionList {
+	display: flex;
+	flex-direction: column;
+}
+
+.permissionRow {
+	display: flex;
+	align-items: center;
+	padding: 0.55rem 0.7rem;
+	transition: background-color 0.1s ease;
+	cursor: pointer;
+}
+
+.permissionRow:hover {
+	background: var(--background-modifier-hover);
+}
+
+.permissionRow label {
+	flex: 1;
+	cursor: pointer;
+}
+
+.permissionLabel {
+	font-size: 0.9rem;
+	line-height: 1.25rem;
+	font-weight: 500;
+	color: var(--text-primary);
+}
+
+.scopeRow {
+	padding: 0.1rem 0;
+	border-radius: 0.4rem;
+	border: none;
+	background: none;
+	overflow: visible;
+	width: 100%;
+	display: block;
+}
+
+.scopeHeading {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	flex-wrap: wrap;
+}
+
+.scopeName {
+	font-weight: 600;
+	color: var(--text-primary);
+	font-size: 0.95rem;
+}
+
+.scopeDescription {
+	margin: 0;
+	color: var(--text-secondary);
+	font-size: 0.85rem;
+	line-height: 1.4;
+}
+
+.scopeChip {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.12rem 0.45rem;
+	border-radius: 62.4375rem;
+	background: var(--background-secondary);
+	border: 0.0625rem solid var(--background-modifier-accent);
+	color: var(--text-tertiary);
+	font-size: 0.7rem;
+}
+
+.emptyState {
+	padding: 0.75rem;
+	border-radius: 0.6rem;
+	background: var(--background-secondary);
+	border: 0.0625rem dashed var(--background-modifier-accent);
+	color: var(--text-secondary);
+	font-size: 0.85rem;
+}
+
+.caution {
+	padding: 0.65rem 0.75rem;
+	border-radius: 0.7rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	background: var(--background-secondary);
+	color: var(--text-secondary);
+	font-size: 0.82rem;
+	line-height: 1.35;
+}
+
+.dangerNotice {
+	padding: 0.75rem 0.85rem;
+	border-radius: 0.7rem;
+	border: 0.0625rem solid var(--status-danger, var(--background-modifier-accent));
+	background: color-mix(in srgb, var(--background-secondary) 70%, var(--status-danger, #f04747) 30%);
+	color: var(--text-primary);
+	font-size: 0.85rem;
+	line-height: 1.35;
+}
+
+.successCard {
+	padding: 0.75rem 0.9rem;
+	border-radius: 0.85rem;
+	background: var(--background-secondary);
+	border: 0.0625rem solid var(--background-modifier-accent);
+	color: var(--text-primary);
+	font-size: 0.9rem;
+	line-height: 1.35;
+}
+
+.successScreen {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.65rem;
+	padding: 2.5rem 1.5rem;
+	text-align: center;
+}
+
+.successIconCircle {
+	height: 4.5rem;
+	width: 4.5rem;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: color-mix(in srgb, var(--status-online, #3ba55c) 15%, transparent);
+}
+
+.successIcon {
+	height: 3rem;
+	width: 3rem;
+	color: var(--status-online, #3ba55c);
+}
+
+.successTitle {
+	margin: 0;
+	font-size: 1.35rem;
+	font-weight: 700;
+	color: var(--text-primary);
+}
+
+.successSubtitle {
+	margin: 0;
+	color: var(--text-secondary);
+	font-size: 0.95rem;
+	line-height: 1.5;
+}
+
+.successAction {
+	margin-top: 0.35rem;
+	min-width: 7.5rem;
+}
+
+.guildOption,
+.guildValue {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--spacing-1);
+	width: 100%;
+	min-height: 2.25rem;
+	padding: 0 var(--spacing-1);
+}
+
+.guildAvatar,
+.guildAvatarPlaceholder {
+	height: 1.75rem;
+	width: 1.75rem;
+	border-radius: 62.4375rem;
+	flex: 0 0 1.75rem;
+}
+
+.guildAvatar {
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.guildAvatarPlaceholder {
+	background: color-mix(in srgb, #0f1014 80%, var(--background-header-secondary) 20%);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: 700;
+	font-size: 0.9rem;
+	line-height: 1.75rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+}
+
+.guildOptionLabel {
+	font-size: 0.9rem;
+	color: var(--text-primary);
+}
+
+.guildOptionDisabled {
+	opacity: 0.5;
+}
+
+.guildOptionNotice {
+	margin-left: auto;
+	color: var(--text-tertiary);
+	font-size: 0.85rem;
+}
+
+.actionSection {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	align-items: stretch;
+}
+
+.footerText {
+	margin: 0;
+	font-size: 0.85rem;
+	color: var(--text-secondary);
+	line-height: 1.35;
+	text-align: left;
+	display: block;
+	width: 100%;
+	margin-top: 0.35rem;
+	padding-top: 0.1rem;
+}
+
+.actions {
+	display: flex;
+	flex-direction: row;
+	gap: 0.5rem;
+	width: 100%;
+}
+
+.actionButton {
+	flex: 1;
+	width: 100%;
+}

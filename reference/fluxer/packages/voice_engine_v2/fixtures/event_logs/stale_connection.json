@@ -1,0 +1,84 @@
+{
+	"name": "stale_connection",
+	"description": "A stale connect completion is rejected after a newer connect operation supersedes it.",
+	"steps": [
+		{
+			"name": "request first connection",
+			"event": {
+				"type": "connection.connectRequested",
+				"options": {
+					"url": "wss://voice-one.example.test",
+					"token": "token-1"
+				}
+			},
+			"commands": [
+				{
+					"type": "connection.connect",
+					"operationId": 1,
+					"options": {
+						"url": "wss://voice-one.example.test",
+						"token": "token-1"
+					}
+				}
+			]
+		},
+		{
+			"name": "request replacement connection",
+			"event": {
+				"type": "connection.connectRequested",
+				"options": {
+					"url": "wss://voice-two.example.test",
+					"token": "token-2"
+				}
+			},
+			"commands": [
+				{
+					"type": "connection.connect",
+					"operationId": 2,
+					"options": {
+						"url": "wss://voice-two.example.test",
+						"token": "token-2"
+					}
+				}
+			]
+		},
+		{
+			"name": "stale first completion arrives",
+			"event": {
+				"type": "connection.connectSucceeded",
+				"operationId": 1
+			},
+			"commands": []
+		},
+		{
+			"name": "runtime rejects stale first completion",
+			"event": {
+				"type": "command.staleCompletionRejected",
+				"operationId": 1,
+				"commandType": "connection.connect",
+				"resourceKey": "connection"
+			},
+			"commands": []
+		},
+		{
+			"name": "replacement completion succeeds",
+			"event": {
+				"type": "connection.connectSucceeded",
+				"operationId": 2
+			},
+			"commands": []
+		}
+	],
+	"expected": {
+		"nextOperationId": 3,
+		"connectionStatus": "connected",
+		"activeUrl": "wss://voice-two.example.test",
+		"desiredUrl": "wss://voice-two.example.test",
+		"gatewayChannelId": null,
+		"lifecycleTearingDown": false,
+		"operationStatuses": {
+			"1": "stale",
+			"2": "succeeded"
+		}
+	}
+}

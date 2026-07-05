@@ -1,0 +1,37 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.pickerBody {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: hidden;
+	background-color: var(--background-secondary);
+}
+
+.pickerBody :global([data-flx^='channel.pickers.gif.gif-picker-view.gif-picker-container']) {
+	grid-template-rows: auto minmax(0, 1fr);
+	background-color: var(--background-secondary);
+}
+
+.pickerBody :global([data-flx^='channel.pickers.gif.gif-picker-view.gif-picker-main']),
+.pickerBody :global([data-flx='channel.pickers.gif.gif-picker-view.virtual-list']) {
+	background-color: var(--background-secondary);
+}
+
+.pickerBody :global([data-flx='channel.pickers.gif.gif-picker-view.mobile-header-wrapper']) {
+	padding-block: 0 var(--spacing-2);
+}
+
+@media (min-width: 768px) {
+	.root.root.root {
+		width: 31.125rem;
+		max-width: calc(100vw - 2rem);
+		min-height: 0;
+	}
+
+	.pickerBody {
+		flex: none;
+		height: min(31.125rem, calc(100dvh - 10rem));
+	}
+}

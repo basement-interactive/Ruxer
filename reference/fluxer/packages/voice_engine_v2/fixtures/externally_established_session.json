@@ -1,0 +1,66 @@
+{
+	"name": "externally_established_session",
+	"events": [
+		{
+			"type": "microphone.publishRequested",
+			"options": {
+				"deviceId": "default"
+			}
+		},
+		{
+			"type": "connection.externallyEstablished",
+			"options": {
+				"url": "wss://voice.example.test",
+				"token": ""
+			}
+		},
+		{
+			"type": "microphone.publishSucceeded",
+			"operationId": 1
+		},
+		{
+			"type": "connection.remoteDisconnected",
+			"reason": "network"
+		},
+		{
+			"type": "microphone.publishRequested",
+			"options": {
+				"deviceId": "default"
+			}
+		},
+		{
+			"type": "connection.externallyEstablished",
+			"options": {
+				"url": "wss://voice-reconnect.example.test",
+				"token": ""
+			}
+		},
+		{
+			"type": "microphone.publishSucceeded",
+			"operationId": 2
+		},
+		{
+			"type": "gateway.voiceStateUpdated",
+			"voiceState": {
+				"guildId": "guild-1",
+				"channelId": "channel-1",
+				"userId": "user-1",
+				"sessionId": "session-1",
+				"selfMute": false,
+				"selfDeaf": false,
+				"selfVideo": false,
+				"selfStream": false,
+				"suppress": false,
+				"requestToSpeakTimestamp": null
+			}
+		}
+	],
+	"expected": {
+		"nextOperationId": 3,
+		"connectionStatus": "connected",
+		"activeUrl": "wss://voice-reconnect.example.test",
+		"microphoneStatus": "published",
+		"microphoneDeviceId": "default",
+		"gatewayChannelId": "channel-1"
+	}
+}

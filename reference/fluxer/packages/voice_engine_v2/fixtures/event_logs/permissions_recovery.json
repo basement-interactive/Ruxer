@@ -1,0 +1,61 @@
+{
+	"name": "microphone permission denial mutes and grant restores requested unmute",
+	"events": [
+		{"type": "connection.connectRequested", "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "connection.connectSucceeded", "operationId": 1},
+		{"type": "microphone.publishRequested", "options": {"deviceId": "mic-a"}},
+		{"type": "microphone.publishSucceeded", "operationId": 2},
+		{
+			"type": "permissions.result",
+			"operationId": null,
+			"result": {"name": "microphone", "status": "denied", "canPrompt": false}
+		},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 3},
+		{"type": "localAudio.muteRequested", "muted": false},
+		{
+			"type": "permissions.result",
+			"operationId": null,
+			"result": {"name": "microphone", "status": "granted", "canPrompt": false}
+		},
+		{"type": "microphone.setEnabledSucceeded", "operationId": 4}
+	],
+	"expectedCommands": [
+		{"type": "connection.connect", "operationId": 1, "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "microphone.publish", "operationId": 2, "options": {"deviceId": "mic-a"}},
+		{"type": "microphone.setEnabled", "operationId": 3, "enabled": false},
+		{"type": "microphone.setEnabled", "operationId": 4, "enabled": true}
+	],
+	"checkpoints": [
+		{
+			"afterEvent": 5,
+			"microphoneStatus": "published",
+			"microphoneEnabled": false,
+			"localSpeakingOverride": false,
+			"locallyMuted": true,
+			"mutedByPermission": true,
+			"permissionStatus": "denied"
+		},
+		{
+			"afterEvent": 7,
+			"microphoneStatus": "published",
+			"microphoneEnabled": false,
+			"locallyMuted": true,
+			"preferredLocallyMuted": false,
+			"mutedByPermission": true
+		}
+	],
+	"expectedSnapshot": {
+		"nextOperationId": 5,
+		"connectionStatus": "connected",
+		"microphoneStatus": "published",
+		"microphoneEnabled": true,
+		"localSpeakingOverride": null,
+		"locallyMuted": false,
+		"preferredLocallyMuted": false,
+		"mutedByPermission": false,
+		"permissionStatus": "granted",
+		"publishedDeviceId": "mic-a",
+		"desiredDeviceId": "mic-a",
+		"lastFailureCode": null
+	}
+}

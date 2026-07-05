@@ -1,0 +1,227 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import * as AccessibilityCommands from '@app/features/accessibility/commands/AccessibilityCommands';
+import Accessibility from '@app/features/accessibility/state/Accessibility';
+import {ConfirmModal} from '@app/features/app/components/dialogs/ConfirmModal';
+import {PRODUCT_NAME} from '@app/features/app/config/I18nDisplayConstants';
+import {
+	getCachedDesktopTroubleshootingSettings,
+	getDesktopTroubleshootingSettings,
+	setDesktopDisableHardwareAcceleration,
+} from '@app/features/devtools/utils/DesktopTroubleshootingUtils';
+import {CANCEL_DESCRIPTOR} from '@app/features/i18n/utils/CommonMessageDescriptors';
+import * as ModalCommands from '@app/features/ui/commands/ModalCommands';
+import {modal} from '@app/features/ui/commands/ModalCommands';
+import {Switch} from '@app/features/ui/components/form/FormSwitch';
+import {
+	getCachedDesktopWindowBehaviorSettings,
+	getDesktopWindowBehaviorSettings,
+	setDesktopWindowBehaviorSettings,
+} from '@app/features/ui/utils/DesktopWindowBehaviorUtils';
+import {getElectronAPI} from '@app/features/ui/utils/NativeUtils';
+import type {DesktopTroubleshootingSettings, DesktopWindowBehaviorSettings} from '@app/types/electron.d';
+import {msg} from '@lingui/core/macro';
+import {Trans, useLingui} from '@lingui/react/macro';
+import {observer} from 'mobx-react-lite';
+import {useCallback, useLayoutEffect, useState} from 'react';
+
+const STAY_FULLY_INTERACTIVE_WHEN_UNFOCUSED_DESCRIPTOR = msg({
+	message: 'Stay fully interactive when unfocused',
+	comment: 'Short label for an advanced desktop preference.',
+});
+const FIRST_CLICK_PASS_THROUGH_WHEN_UNFOCUSED_DESCRIPTOR = msg({
+	message: 'First click pass-through when unfocused',
+	comment: 'Short label for an advanced desktop preference.',
+});
+const USE_NATIVE_TITLE_BAR_DESCRIPTOR = msg({
+	message: 'Use native title bar',
+	comment: 'Short label for an advanced desktop preference.',
+});
+const USE_HARDWARE_ACCELERATION_DESCRIPTOR = msg({
+	message: 'Use hardware acceleration',
+	comment: 'Short label for an advanced desktop troubleshooting preference.',
+});
+const ENABLE_HARDWARE_ACCELERATION_DESCRIPTOR = msg({
+	message: 'Enable hardware acceleration?',
+	comment: 'Confirmation prompt in advanced settings.',
+});
+const DISABLE_HARDWARE_ACCELERATION_DESCRIPTOR = msg({
+	message: 'Disable hardware acceleration?',
+	comment: 'Confirmation prompt in advanced settings.',
+});
+const RESTART_NOW_DESCRIPTOR = msg({
+	message: 'Restart now',
+	comment: 'Short confirmation button label in advanced settings.',
+});
+
+function useDesktopWindowBehaviorSettings() {
+	const cachedDesktopWindowBehavior = getCachedDesktopWindowBehaviorSettings();
+	const [desktopWindowBehavior, setDesktopWindowBehavior] = useState<DesktopWindowBehaviorSettings | null>(
+		cachedDesktopWindowBehavior,
+	);
+	const [desktopWindowBehaviorBusy, setDesktopWindowBehaviorBusy] = useState(cachedDesktopWindowBehavior === null);
+	useLayoutEffect(() => {
+		let mounted = true;
+		if (getCachedDesktopWindowBehaviorSettings() !== null) {
+			setDesktopWindowBehaviorBusy(false);
+			return () => {
+				mounted = false;
+			};
+		}
+		const initDesktopWindowBehavior = async () => {
+			const settings = await getDesktopWindowBehaviorSettings();
+			if (!mounted) return;
+			if (settings !== null) {
+				setDesktopWindowBehavior(settings);
+			}
+			setDesktopWindowBehaviorBusy(false);
+		};
+		void initDesktopWindowBehavior();
+		return () => {
+			mounted = false;
+		};
+	}, []);
+	const updateDesktopWindowBehavior = useCallback(async (settings: Partial<DesktopWindowBehaviorSettings>) => {
+		setDesktopWindowBehaviorBusy(true);
+		const nextSettings = await setDesktopWindowBehaviorSettings(settings);
+		if (nextSettings !== null) {
+			setDesktopWindowBehavior(nextSettings);
+		}
+		setDesktopWindowBehaviorBusy(false);
+		return nextSettings;
+	}, []);
+	return {desktopWindowBehavior, desktopWindowBehaviorBusy, updateDesktopWindowBehavior};
+}
+
+function useDesktopTroubleshootingSettings() {
+	const cachedDesktopTroubleshooting = getCachedDesktopTroubleshootingSettings();
+	const [desktopTroubleshooting, setDesktopTroubleshooting] = useState<DesktopTroubleshootingSettings | null>(
+		cachedDesktopTroubleshooting,
+	);
+	const [desktopTroubleshootingBusy, setDesktopTroubleshootingBusy] = useState(cachedDesktopTroubleshooting === null);
+	useLayoutEffect(() => {
+		let mounted = true;
+		if (getCachedDesktopTroubleshootingSettings() !== null) {
+			setDesktopTroubleshootingBusy(false);
+			return () => {
+				mounted = false;
+			};
+		}
+		const initDesktopTroubleshooting = async () => {
+			const settings = await getDesktopTroubleshootingSettings();
+			if (!mounted) return;
+			if (settings !== null) {
+				setDesktopTroubleshooting(settings);
+			}
+			setDesktopTroubleshootingBusy(false);
+		};
+		void initDesktopTroubleshooting();
+		return () => {
+			mounted = false;
+		};
+	}, []);
+	return {
+		desktopTroubleshooting,
+		desktopTroubleshootingBusy,
+		setDesktopTroubleshooting,
+		setDesktopTroubleshootingBusy,
+	};
+}
+
+export const StayInteractiveUnfocusedControl = observer(() => {
+	const {i18n} = useLingui();
+	return (
+		<Switch
+			ariaLabel={i18n._(STAY_FULLY_INTERACTIVE_WHEN_UNFOCUSED_DESCRIPTOR)}
+			value={Accessibility.stayInteractiveWhenUnfocused}
+			onChange={(value) => AccessibilityCommands.update({stayInteractiveWhenUnfocused: value})}
+			compact
+			data-flx="user.advanced-settings-tab.switch.stay-interactive-unfocused"
+		/>
+	);
+});
+
+export const FirstClickPassThroughControl = observer(() => {
+	const {i18n} = useLingui();
+	return (
+		<Switch
+			ariaLabel={i18n._(FIRST_CLICK_PASS_THROUGH_WHEN_UNFOCUSED_DESCRIPTOR)}
+			value={Accessibility.firstClickPassThroughWhenUnfocused}
+			onChange={(value) => AccessibilityCommands.update({firstClickPassThroughWhenUnfocused: value})}
+			compact
+			data-flx="user.advanced-settings-tab.switch.first-click-pass-through"
+		/>
+	);
+});
+
+export const NativeTitleBarControl = observer(() => {
+	const {i18n} = useLingui();
+	const {desktopWindowBehavior, desktopWindowBehaviorBusy, updateDesktopWindowBehavior} =
+		useDesktopWindowBehaviorSettings();
+	return (
+		<Switch
+			ariaLabel={i18n._(USE_NATIVE_TITLE_BAR_DESCRIPTOR)}
+			value={desktopWindowBehavior?.useNativeTitleBar ?? false}
+			disabled={desktopWindowBehaviorBusy || desktopWindowBehavior === null}
+			onChange={(value) => {
+				void updateDesktopWindowBehavior({useNativeTitleBar: value});
+			}}
+			compact
+			data-flx="user.advanced-settings-tab.switch.native-title-bar"
+		/>
+	);
+});
+
+export const HardwareAccelerationControl = observer(() => {
+	const {i18n} = useLingui();
+	const {desktopTroubleshooting, desktopTroubleshootingBusy, setDesktopTroubleshooting, setDesktopTroubleshootingBusy} =
+		useDesktopTroubleshootingSettings();
+	const handleChange = useCallback(
+		(value: boolean) => {
+			const desiredDisableValue = !value;
+			ModalCommands.push(
+				modal(() => (
+					<ConfirmModal
+						title={
+							value ? i18n._(ENABLE_HARDWARE_ACCELERATION_DESCRIPTOR) : i18n._(DISABLE_HARDWARE_ACCELERATION_DESCRIPTOR)
+						}
+						description={
+							value ? (
+								<Trans>{PRODUCT_NAME} needs to restart for hardware acceleration to take effect.</Trans>
+							) : (
+								<Trans>
+									{PRODUCT_NAME} needs to restart to disable Chromium's hardware acceleration. Use this only if you're
+									troubleshooting graphics glitches or high GPU usage.
+								</Trans>
+							)
+						}
+						primaryText={i18n._(RESTART_NOW_DESCRIPTOR)}
+						primaryVariant="primary"
+						secondaryText={i18n._(CANCEL_DESCRIPTOR)}
+						onPrimary={async () => {
+							setDesktopTroubleshootingBusy(true);
+							const next = await setDesktopDisableHardwareAcceleration(desiredDisableValue, {restart: true});
+							if (next) {
+								setDesktopTroubleshooting(next);
+							}
+							setDesktopTroubleshootingBusy(false);
+						}}
+						data-flx="user.advanced-settings-tab.hardware-acceleration.confirm-modal"
+					/>
+				)),
+			);
+		},
+		[i18n, setDesktopTroubleshooting, setDesktopTroubleshootingBusy],
+	);
+	if (getElectronAPI()?.platform === 'darwin') return null;
+	return (
+		<Switch
+			ariaLabel={i18n._(USE_HARDWARE_ACCELERATION_DESCRIPTOR)}
+			value={!(desktopTroubleshooting?.disableHardwareAcceleration ?? false)}
+			disabled={desktopTroubleshootingBusy || desktopTroubleshooting === null}
+			onChange={handleChange}
+			compact
+			data-flx="user.advanced-settings-tab.switch.hardware-acceleration"
+		/>
+	);
+});

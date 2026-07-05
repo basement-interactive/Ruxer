@@ -1,0 +1,8 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.mediaViewerPortal {
+	position: fixed;
+	inset: 0;
+	z-index: var(--z-index-modal-swap);
+	pointer-events: none;
+}

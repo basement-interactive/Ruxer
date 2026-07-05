@@ -1,0 +1,257 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+name: build app-proxy
+
+on:
+  workflow_dispatch:
+    inputs:
+      build-version:
+        description: "Explicit Fluxer CalVer build version (YYYY.MDD.MICRO, UTC HHMMSS without leading zeroes) to use instead of automatic UTC clock allocation"
+        type: string
+        required: false
+        default: ""
+      finalise-release:
+        description: "Publish the GitHub Release after this workflow completes. Set false when an orchestrator will finalise the release."
+        type: boolean
+        required: false
+        default: true
+  workflow_call:
+    inputs:
+      build-version:
+        description: "Explicit Fluxer CalVer build version (YYYY.MDD.MICRO, UTC HHMMSS without leading zeroes) to use instead of automatic UTC clock allocation"
+        type: string
+        required: false
+        default: ""
+      finalise-release:
+        description: "Publish the GitHub Release after this workflow completes. Set false when an orchestrator will finalise the release."
+        type: boolean
+        required: false
+        default: true
+      approval-required:
+        description: "Require the protected builds environment approval before this build runs."
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  actions: read
+  contents: write
+  packages: write
+
+env:
+  GHCR_OWNER: ${{ github.repository_owner }}
+
+jobs:
+  approve:
+    name: approve build release
+    if: ${{ format('{0}', inputs['approval-required']) != 'false' }}
+    runs-on: ubuntu-24.04
+    environment: builds
+    timeout-minutes: 5
+    steps:
+      - name: approved
+        run: echo "Build release approved."
+
+  meta:
+    name: resolve metadata
+    needs: approve
+    if: ${{ !cancelled() && (needs.approve.result == 'success' || needs.approve.result == 'skipped') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      build_version: ${{ steps.vars.outputs.build_version }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}/gitconfig
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+      - name: set variables
+        id: vars
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-app-proxy
+          --step set_metadata
+          --build-version "${{ inputs['build-version'] }}"
+
+  build:
+    name: build app-proxy (amd64)
+    needs: meta
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}/gitconfig
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+      - name: prepare docker config
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-app-proxy
+          --step prepare_docker_config
+      - uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
+      - name: configure ghcr auth
+        env:
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-app-proxy
+          --step configure_ghcr_auth
+
+      - name: build and push image + extract assets
+        env:
+          BUILD_VERSION: ${{ needs.meta.outputs.build_version }}
+          PUBLIC_ASSET_BASE_URL: https://fluxerstatic.com
+          CACHE_FROM: type=gha,scope=fluxer-app-proxy
+          CACHE_TO: type=gha,scope=fluxer-app-proxy,mode=max
+          DOCKER_BUILD_SUMMARY: false
+          DOCKER_BUILD_RECORD_UPLOAD: false
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-app-proxy
+          --step build_and_extract
+
+      - name: generate asset manifest
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-app-proxy
+          --step generate_asset_manifest
+
+      - name: Upload asset manifest handoff
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: app-proxy-assets-manifest
+          path: app-dist-output/dist/assets-manifest.txt
+          if-no-files-found: error
+
+      - name: upload assets to S3 static bucket
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          S3_ENDPOINT: https://ewr1.vultrobjects.com
+          STATIC_BUCKET: fluxer-static
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- build-app-proxy
+          --step upload_assets
+
+  build-arm64:
+    name: build app-proxy (arm64)
+    needs: meta
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}/gitconfig
+      - uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
+      - uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
+        with:
+          context: .
+          file: fluxer_app_proxy/Dockerfile
+          push: true
+          provenance: false
+          platforms: linux/arm64
+          tags: ghcr.io/${{ env.GHCR_OWNER }}/fluxer-app-proxy:${{ needs.meta.outputs.build_version }}-arm64
+          build-args: |
+            BUILD_VERSION=${{ needs.meta.outputs.build_version }}
+            PUBLIC_ASSET_BASE_URL=https://fluxerstatic.com
+          cache-from: type=gha,scope=fluxer-app-proxy-arm64
+          cache-to: type=gha,scope=fluxer-app-proxy-arm64,mode=max,ignore-error=true
+        env:
+          DOCKER_BUILD_SUMMARY: false
+          DOCKER_BUILD_RECORD_UPLOAD: false
+
+  merge:
+    name: merge multi-arch manifest
+    needs: [meta, build, build-arm64]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}/gitconfig
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+      - name: Download app-proxy asset manifest
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: app-proxy-assets-manifest
+          path: release-input/app-proxy
+      - uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
+      - uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: fuse amd64 + arm64 into a multi-arch manifest
+        env:
+          IMAGE: ghcr.io/${{ env.GHCR_OWNER }}/fluxer-app-proxy
+          VERSION: ${{ needs.meta.outputs.build_version }}
+        run: |
+          set -euo pipefail
+          amd64_digest="$(docker buildx imagetools inspect "${IMAGE}:${VERSION}" --format '{{json .Manifest}}' | jq -r '.digest')"
+          echo "amd64 digest: ${amd64_digest}"
+          docker buildx imagetools create \
+            -t "${IMAGE}:${VERSION}" \
+            -t "${IMAGE}:v1" \
+            -t "${IMAGE}:latest" \
+            "${IMAGE}@${amd64_digest}" \
+            "${IMAGE}:${VERSION}-arm64"
+          docker buildx imagetools inspect "${IMAGE}:${VERSION}"
+
+      - name: Write GitHub release app-proxy fragment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMAGE_REF: ghcr.io/${{ env.GHCR_OWNER }}/fluxer-app-proxy:${{ needs.meta.outputs.build_version }}
+          VERSION: ${{ needs.meta.outputs.build_version }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- release
+          publish-app-proxy
+          --build-version "${VERSION}"
+          --image fluxer-app-proxy
+          --image-ref "${IMAGE_REF}"
+          --moving-tags "v1,latest"
+          --asset-manifest release-input/app-proxy/assets-manifest.txt
+      - name: Upload GitHub release fragment
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-fragment-fluxer-app-proxy
+          path: release-out/fragments/fluxer-release-fragment-app-proxy.json
+          if-no-files-found: error
+          retention-days: 14
+
+  finalise:
+    name: finalise GitHub release
+    if: ${{ inputs['finalise-release'] != false }}
+    needs: [meta, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        env:
+          GIT_CONFIG_GLOBAL: ${{ runner.temp }}/gitconfig
+      - name: Set up Rust toolchain (CI helpers)
+        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9
+        with:
+          toolchain: "1.93.0"
+      - name: Download GitHub release fragments
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: release-fragment-*
+          path: release-out/fragments
+          merge-multiple: true
+      - name: finalise GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.meta.outputs.build_version }}
+        run: >-
+          cargo run --locked --quiet --manifest-path tools/ci/Cargo.toml -- release
+          finalise
+          --build-version "${VERSION}"

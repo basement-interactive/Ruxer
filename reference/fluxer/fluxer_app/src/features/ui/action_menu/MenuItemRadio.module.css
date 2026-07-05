@@ -1,0 +1,31 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.radioButton {
+	display: flex;
+	height: 1rem;
+	width: 1rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	border: 0.0625rem solid;
+	cursor: pointer;
+	box-sizing: border-box;
+	transition: none;
+}
+
+.radioButtonSelected {
+	border-color: var(--brand-primary);
+	background-color: var(--brand-primary);
+}
+
+.radioButtonUnselected {
+	border-color: var(--background-modifier-accent);
+	background-color: var(--form-surface-background);
+}
+
+.radioIndicator {
+	height: 0.375rem;
+	width: 0.375rem;
+	border-radius: 50%;
+	background-color: white;
+}

@@ -1,0 +1,100 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+syntax = "proto3";
+
+package fluxer.user.preferences.v1;
+
+message UsageStat {
+  uint32 count = 1;
+  int64 last_used_ms = 2;
+}
+
+message EmojiPickerState {
+  map<string, UsageStat> usage = 1;
+  repeated string favorite_emoji_ids = 2;
+  repeated string collapsed_category_ids = 3;
+}
+
+message StickerPickerState {
+  map<string, UsageStat> usage = 1;
+  repeated string favorite_sticker_ids = 2;
+  repeated string collapsed_category_ids = 3;
+}
+
+message MemesPickerState {
+  map<string, UsageStat> usage = 1;
+  repeated string favorite_meme_ids = 2;
+  repeated string collapsed_category_ids = 3;
+}
+
+message EmojiState {
+  string skin_tone = 1;
+}
+
+message EmojiStickerLayoutSettings {
+  EmojiPickerLayout emoji_layout = 1;
+  StickerPickerViewMode sticker_view_mode = 2;
+}
+
+enum EmojiPickerLayout {
+  EMOJI_PICKER_LAYOUT_UNSPECIFIED = 0;
+  EMOJI_PICKER_LAYOUT_LIST = 1;
+  EMOJI_PICKER_LAYOUT_GRID = 2;
+}
+
+enum StickerPickerViewMode {
+  STICKER_PICKER_VIEW_MODE_UNSPECIFIED = 0;
+  STICKER_PICKER_VIEW_MODE_COZY = 1;
+  STICKER_PICKER_VIEW_MODE_COMPACT = 2;
+}
+
+message FavoriteGifSettings {
+  repeated FavoriteGifEntry entries = 1;
+  bool save_as_saved_media = 2;
+  bool seen_first_time_prompt = 3;
+}
+
+message FavoriteGifMediaFormat {
+  string src = 1;
+  string proxy_src = 2;
+  uint32 width = 3;
+  uint32 height = 4;
+}
+
+message FavoriteGifEntry {
+  string url = 1;
+  string proxy_url = 2;
+  uint32 width = 3;
+  uint32 height = 4;
+  map<string, FavoriteGifMediaFormat> media = 5;
+  string content_type = 6;
+  string placeholder = 7;
+}
+
+message SoundSettings {
+  bool all_sounds_disabled = 1;
+  optional double master_volume = 2;
+  map<string, bool> disabled_sounds = 3;
+  map<string, double> sound_overrides = 4;
+
+}
+
+enum SoundType {
+  SOUND_TYPE_UNSPECIFIED = 0;
+  SOUND_TYPE_DEAF = 1;
+  SOUND_TYPE_UNDEAF = 2;
+  SOUND_TYPE_MUTE = 3;
+  SOUND_TYPE_UNMUTE = 4;
+  SOUND_TYPE_MESSAGE = 5;
+  SOUND_TYPE_INCOMING_RING = 6;
+  SOUND_TYPE_USER_JOIN = 7;
+  SOUND_TYPE_USER_LEAVE = 8;
+  SOUND_TYPE_USER_MOVE = 9;
+  SOUND_TYPE_VIEWER_JOIN = 10;
+  SOUND_TYPE_VIEWER_LEAVE = 11;
+  SOUND_TYPE_VOICE_DISCONNECT = 12;
+  SOUND_TYPE_CAMERA_ON = 13;
+  SOUND_TYPE_CAMERA_OFF = 14;
+  SOUND_TYPE_SCREEN_SHARE_START = 15;
+  SOUND_TYPE_SCREEN_SHARE_STOP = 16;
+}

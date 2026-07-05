@@ -1,0 +1,77 @@
+{
+	"name": "device_inventory",
+	"events": [
+		{"type": "devices.enumerateRequested"},
+		{
+			"type": "devices.changed",
+			"operationId": 1,
+			"reason": "initial",
+			"devices": {
+				"audioInputs": [
+					{"deviceId": "mic-1", "label": "Built-in Microphone", "isDefault": true, "role": "default"},
+					{
+						"deviceId": "mic-2",
+						"label": "USB Microphone",
+						"isDefault": false,
+						"role": "communications",
+						"endpointLabel": "USB Audio",
+						"isDefaultRoute": true
+					}
+				],
+				"audioOutputs": [{"deviceId": "speaker-1", "label": "Built-in Speakers", "isDefault": true, "role": "default"}],
+				"cameras": [{"deviceId": "camera-1", "label": "FaceTime Camera", "description": "Integrated camera"}],
+				"selectedAudioInputId": "mic-1",
+				"selectedAudioOutputId": "speaker-1",
+				"selectedCameraId": "camera-1"
+			}
+		},
+		{"type": "devices.selectAudioInputRequested", "deviceId": "mic-2"},
+		{"type": "command.succeeded", "operationId": 2, "commandType": "devices.selectAudioInput"},
+		{
+			"type": "devices.changed",
+			"operationId": null,
+			"reason": "hotplug",
+			"devices": {
+				"audioInputs": [
+					{
+						"deviceId": "mic-2",
+						"label": "USB Microphone",
+						"isDefault": true,
+						"role": "communications",
+						"endpointLabel": "USB Audio",
+						"isDefaultRoute": true
+					}
+				],
+				"audioOutputs": [
+					{"deviceId": "speaker-1", "label": "Built-in Speakers", "isDefault": true, "role": "default"},
+					{"deviceId": "headset-1", "label": "USB Headset", "isDefault": false, "role": "endpoint"}
+				],
+				"cameras": [
+					{"deviceId": "camera-1", "label": "FaceTime Camera", "description": "Integrated camera"},
+					{"deviceId": "camera-2", "label": "Capture Card", "description": "USB capture"}
+				],
+				"selectedAudioInputId": "mic-2",
+				"selectedAudioOutputId": "speaker-1",
+				"selectedCameraId": "camera-1"
+			}
+		}
+	],
+	"expectedCommands": [
+		[{"type": "devices.enumerate", "operationId": 1}],
+		[],
+		[{"type": "devices.selectAudioInput", "operationId": 2, "deviceId": "mic-2"}],
+		[],
+		[]
+	],
+	"expected": {
+		"nextOperationId": 3,
+		"deviceOperationId": null,
+		"failureCode": null,
+		"selectedAudioInputId": "mic-2",
+		"selectedAudioInputLabel": "USB Microphone",
+		"selectedAudioInputRole": "communications",
+		"audioOutputCount": 2,
+		"cameraCount": 2,
+		"operationStatuses": {"1": "succeeded", "2": "succeeded"}
+	}
+}

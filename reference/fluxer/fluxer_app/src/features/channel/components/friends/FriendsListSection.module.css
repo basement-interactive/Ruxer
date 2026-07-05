@@ -1,0 +1,18 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.sectionTitle {
+	margin-bottom: 1rem;
+	font-weight: 600;
+	font-size: 0.75rem;
+	line-height: 1rem;
+	text-transform: uppercase;
+	color: var(--text-primary-muted);
+}
+
+.sectionContent {
+	margin: 0 -1rem;
+}
+
+.sectionContentWithMargin {
+	margin: 0 -1rem 2rem;
+}

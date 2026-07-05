@@ -1,0 +1,280 @@
+/* Composer — ported 1:1 from reference/fluxer/fluxer_app/src/features/channel/components/textarea/InputWrapper.module.css
+ * + TextareaInput.module.css. Every value below is traced to the source line.
+ * Re-authored clean (not copied verbatim) but producing identical visual output.
+ *
+ * Layout variables (TextareaInput.module.css:3-25, globals.css:99-105):
+ *   --textarea-font-size: 1rem (:4)
+ *   --textarea-line-height: calc(1rem * 1.375) = 1.375rem (:24)
+ *   --textarea-min-height: 4.5rem (var(--input-container-min-height), globals.css:101)
+ *   --textarea-horizontal-padding: 1rem (--chat-horizontal-padding, :16)
+ *   --textarea-button-height: 2.25rem (var(--user-area-content-height), :5)
+ *   --textarea-button-icon-size: 1.625rem (:6)
+ *   --textarea-upload-gap: 1rem (var(--message-gutter), :18)
+ */
+
+/* --- Composer container (InputWrapper.module.css:11-19) --- */
+.composer {
+  position: relative;
+  padding: 0 var(--chat-horizontal-padding, 1rem) 0.75rem;
+  flex-shrink: 0;
+  background-color: var(--background-secondary-lighter); /* InputWrapper.module.css:13 */
+}
+
+/* --- Typing indicator (globals.css:108-109) --- */
+.composer-typing {
+  padding: 0.25rem 0.25rem 0.25rem;
+  height: 1rem;
+  font-size: 0.6875rem;
+  color: var(--text-primary-muted);
+}
+
+/* --- Slowmode countdown (globals.css:110) --- */
+.composer-slowmode {
+  padding: 0.25rem;
+  height: 1rem;
+  font-size: 0.6875rem;
+  color: var(--text-primary-muted);
+  display: flex;
+  align-items: center;
+}
+
+/* --- Emoji autocomplete (ContextMenu.module.css anatomy) --- */
+.emoji-autocomplete {
+  position: absolute;
+  bottom: 4rem; /* above the composer bar */
+  left: 1rem;
+  width: min(20rem, calc(100% - 2rem));
+  background: var(--form-surface-background); /* ContextMenu.module.css:31 */
+  border: 0.0625rem solid var(--background-modifier-accent); /* :32 */
+  border-radius: 0.5rem; /* :33 */
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.24); /* :34 */
+  z-index: var(--z-index-popout, 15000);
+  max-height: 16.25rem;
+  overflow-y: auto;
+  padding: 0.375rem; /* :30 */
+}
+.emoji-ac-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.3125rem 0.5rem;
+  border: 0.0625rem solid transparent;
+  border-radius: 0.375rem;
+  text-align: left;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.125rem;
+  cursor: pointer;
+  min-height: 2rem;
+}
+.emoji-ac-row:hover,
+.emoji-ac-row.selected {
+  background: var(--surface-interactive-hover-bg);
+  color: var(--text-primary);
+}
+.emoji-ac-char {
+  font-size: 1.25rem;
+}
+.emoji-ac-char img,
+img.emoji-ac-char {
+  width: 1.25rem;
+  height: 1.25rem;
+  object-fit: contain;
+  display: block;
+}
+.emoji-ac-code {
+  color: var(--text-primary-muted);
+  font-size: 0.8125rem;
+}
+.emoji-ac-guild {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-primary-muted);
+}
+
+/* --- Attachment chips --- */
+.composer-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.attachment-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--background-secondary-alt);
+  border: 0.0625rem solid var(--background-modifier-accent);
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+}
+.attachment-remove {
+  color: var(--text-primary-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.attachment-remove:hover {
+  color: var(--status-danger);
+}
+
+/* --- Reply preview bar (InputWrapper.module.css:30-32 stackSection) --- */
+.composer-reply {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.125rem;
+  background: var(--background-secondary);
+  border-top: 0.0625rem solid var(--user-area-divider-color); /* InputWrapper.module.css:31 */
+  border-radius: 0;
+  font-size: 0.875rem;
+  color: var(--text-primary-muted);
+}
+.composer-reply-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.composer-reply-name {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.composer-reply-cancel {
+  color: var(--text-primary-muted);
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.composer-reply-cancel:hover {
+  color: var(--status-danger);
+}
+
+/* --- Composer bar (TextareaInput.module.css:27-52) --- */
+.composer-bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* upload + textarea + emoji */
+  align-items: flex-start; /* top-align so a multi-line textarea grows down */
+  column-gap: 0.5rem;
+  background: var(--background-textarea, hsl(258, 10%, 22%)); /* :30 */
+  border-radius: var(--radius-xl, 0.75rem); /* :31 */
+  padding: 0 0.5rem;
+  min-height: 2.75rem;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* --- Attachment button (TextareaInput.module.css:5-6) --- */
+.composer-attach {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem; /* :5 (button-height) */
+  height: 2.25rem;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-primary-muted);
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin: 0;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition-fast, 100ms ease);
+}
+.composer-attach:hover {
+  color: var(--text-primary);
+}
+.composer-attach svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+/* --- Textarea input (TextareaInput.module.css:44-80) --- */
+.composer-input-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.6875rem 0; /* vertically center the 1.375rem line in the 2.75rem row */
+}
+.composer-input {
+  width: 100%;
+  background: transparent; /* :71 */
+  border: none; /* :78 */
+  outline: none; /* :79 */
+  resize: none; /* :66 */
+  overflow: hidden; /* :67 */
+  white-space: pre-wrap; /* :68 */
+  overflow-wrap: anywhere; /* :69 */
+  word-break: break-word; /* :70 */
+  color: var(--text-chat); /* :72 */
+  caret-color: var(--text-chat); /* :74 */
+  line-height: 1.375rem; /* :24 (textarea-line-height) */
+  font-family: inherit; /* :80 */
+  font-size: var(--font-size, 1rem); /* :4 */
+  padding: 0;
+  margin: 0;
+  max-height: 12.5rem;
+}
+.composer-input::placeholder {
+  color: var(--text-tertiary-muted);
+}
+
+/* --- Right-side action group (column 3: GIF + emoji, + Cancel in edit mode).
+   Wrapping all trailing buttons in one grid cell keeps them on a single row
+   (a flat list of buttons overflowed the 3-column grid onto a second row). --- */
+.composer-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.125rem;
+  flex-shrink: 0;
+}
+
+/* --- Emoji button (same anatomy as attach button) --- */
+.composer-emoji-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  color: var(--text-primary-muted);
+  flex-shrink: 0;
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition-fast, 100ms ease);
+}
+.composer-emoji-btn:hover {
+  color: var(--text-primary);
+}
+.composer-emoji-btn svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+/* --- Cancel button (edit mode) --- */
+.composer-cancel {
+  padding: 0.5rem 0.75rem;
+  color: var(--text-primary-muted);
+  font-weight: 500;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-radius: 0.375rem;
+}
+.composer-cancel:hover {
+  color: var(--status-danger);
+  background: var(--background-modifier-hover);
+}

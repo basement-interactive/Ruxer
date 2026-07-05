@@ -1,0 +1,29 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-3);
+	padding-bottom: var(--spacing-8);
+}
+
+.headerSearch {
+	margin-top: var(--spacing-3);
+	width: 100%;
+}
+
+.headerSearchInput {
+	width: 100%;
+}
+
+.loadingContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--spacing-8) 0;
+	flex: 1;
+}
+
+.sendButton {
+	flex-shrink: 0;
+}

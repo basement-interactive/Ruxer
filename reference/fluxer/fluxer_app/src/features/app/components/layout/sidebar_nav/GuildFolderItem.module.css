@@ -1,0 +1,305 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.folderContainer {
+	--folder-accent: var(--brand-primary);
+	--folder-fill: 10%;
+	--folder-hover-fill: 14%;
+	--folder-selected-fill: 18%;
+	--folder-expanded-fill: 8%;
+	--folder-item-size: var(--guild-folder-expanded-surface-size, var(--guild-list-item-box-size, 3rem));
+	--folder-item-box-size: var(--guild-folder-expanded-surface-size, var(--guild-list-item-box-size, 3rem));
+	--folder-item-gap: var(--guild-list-item-gap, 0.25rem);
+	--folder-item-inset: calc((var(--folder-item-box-size) - var(--folder-item-size)) / 2);
+	--folder-expanded-surface-size: var(--guild-folder-expanded-surface-size, var(--folder-item-box-size));
+	--folder-radius: calc(var(--folder-item-size) * 0.3);
+	--folder-surface: color-mix(
+		in srgb,
+		var(--surface-interactive-hover-bg) calc(100% - var(--folder-fill)),
+		var(--folder-accent) var(--folder-fill)
+	);
+	--folder-surface-hover: color-mix(
+		in srgb,
+		var(--surface-interactive-hover-bg) calc(100% - var(--folder-hover-fill)),
+		var(--folder-accent) var(--folder-hover-fill)
+	);
+	--folder-surface-selected: color-mix(
+		in srgb,
+		var(--surface-interactive-selected-bg) calc(100% - var(--folder-selected-fill)),
+		var(--folder-accent) var(--folder-selected-fill)
+	);
+	--folder-expanded-surface: color-mix(
+		in srgb,
+		var(--background-secondary) calc(100% - var(--folder-expanded-fill)),
+		var(--folder-accent) var(--folder-expanded-fill)
+	);
+	--folder-mini-surface: color-mix(in srgb, var(--background-secondary) 86%, var(--folder-accent) 14%);
+	--folder-icon-color: color-mix(in srgb, var(--text-primary) 86%, var(--folder-accent) 14%);
+	--guild-badge-surface: var(--folder-surface);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	align-items: center;
+	isolation: isolate;
+}
+
+:global(.theme-light) .folderContainer {
+	--folder-fill: 8%;
+	--folder-hover-fill: 12%;
+	--folder-selected-fill: 16%;
+	--folder-expanded-fill: 7%;
+	--folder-mini-surface: color-mix(in srgb, var(--background-primary) 88%, var(--folder-accent) 12%);
+}
+
+.folderContainer[data-hovered='true'] {
+	--folder-surface: var(--folder-surface-hover);
+}
+
+.folderContainer[data-selected='true'] {
+	--folder-surface: var(--folder-surface-selected);
+	--folder-icon-color: color-mix(in srgb, var(--text-primary) 72%, var(--folder-accent) 28%);
+}
+
+.folderContainer[data-expanded='true'] {
+	--guild-badge-surface: var(--folder-expanded-surface);
+}
+
+.folderIndicator {
+	position: absolute;
+	left: -0.15rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: var(--folder-item-size);
+	width: 0.5rem;
+	pointer-events: none;
+	container-type: layout size;
+	z-index: 2;
+}
+
+.folderIndicatorBar {
+	display: block;
+	width: 0.35rem;
+	border-radius: 0 var(--radius-full) var(--radius-full) 0;
+	background-color: var(--text-primary);
+}
+
+.relative {
+	position: relative;
+	height: var(--folder-item-size);
+	width: var(--folder-item-size);
+	border-radius: var(--folder-radius);
+}
+
+.collapsedFolder {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: repeat(2, 1fr);
+	gap: 0.125rem;
+	height: var(--folder-item-size);
+	width: var(--folder-item-size);
+	box-sizing: border-box;
+	flex-shrink: 0;
+	cursor: pointer;
+	border-radius: var(--folder-radius);
+	padding: 0.25rem;
+	transition:
+		border-radius 0.12s ease,
+		background-color 0.12s ease;
+}
+
+.collapsedFolderBackground {
+	position: absolute;
+	inset: 0;
+	height: var(--folder-item-size);
+	width: var(--folder-item-size);
+	border-radius: var(--folder-radius);
+	background-color: var(--folder-surface);
+	pointer-events: none;
+	z-index: 0;
+	transition:
+		background-color 0.12s ease,
+		border-radius 0.12s ease,
+		transform 0.12s ease;
+}
+
+.folderContainer[data-hovered='true']:not([data-expanded='true']) .collapsedFolderBackground,
+.folderContainer[data-selected='true']:not([data-expanded='true']) .collapsedFolderBackground {
+	transform: scale(1.03);
+}
+
+.miniGuildIcon {
+	width: 100%;
+	height: 100%;
+	border-radius: calc(var(--folder-radius) * 0.38);
+	background-size: cover;
+	background-position: center;
+	background-color: transparent;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+.miniGuildIconWithInitials {
+	background-color: var(--folder-mini-surface);
+}
+
+.miniGuildInitials {
+	font-size: 0.5rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	line-height: 1;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.folderBadge {
+	position: absolute;
+	right: -0.25rem;
+	bottom: -0.25rem;
+	z-index: 2;
+	pointer-events: auto;
+	border-radius: var(--radius-md);
+}
+
+.folderBadgeActive {
+	box-shadow: 0 0 0 0.1875rem var(--guild-badge-surface, var(--background-secondary));
+}
+
+.expandedFolderBackground {
+	position: absolute;
+	top: 0;
+	bottom: calc(var(--folder-item-gap) / 2);
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(var(--folder-expanded-surface-size) + 0.25rem);
+	border-radius: calc(var(--folder-item-box-size) * 0.32);
+	background-color: var(--folder-expanded-surface);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.folderHeader {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	height: calc(var(--folder-item-box-size) + var(--folder-item-gap));
+	width: 100%;
+	box-sizing: border-box;
+	align-items: center;
+	justify-content: center;
+	padding: var(--folder-item-inset);
+}
+
+.folderHeaderButton {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: var(--folder-item-size);
+	width: var(--folder-item-size);
+	box-sizing: border-box;
+	flex-shrink: 0;
+	cursor: pointer;
+	border-radius: var(--folder-radius);
+	padding: 0.25rem;
+	transition:
+		border-radius 0.12s ease,
+		background-color 0.12s ease;
+}
+
+.folderContainer[data-expanded='true'] .folderHeaderButton {
+	background-color: var(--folder-surface);
+}
+
+.folderContainer[data-hovered='true'] .folderHeaderButton,
+.folderContainer[data-selected='true'] .folderHeaderButton,
+.folderContainer[data-hovered='true'] .collapsedFolder,
+.folderContainer[data-selected='true'] .collapsedFolder,
+.folderContainer[data-hovered='true'] .collapsedFolderBackground,
+.folderContainer[data-selected='true'] .collapsedFolderBackground {
+	border-radius: calc(var(--folder-item-size) * 0.24);
+}
+
+.folderIcon {
+	width: 1.5rem;
+	height: 1.5rem;
+	color: var(--folder-icon-color);
+	transition: color 0.12s ease;
+}
+
+.expandedGuilds {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	gap: 0.0625rem;
+	padding-top: 0;
+	padding-bottom: calc(var(--folder-item-gap) * 0.5);
+}
+
+.folderTooltipContainer {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.375rem;
+	padding: 0.125rem 0;
+}
+
+.folderTooltipName {
+	min-width: 0;
+	overflow-wrap: anywhere;
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.dropIndicatorTop::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: var(--folder-expanded-surface-size);
+	transform: translateX(-50%);
+	height: 0.125rem;
+	background: var(--brand-primary-light);
+	border-radius: 0.0625rem;
+	z-index: 1;
+}
+
+.dropIndicatorBottom::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	width: var(--folder-expanded-surface-size);
+	transform: translateX(-50%);
+	height: 0.125rem;
+	background: var(--brand-primary-light);
+	border-radius: 0.0625rem;
+	z-index: 1;
+}
+
+.dropIndicatorInside .collapsedFolder,
+.dropIndicatorInside .folderHeaderButton {
+	outline: 0.125rem solid var(--brand-primary-light);
+	outline-offset: 0.125rem;
+	border-radius: 30%;
+}
+
+:global(.theme-light) .dropIndicatorTop::before,
+:global(.theme-light) .dropIndicatorBottom::after {
+	background: var(--brand-primary);
+}
+
+:global(.theme-light) .dropIndicatorInside .collapsedFolder,
+:global(.theme-light) .dropIndicatorInside .folderHeaderButton {
+	outline-color: var(--brand-primary);
+}

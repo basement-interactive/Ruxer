@@ -1,0 +1,114 @@
+/* Avatar — ported 1:1 from reference/fluxer/fluxer_app/src/features/ui/components/BaseAvatar.module.css.
+ * Every value below is traced to the source line. Re-authored clean (not copied
+ * verbatim) but producing identical visual output.
+ *
+ * The new flx-avatar* classes use the SVG-mask anatomy from the real client.
+ * Legacy .avatar* classes are kept for components still using the old class
+ * names, mapped to the same Fluxer token values.
+ */
+
+/* --- New SVG-mask avatar (BaseAvatar.module.css:3-150) --- */
+.flx-avatar {
+  position: relative; /* BaseAvatar.module.css:4 (container) */
+  display: inline-flex;
+  flex-shrink: 0;
+  /* overflow visible so the status dot can sit on top of the circle edge */
+  overflow: visible;
+  border-radius: 50%;
+  /* inline-size container so the speaking outline can scale with the avatar
+     (the 10cqi cap in the ring width below). */
+  container-type: inline-size;
+}
+/* Green active-speaker ring. Width: min(3px, 10% of avatar) so it stays
+   proportional on tiny voice-row avatars. Color #22c55e (green-500). */
+.flx-avatar--speaking {
+  outline-style: solid;
+  outline-width: min(0.1875rem, 10cqi);
+  outline-color: #22c55e;
+  outline-offset: 0;
+}
+.flx-avatar__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%; /* the SVG circle clips the image; this is a fallback for non-SVG-mask contexts */
+}
+.flx-avatar__fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85em;
+  user-select: none;
+  border-radius: 50%;
+}
+/* Status dot — positioned by inline style from the geometry table
+ * (GenerateAvatarMasks.ts:21-33). The dot sits in the cutout punched out of
+ * the avatar circle; its border ring is the surrounding background color. */
+.flx-avatar__status {
+  position: absolute; /* BaseAvatar.module.css:38 */
+  pointer-events: auto; /* :37 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; /* :47 */
+  border-style: solid; /* :41 */
+  box-sizing: border-box; /* :46 */
+  z-index: 1;
+}
+/* Status colors (from --status-* tokens, GenerateColorSystem.ts:464-467) */
+.flx-avatar__status--online { background: var(--status-online); }
+.flx-avatar__status--dnd { background: var(--status-dnd); }
+.flx-avatar__status--idle { background: var(--status-idle); }
+.flx-avatar__status--invisible { background: var(--status-offline); }
+
+/* --- Legacy classes (backwards compat) — mapped to Fluxer tokens --- */
+.avatar {
+  display: inline-flex;
+  border-radius: var(--radius-full, 624.9375rem);
+  overflow: visible;
+  flex-shrink: 0;
+  position: relative;
+}
+.avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full, 624.9375rem);
+  overflow: hidden;
+  display: flex;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85em;
+  user-select: none;
+}
+.avatar-status {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: var(--background-secondary, #2b2d31);
+  background: var(--status-online, #23a55a);
+  box-sizing: border-box;
+  z-index: 1;
+}
+.avatar-status-online { background: var(--status-online, #23a55a); }
+.avatar-status-dnd { background: var(--status-dnd, #f04747); }
+.avatar-status-idle { background: var(--status-idle, #f0b232); }
+.avatar-status-invisible { background: var(--status-offline, #80848e); }

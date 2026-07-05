@@ -1,0 +1,115 @@
+/* MessageStream — ported 1:1 from reference/fluxer/fluxer_app/src/features/channel/components/ChannelMessages.module.css.
+ * Every value below is traced to the source line. Re-authored clean (not copied
+ * verbatim) but producing identical visual output.
+ */
+
+/* --- Scroller container (ChannelMessages.module.css:3-14, 16-25) --- */
+.message-stream {
+  position: relative; /* :4 */
+  display: flex; /* :5 */
+  flex-direction: column; /* :6 */
+  flex: 1 1 0%; /* :7 */
+  min-height: 0; /* :8 */
+  min-width: 0; /* :9 */
+  height: 100%; /* :10 */
+  overflow-y: auto;
+  font-size: var(--font-size, 1rem); /* :11 */
+  --message-group-spacing: 1rem; /* :13 */
+  --scrollbar-track-bg: var(--background-secondary-lighter); /* :12 */
+}
+
+/* --- Scroller inner (ChannelMessages.module.css:61-76) --- */
+.message-stream-inner {
+  display: flex; /* :62 */
+  flex-direction: column; /* :63 */
+  justify-content: flex-end; /* :64 */
+  min-height: 100%; /* :65 */
+  padding-left: 0.75rem; /* :66 (mobile) */
+  padding-right: 0.75rem; /* :67 */
+  position: relative; /* :68 */
+  margin-top: auto;
+}
+
+/* Desktop padding override (ChannelMessages.module.css:71-76) */
+@media (min-width: 768px) {
+  .message-stream-inner {
+    padding-left: var(--chat-horizontal-padding, 1rem); /* :73 */
+    padding-right: var(--chat-horizontal-padding, 1rem); /* :74 */
+  }
+}
+
+/* --- Scroller spacer (ChannelMessages.module.css:35-41) --- */
+.message-stream::after {
+  content: "";
+  display: block;
+  height: var(--scroller-spacer-height, 1.75rem); /* :37 */
+  pointer-events: none; /* :38 */
+  width: 100%; /* :39 */
+  flex-shrink: 0; /* :40 */
+}
+
+/* --- Empty state --- */
+.message-stream-empty {
+  padding: 2rem; /* generous padding for the welcome state */
+  text-align: center;
+  color: var(--text-tertiary-muted);
+  margin-top: auto;
+}
+
+/* --- Loading indicator --- */
+.message-stream-loading-top {
+  padding: 0.5rem;
+  text-align: center;
+  color: var(--text-tertiary-muted);
+  font-size: 0.875rem;
+}
+
+/* --- Day divider --- */
+.day-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+  padding: 0 var(--chat-horizontal-padding, 1rem);
+}
+.day-divider-line {
+  flex: 1;
+  height: 0.0625rem;
+  background-color: var(--border-color);
+  opacity: 0.3;
+}
+.day-divider-label {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  line-height: 1.125rem;
+}
+
+/* --- Jump to bottom button ---
+ * The real client uses a "jump to present" bar (ChannelMessages.module.css:93-107):
+ * bg: var(--background-tertiary), border: 0.0625rem solid ..., border-radius: 0 0 0.5rem 0.5rem.
+ * Our floating button is a pragmatic adaptation — same colors, rounded. */
+.jump-to-bottom {
+  position: absolute;
+  bottom: 1rem; /* var(--spacing-4) */
+  right: 1rem; /* var(--spacing-4) */
+  width: 2.75rem; /* 44px — matches the guild-icon-size for visual consistency */
+  height: 2.75rem;
+  border-radius: var(--radius-full, 624.9375rem);
+  background: var(--background-tertiary); /* :97 (jumpToPresentBar) */
+  color: var(--text-secondary); /* :101 */
+  border: 0.0625rem solid color-mix(in srgb, var(--background-modifier-accent) 80%, transparent); /* :95 */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-index-elevated-3, 30); /* :83 */
+  transition: background var(--transition-fast, 100ms ease), transform var(--transition-fast, 100ms ease);
+}
+.jump-to-bottom:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-primary); /* :105 */
+  transform: translateY(-0.125rem);
+}

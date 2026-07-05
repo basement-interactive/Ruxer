@@ -1,0 +1,32 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.bar {
+	--mic-peak-percent: 0%;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 0.625rem;
+	padding: 0.75rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 0.5rem;
+	background: var(--background-secondary);
+}
+
+.meter {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+}
+
+.actionButton {
+	justify-self: end;
+	width: 2.5rem;
+	height: 2.5rem;
+}
+
+@media (max-width: 44rem) {
+	.bar {
+		grid-column: 1 / -1;
+		gap: 0.5rem;
+	}
+}

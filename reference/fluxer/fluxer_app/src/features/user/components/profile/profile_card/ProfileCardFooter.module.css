@@ -1,0 +1,22 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.footerSection {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	box-sizing: border-box;
+	gap: 0.5rem;
+	width: 100%;
+	padding-top: 1rem;
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+}
+
+.footerSection > * {
+	width: 100%;
+}
+
+:global(html:not(.auth-page):not(.mobile-layout)) .footerSection.footerSection :global(button) {
+	flex: 1 1 auto;
+	width: 100%;
+}

@@ -1,0 +1,31 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.dropIndicator {
+	position: absolute;
+	right: 0;
+	left: 0;
+	height: 0.125rem;
+	border-radius: 624.9375rem;
+	transition: background-color 150ms;
+}
+
+.dropIndicatorTop {
+	top: -0.125rem;
+}
+
+.dropIndicatorBottom {
+	bottom: -0.125rem;
+}
+
+.dropIndicatorValid {
+	background-color: var(--brand-primary-light);
+}
+
+.dropIndicatorInvalid {
+	background-color: var(--text-primary-muted);
+	opacity: 0.6;
+}
+
+:global(.theme-light) .dropIndicatorValid {
+	background-color: var(--brand-primary);
+}

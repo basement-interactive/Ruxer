@@ -1,0 +1,58 @@
+# Build-time optimizations. Applies to every crate in the workspace.
+#
+# The dominant cost of an incremental Rust build on Windows/MSVC is LINKING
+# (the default `link.exe` is single-threaded and slow on large binaries like
+# the Tauri app + livekit deps). Switching to LLVM's `lld-link` — a drop-in,
+# multi-threaded replacement for `link.exe` — cuts incremental link time
+# dramatically. `lld-link.exe` ships with LLVM (installed at C:\Program
+# Files\LLVM\bin) and is fully MSVC-ABI compatible.
+#
+# sccache caches compiled crate artifacts across builds/clean rebuilds, so the
+# heavy dependency graph (tauri, livekit, windows, reqwest, …) only compiles
+# once and is reused on every subsequent build — including after `cargo clean`
+# or switching branches. RUSTC_WRAPPER is the supported hook.
+
+[target.x86_64-pc-windows-msvc]
+linker = "lld-link.exe"
+# Static CRT (/MT) is REQUIRED once voice-native (livekit/webrtc-sys) is in the
+# build. webrtc-sys links a PREBUILT libwebrtc.lib compiled with the static CRT
+# (/MT), but Rust's MSVC default is the dynamic CRT (/MD) — mixing them fails
+# the final link with `lld-link: error: /failifmismatch: mismatch detected for
+# 'RuntimeLibrary': ... MD_DynamicRelease vs MT_StaticRelease` (webrtc-sys's
+# jsep.obj is /MT, Rust's own codegen objects are /MD). Forcing the whole
+# binary to the static CRT aligns them. This first surfaced on the first
+# Windows RELEASE build to include voice-native (v0.1.7); earlier Windows
+# builds predated the voice engine. Verified: does NOT break WebView2/Tauri
+# linking. (Linux is unaffected — different CRT model.)
+rustflags = ["-C", "target-feature=+crt-static"]
+
+# mold is a drop-in, massively parallel replacement for GNU ld — commonly
+# 5-10x faster at the final link step, which matters more once
+# [profile.release] LTO is thin instead of fat (see root Cargo.toml) and
+# linking becomes a bigger fraction of remaining build time. `-fuse-ld=mold`
+# via clang keeps the invocation drop-in; no change to the produced binary's
+# runtime behavior. Requires `mold` + `clang` installed in the Linux build
+# environment (`sudo apt-get install -y mold clang`).
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "link-arg=-fuse-ld=mold"]
+
+[build]
+# Cache all crate compilations. Requires sccache on PATH (cargo install
+# sccache). Safe: falls through to direct compilation if the wrapper is
+# missing at runtime is NOT automatic — if sccache is uninstalled, comment
+# this line out. See the [profile.dev] tuning in the root Cargo.toml.
+rustc-wrapper = "sccache"
+
+[env]
+# Pin sccache's coordination port away from its 4226 default. On this
+# machine WSL2's `wslrelay.exe` binds 4226 (unrelated to sccache — just
+# incidental port reuse), which made sccache's server fail to start with
+# "Address in use" and, worse, silently talk to whatever WAS listening
+# there instead of erroring — surfaced as compile failures ("failed to
+# execute compile") and a suspiciously WSL-looking cache path. Explicit port
+# avoids relying on "nothing else happens to be on 4226" being true.
+SCCACHE_SERVER_PORT = "4227"
+
+[net]
+git-fetch-with-cli = true

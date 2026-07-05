@@ -1,0 +1,166 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.gridViewport {
+	width: 100%;
+	max-width: 100%;
+	height: 100%;
+	min-width: 0;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	container-type: size;
+	container-name: voice-grid;
+}
+
+.gridViewportCompact .grid {
+	--voice-grid-gap: clamp(6px, 2.4cqh, 10px);
+	--voice-grid-side-padding: clamp(6px, 2cqh, 12px);
+	--voice-grid-vertical-padding: clamp(5px, 1.8cqh, 10px);
+	--voice-grid-min-tile-width: 148px;
+	--voice-grid-min-tile-height: calc(148px * 9 / 16);
+}
+
+.gridViewport[data-edge-to-edge='true'] .grid {
+	--voice-grid-side-padding: 0px;
+	--voice-grid-vertical-padding: 0px;
+}
+
+.grid {
+	--voice-grid-columns: 1;
+	--voice-grid-rows: var(--voice-grid-rows-1);
+	--voice-grid-gap: 12px;
+	--voice-grid-side-padding: 12px;
+	--voice-grid-vertical-padding: 14px;
+	--voice-grid-min-tile-width: 220px;
+	--voice-grid-min-tile-height: calc(220px * 9 / 16);
+	--voice-grid-available-width: max(0px, calc(100cqw - (2 * var(--voice-grid-side-padding))));
+	--voice-grid-available-height: max(0px, calc(100cqh - (2 * var(--voice-grid-vertical-padding))));
+	--voice-grid-column-width: max(
+		0px,
+		calc(
+			(var(--voice-grid-available-width) - ((var(--voice-grid-columns) - 1) * var(--voice-grid-gap))) /
+			var(--voice-grid-columns)
+		)
+	);
+	--voice-grid-row-height: max(
+		0px,
+		calc(
+			(var(--voice-grid-available-height) - ((var(--voice-grid-rows) - 1) * var(--voice-grid-gap))) /
+			var(--voice-grid-rows)
+		)
+	);
+	--voice-grid-multi-tile-width: min(var(--voice-grid-column-width), calc(var(--voice-grid-row-height) * 16 / 9));
+	--voice-grid-tile-width: var(--voice-grid-multi-tile-width);
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-content: center;
+	align-items: stretch;
+	width: 100%;
+	max-width: 100%;
+	height: 100%;
+	min-height: 100%;
+	gap: var(--voice-grid-gap);
+	padding-inline: var(--voice-grid-side-padding);
+	padding-block: var(--voice-grid-vertical-padding);
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.gridItem {
+	flex: 0 0 var(--voice-grid-tile-width);
+	width: var(--voice-grid-tile-width);
+	max-width: 100%;
+	min-width: var(--voice-grid-min-tile-width);
+	min-height: var(--voice-grid-min-tile-height);
+	aspect-ratio: 16 / 9;
+}
+
+.grid[data-tile-count='1'] {
+	align-content: center;
+}
+
+.grid[data-tile-count='1'] .gridItem {
+	max-width: var(--voice-grid-available-width);
+	max-height: var(--voice-grid-available-height);
+	min-width: 0;
+	min-height: 0;
+	aspect-ratio: 16 / 9;
+}
+
+.grid[data-tile-count='1'] .gridItem > * {
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 16 / 9;
+}
+
+.grid:has(> :nth-child(6)) {
+	--voice-grid-gap: 10px;
+}
+
+.grid:has(> :nth-child(12)) {
+	--voice-grid-gap: 8px;
+}
+
+.gridViewportCompact .grid:has(> :nth-child(12)) {
+	--voice-grid-gap: 6px;
+}
+
+.grid:has(> :nth-child(24)) {
+	--voice-grid-gap: 6px;
+}
+
+.gridViewportCompact .grid:has(> :nth-child(24)) {
+	--voice-grid-gap: 5px;
+}
+
+.grid:has(> :nth-child(40)) {
+	--voice-grid-gap: 4px;
+}
+
+@container voice-grid (max-width: 759px) {
+	.grid {
+		--voice-grid-side-padding: 8px;
+	}
+}
+
+@container voice-grid (max-width: 419px) {
+	.grid {
+		--voice-grid-side-padding: 6px;
+	}
+}
+
+@container voice-grid (max-height: 519px) {
+	.grid {
+		--voice-grid-vertical-padding: 10px;
+	}
+}
+
+@container voice-grid (max-height: 359px) {
+	.grid {
+		--voice-grid-vertical-padding: 8px;
+	}
+}
+
+@container voice-grid (min-width: 520px) and (min-height: 260px) {
+	.grid:has(> :nth-child(2)) {
+		--voice-grid-columns: 2;
+		--voice-grid-rows: var(--voice-grid-rows-2);
+	}
+}
+
+@container voice-grid (min-width: 860px) and (min-height: 360px) {
+	.grid:has(> :nth-child(5)) {
+		--voice-grid-columns: 3;
+		--voice-grid-rows: var(--voice-grid-rows-3);
+	}
+}
+
+@container voice-grid (min-width: 1180px) and (min-height: 460px) {
+	.grid:has(> :nth-child(10)) {
+		--voice-grid-columns: 4;
+		--voice-grid-rows: var(--voice-grid-rows-4);
+	}
+}

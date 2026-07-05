@@ -1,0 +1,92 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.form {
+	display: flex;
+	width: 100%;
+	min-width: 0;
+}
+
+.formControls {
+	display: flex;
+	align-items: flex-end;
+	gap: var(--spacing-2);
+	width: 100%;
+	min-width: 0;
+}
+
+.urlField {
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+.urlInput {
+	min-width: 0;
+}
+
+.submitButton {
+	flex: 0 0 auto;
+	min-width: 7rem;
+}
+
+.results {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-4);
+}
+
+.embedPreview {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--spacing-2);
+	width: 100%;
+	min-width: 0;
+}
+
+.codeSurface {
+	width: 100%;
+	min-width: 0;
+	display: flex;
+}
+
+.codeSurface :global(pre) {
+	width: 100%;
+	max-width: 100%;
+	user-select: inherit;
+	-webkit-user-select: inherit;
+}
+
+.codeSurface :global(code),
+.codeSurface :global(.hljs) {
+	user-select: inherit;
+	-webkit-user-select: inherit;
+}
+
+.codeSurface div[class*='codeContainer'],
+.codeSurface pre[class*='hljs'],
+.codeSurface pre,
+.codeSurface [class*='codeContainer'] {
+	max-width: unset !important;
+	width: 100% !important;
+}
+
+.statusText {
+	color: var(--text-primary-muted);
+	font-size: 0.875rem;
+}
+
+.errorText {
+	color: var(--accent-danger, #ef4444);
+	font-size: 0.875rem;
+}
+
+@media (max-width: 720px) {
+	.formControls {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.submitButton {
+		width: 100%;
+	}
+}

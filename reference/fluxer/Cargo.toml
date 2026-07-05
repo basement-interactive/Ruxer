@@ -1,0 +1,30 @@
+[workspace]
+members = [
+	"fluxer_admin",
+	"fluxer_app_proxy",
+	"fluxer_common",
+	"fluxer_marketing",
+	"fluxer_media_proxy",
+	"fluxer_gifs",
+	"fluxer_svc",
+	"fluxer_messages",
+	"fluxer_snowflakes",
+	"tools/ci",
+	"tools/content/update-frozen-snapshot",
+	"tools/dev",
+	"tools/i18n_auto",
+	"tools/marketing/update-gettext-catalogs",
+	"fluxer_users",
+	"fluxer_unfurl",
+	"packages/markdown_parser/rust",
+]
+exclude = [
+	"packages/markdown_parser/rust/fuzz",
+	"fluxer_desktop/native/webrtc-sender/vendor/tract-linalg-0.19.16",
+	"fluxer_desktop/native/webrtc-sender/vendor/tract-linalg-0.23.1",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "AGPL-3.0-or-later"

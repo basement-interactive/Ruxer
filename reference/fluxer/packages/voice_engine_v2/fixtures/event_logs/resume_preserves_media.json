@@ -1,0 +1,48 @@
+{
+	"name": "resume_preserves_media",
+	"steps": [
+		{
+			"name": "external establishment",
+			"event": {"type": "connection.externallyEstablished", "options": {"url": "wss://voice.fixture", "token": ""}},
+			"commands": []
+		},
+		{
+			"name": "camera publish requested",
+			"event": {"type": "camera.publishRequested", "options": {"deviceId": "camera-1"}},
+			"commands": [{"type": "camera.publish", "operationId": 1, "options": {"deviceId": "camera-1"}}]
+		},
+		{
+			"name": "camera publish succeeded",
+			"event": {"type": "camera.publishSucceeded", "operationId": 1},
+			"commands": []
+		},
+		{
+			"name": "resume re-establishes the same endpoint without replaying media",
+			"event": {"type": "connection.externallyEstablished", "options": {"url": "wss://voice.fixture", "token": ""}},
+			"commands": []
+		},
+		{
+			"name": "camera unpublish after resume plans a real command",
+			"event": {"type": "camera.unpublishRequested"},
+			"commands": [{"type": "camera.unpublish", "operationId": 2}]
+		},
+		{
+			"name": "camera unpublish succeeded",
+			"event": {"type": "camera.unpublishSucceeded", "operationId": 2},
+			"commands": []
+		},
+		{
+			"name": "true remote disconnect resets the session",
+			"event": {"type": "connection.remoteDisconnected", "reason": "network"},
+			"commands": []
+		}
+	],
+	"expected": {
+		"nextOperationId": 3,
+		"connectionStatus": "idle",
+		"activeUrl": null,
+		"desiredUrl": null,
+		"gatewayChannelId": null,
+		"lifecycleTearingDown": false
+	}
+}

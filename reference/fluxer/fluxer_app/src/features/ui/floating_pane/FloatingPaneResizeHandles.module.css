@@ -1,0 +1,103 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.handle {
+	position: absolute;
+	border: none;
+	background: transparent;
+	padding: 0;
+	z-index: 4;
+	pointer-events: auto;
+	touch-action: none;
+}
+
+.edgeTop {
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 0.75rem;
+	cursor: n-resize;
+}
+
+.edgeBottom {
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 0.75rem;
+	cursor: s-resize;
+}
+
+.edgeLeft {
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 0.75rem;
+	cursor: w-resize;
+}
+
+.edgeRight {
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: 0.75rem;
+	cursor: e-resize;
+}
+
+.cornerTopLeft,
+.cornerTopRight,
+.cornerBottomLeft,
+.cornerBottomRight {
+	width: 1.125rem;
+	height: 1.125rem;
+	z-index: 5;
+}
+
+.cornerTopLeft {
+	top: 0;
+	left: 0;
+	cursor: nw-resize;
+}
+
+.cornerTopRight {
+	top: 0;
+	right: 0;
+	cursor: ne-resize;
+}
+
+.cornerBottomLeft {
+	bottom: 0;
+	left: 0;
+	cursor: sw-resize;
+}
+
+.cornerBottomRight {
+	right: 0;
+	bottom: 0;
+	cursor: se-resize;
+}
+
+.cornerVisualHint {
+	position: absolute;
+	right: 0.25rem;
+	bottom: 0.25rem;
+	width: 0.625rem;
+	height: 0.625rem;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 150ms ease;
+	background: linear-gradient(
+		135deg,
+		transparent 0%,
+		transparent 50%,
+		var(--floating-pane-resize-hint-color, rgba(255, 255, 255, 0.75)) 50%,
+		var(--floating-pane-resize-hint-color, rgba(255, 255, 255, 0.75)) 60%,
+		transparent 60%,
+		transparent 70%,
+		var(--floating-pane-resize-hint-color, rgba(255, 255, 255, 0.55)) 70%,
+		var(--floating-pane-resize-hint-color, rgba(255, 255, 255, 0.55)) 80%,
+		transparent 80%
+	);
+}
+
+.cornerVisualHintVisible {
+	opacity: 1;
+}

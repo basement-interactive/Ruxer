@@ -1,0 +1,57 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.iconMedium {
+	height: 1.25rem;
+	width: 1.25rem;
+}
+
+.noteButtonContainer {
+	transition: opacity 0.3s ease-in-out;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.noteButtonContainerVisible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.noteButton {
+	cursor: pointer;
+	border: none;
+	background: transparent;
+	padding: 0;
+}
+
+.noteTooltipContent {
+	max-width: 13rem;
+	text-align: center;
+}
+
+.noteIconWrapper {
+	padding-top: 0.25rem;
+	color: var(--text-primary-muted);
+}
+
+.copyIdButtonContainer {
+	transition: opacity 0.3s ease-in-out;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.copyIdButtonContainerVisible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.copyIdButton {
+	cursor: pointer;
+	border: none;
+	background: transparent;
+	padding: 0;
+}
+
+.copyIdIconWrapper {
+	padding-top: 0.25rem;
+	color: var(--text-primary-muted);
+}

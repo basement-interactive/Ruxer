@@ -1,0 +1,53 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.app-layout-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  background: var(--bg-main);
+}
+
+/* When the member list is open, the main content gets a right border. */
+.app-layout:has(.member-list) .app-main {
+  border-right: 1px solid var(--border-color);
+}
+
+/* Reconnect banner: shown when the gateway is connecting/reconnecting. */
+.gateway-banner {
+  background: var(--brand);
+  color: #fff;
+  text-align: center;
+  padding: var(--sp-1) var(--sp-2);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.reaction-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 80px;
+}

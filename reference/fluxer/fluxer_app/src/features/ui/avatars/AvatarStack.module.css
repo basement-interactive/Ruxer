@@ -1,0 +1,84 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: calc(var(--avatar-size) + var(--avatar-overlap));
+	align-items: center;
+	width: fit-content;
+	height: calc(var(--avatar-size) + (2 * var(--avatar-outline, 0.125rem)) + var(--avatar-stack-extra-height, 0.375rem));
+	padding-right: calc(max(calc(0 - var(--avatar-overlap)), 0) + var(--avatar-outline, 0.125rem));
+	padding-block: var(--avatar-stack-padding-block-start, var(--avatar-outline, 0.125rem))
+		var(--avatar-stack-padding-block-end, 0.375rem);
+	flex-shrink: 0;
+	overflow: visible;
+}
+
+.container > *:first-child {
+	grid-column: 1;
+}
+
+.avatar {
+	width: var(--avatar-size);
+	height: var(--avatar-size);
+	border-radius: 50%;
+	position: relative;
+	grid-row: 1;
+	overflow: visible;
+}
+
+.avatarButton {
+	cursor: pointer;
+	border-radius: 50%;
+	border: none;
+	background-color: transparent;
+	padding: 0;
+	outline: none;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 0 0 var(--avatar-outline, 0.125rem) var(--avatar-stack-outline-color, var(--background-tertiary));
+	overflow: visible;
+}
+
+.avatarContent {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	box-shadow: 0 0 0 var(--avatar-outline, 0.125rem) var(--avatar-stack-outline-color, var(--background-tertiary));
+	overflow: visible;
+}
+
+.avatarContextMenuWrap {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.avatar.withMask {
+	overflow: visible;
+}
+
+.remainingCount {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	border: var(--avatar-outline, 0.125rem) solid var(--avatar-stack-outline-color, var(--background-tertiary));
+	background: var(--avatar-stack-outline-color, var(--background-tertiary));
+	color: var(--text-secondary);
+	font-size: var(--font-size-xxs, 0.625rem);
+	font-weight: 600;
+	width: var(--avatar-size);
+	height: var(--avatar-size);
+	grid-row: 1;
+	position: relative;
+	z-index: 1;
+}

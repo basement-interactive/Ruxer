@@ -1,0 +1,87 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	position: relative;
+	display: grid;
+	height: 31.125rem;
+	width: 31.125rem;
+	max-height: 100dvh;
+	max-width: 100dvw;
+	overflow: hidden;
+	border-radius: 0.5rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	background-color: var(--form-surface-background);
+}
+
+.containerWithTabs {
+	grid-template-rows: auto 1fr;
+}
+
+.containerNoTabs {
+	grid-template-rows: auto 1fr;
+}
+
+.header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-3);
+	border-bottom: 0.0625rem solid var(--background-modifier-hover);
+}
+
+.header:has(.nav),
+.header:has(.headerPortal:not(:empty)) {
+	padding: var(--spacing-3);
+}
+
+.headerPortal:empty {
+	display: none;
+}
+
+.nav {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-2);
+}
+
+.tabList {
+	display: flex;
+	gap: var(--spacing-2);
+}
+
+.tab {
+	flex: none;
+	border-radius: var(--radius-md);
+	padding: var(--spacing-1) var(--spacing-2);
+	font-weight: 600;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	transition:
+		color 0.1s ease,
+		background-color 0.1s ease;
+	cursor: pointer;
+}
+
+.tabActive {
+	background-color: var(--background-modifier-selected);
+	color: var(--text-primary);
+}
+
+.tabInactive {
+	background-color: transparent;
+	color: var(--text-primary-muted);
+	box-shadow: none;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.tabInactive:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.content {
+	position: relative;
+	display: grid;
+	grid-template-rows: 1fr auto;
+	overflow: hidden;
+	background-color: var(--background-primary);
+}

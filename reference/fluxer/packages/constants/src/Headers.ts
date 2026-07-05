@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+export const Headers = {
+	CONTENT_TYPE: 'Content-Type',
+	CONTENT_LENGTH: 'Content-Length',
+	CONTENT_DISPOSITION: 'Content-Disposition',
+	AUTHORIZATION: 'Authorization',
+	ACCEPT: 'Accept',
+	CACHE_CONTROL: 'Cache-Control',
+	USER_AGENT: 'User-Agent',
+	X_FORWARDED_FOR: 'X-Forwarded-For',
+	X_FORWARDED_PROTO: 'X-Forwarded-Proto',
+	X_FORWARDED_HOST: 'X-Forwarded-Host',
+	X_REQUEST_ID: 'X-Request-ID',
+	X_RATELIMIT_LIMIT: 'X-RateLimit-Limit',
+	X_RATELIMIT_REMAINING: 'X-RateLimit-Remaining',
+	X_RATELIMIT_RESET: 'X-RateLimit-Reset',
+	X_CONTENT_TYPE_OPTIONS: 'X-Content-Type-Options',
+	X_FRAME_OPTIONS: 'X-Frame-Options',
+	X_XSS_PROTECTION: 'X-XSS-Protection',
+	X_FLUXER_SUDO_MODE_JWT: 'X-Fluxer-Sudo-Mode-JWT',
+	X_FLUXER_VERSION: 'X-Fluxer-Version',
+	X_AUDIT_LOG_REASON: 'X-Audit-Log-Reason',
+	X_INTERNAL_API_KEY: 'X-Internal-API-Key',
+	X_AMZ_REQUEST_ID: 'x-amz-request-id',
+	X_AMZ_ID_2: 'x-amz-id-2',
+	X_ACCEL_BUFFERING: 'X-Accel-Buffering',
+} as const;

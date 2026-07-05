@@ -1,0 +1,120 @@
+[workspace]
+resolver = "2"
+members = ["core", "src-tauri", "capture-codec", "voice-native", "native-vendor/gpu-rebuild", "native-vendor/screen-frame-bus", "native-vendor/encoder-ring", "native-vendor/win-game-capture", "native-vendor/linux-screen-capture"]
+
+# --- Dev profile: optimized for FAST iterative compile+link ------------------
+# The goal is the shortest edit→build→run loop, not runtime speed of debug
+# builds. Levers:
+#   * debug = 1        line-tables-only debuginfo. Full backtraces still work,
+#                      but the object files are far smaller than debug=2, so
+#                      linking (the bottleneck) is much faster.
+#   * split-debuginfo  keep debuginfo OUT of the final binary → the linker
+#                      writes a smaller image → faster links.
+#   * codegen-units    max parallelism across CPU cores for our own crates.
+#   * incremental      only recompile changed codegen units (Cargo default;
+#                      pinned here so it is never accidentally off).
+[profile.dev]
+opt-level = 0
+debug = 1
+split-debuginfo = "unpacked"
+codegen-units = 256
+# incremental is OFF, not on: it is MUTUALLY EXCLUSIVE with sccache. rustc
+# refuses to let sccache cache any crate compiled with -C incremental
+# (sccache reports `CannotCache(incremental)` and every unit is a cache miss).
+# With sccache as our rustc-wrapper (.cargo/config.toml) caching the whole
+# ~1250s dependency graph across clean builds / branch switches / cargo clean
+# is worth far more than incremental's within-crate codegen-unit reuse —
+# especially since the heavy deps (livekit, webrtc-sys bindings, tauri, rustls,
+# image/color crates) change rarely and cache-restore is near-instant. Measured
+# 2026-07-04: with incremental=true, sccache hit rate was 0% (everything
+# CannotCache); turning it off lets sccache actually do its job.
+incremental = false
+
+# Dependencies compile ONCE and are then reused (and cached by sccache across
+# clean rebuilds). Optimizing them to opt-level 2 makes the app itself run
+# noticeably faster in dev (livekit codecs, image decode, crypto) at the cost
+# of a slower FIRST build only — a trade the user accepted. Our own crates
+# stay at opt-level 0 (above) so day-to-day recompiles remain fast.
+[profile.dev.package."*"]
+opt-level = 2
+debug = false
+codegen-units = 16
+
+# The screenshare downscale+JPEG hot path. It's a workspace member, so the
+# "*" dependency override above does NOT apply — without this explicit
+# override its (monomorphized-generic) loops run at opt-level 0 in dev, which
+# caps native screen share at a few fps with seconds of latency.
+[profile.dev.package.fluxer-capture-codec]
+opt-level = 3
+debug = false
+
+# Proc-macro / build-time crates: build them fast, they don't need to be fast
+# at runtime. Overrides the "*" rule above for these specific heavy ones.
+[profile.dev.build-override]
+opt-level = 0
+debug = false
+codegen-units = 256
+
+# --- Release profile: fast to BUILD, still fast to RUN -----------------------
+# This is a desktop chat client (network I/O, WebView2-rendered UI, occasional
+# JPEG encode for screen share) — not a numeric-hot-loop game binary — so the
+# usual "max cross-crate inlining at any build-time cost" release settings buy
+# little runtime benefit here while dominating total build time.
+#
+# LTO REMOVED (was "thin"). Even thin-LTO runs a whole-program optimize pass
+# over the ENTIRE ~110MB static graph (all of libwebrtc/livekit/tauri/windows)
+# at final-link time — it is NOT cached by sccache (sccache caches per-crate
+# codegen, not the link-time LTO merge) and it scales with total binary size,
+# so it was a large, fixed chunk of every release build. For an I/O-bound app
+# the cross-crate inlining it buys is imperceptible at runtime; dropping it
+# (`lto = false`) removes that entire phase. Each crate still optimizes
+# internally at opt-level 2. If a future profiler shows a hot cross-crate path
+# regressed, add thin-LTO back for JUST that dependency via a package override
+# rather than globally.
+#   * codegen-units = 256 max parallelism across cores at codegen (no LTO means
+#                          no serial merge to bottleneck on, so go wide).
+#   * incremental = false  blocks sccache caching otherwise
+#                          (CannotCache(incremental)); release builds are
+#                          clean/CI-style where the cached dep graph wins.
+[profile.release]
+lto = false
+codegen-units = 256
+incremental = false
+# opt-level 2: measurably faster to compile than 3 (less aggressive inlining/
+# vectorization work for LLVM) and within noise at runtime for an I/O-bound
+# app. The one genuinely hot loop (JPEG encode for screen share) keeps
+# opt-level 3 via the package override below.
+opt-level = 2
+strip = true
+
+[profile.release.package.fluxer-capture-codec]
+opt-level = 3
+
+# Upstream crates.io publish bug (confirmed, not fixable by pinning any
+# combination of published versions): every livekit >=0.7.4x requires
+# libwebrtc ^0.3.37/0.3.38, but the newest PUBLISHED webrtc-sys is 0.3.36 —
+# libwebrtc 0.3.37+ calls webrtc-sys APIs
+# (store_frame_metadata/FrameMetadata.user_data) that only exist in
+# webrtc-sys's git HEAD, never released to crates.io. Patched to the upstream
+# monorepo's git HEAD, where all three crates build against each other
+# directly and this version-skew is structurally impossible. Used by
+# voice-native (fluxer-voice-native).
+[patch.crates-io]
+livekit = { git = "https://github.com/livekit/rust-sdks", rev = "95187dff9324e474ebb27a6ee7d2213f9a1caad3", package = "livekit" }
+libwebrtc = { git = "https://github.com/livekit/rust-sdks", rev = "95187dff9324e474ebb27a6ee7d2213f9a1caad3", package = "libwebrtc" }
+
+# webrtc-sys is VENDORED (an EXACT copy of the same git rev 95187df, version
+# 0.3.36 — verified identical) so we can add a Windows NVENC arm to its build.rs.
+# The stock crate already ships the full NVENC C++ tree (src/nvidia/**, vendored
+# NvCodec headers, dynamic nvcuda.dll/nvEncodeAPI64.dll loading) and reuses the
+# same prebuilt libwebrtc (webrtc-51ef663) — the ONLY gap was build.rs wiring
+# those .cpp into the Windows arm (they were Linux-only).
+#
+# CRUCIAL: webrtc-sys is pulled in as a GIT dependency (livekit → libwebrtc →
+# webrtc-sys, all from the rust-sdks monorepo at rev 95187df), NOT from
+# crates.io. A [patch.crates-io] entry therefore does NOT match it (cargo emits
+# "patch ... was not used"). To override a git-sourced crate you must patch its
+# GIT SOURCE URL. Same version (0.3.36) is required for the patch to apply.
+# ROLLBACK: delete this whole [patch."...rust-sdks"] section.
+[patch."https://github.com/livekit/rust-sdks"]
+webrtc-sys = { path = "vendor/webrtc-sys" }

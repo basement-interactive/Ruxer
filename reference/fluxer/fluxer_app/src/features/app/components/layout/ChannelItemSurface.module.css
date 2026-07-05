@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.channelItemSurface {
+	--channel-item-hover-background: var(--surface-interactive-hover-bg);
+	--channel-item-selected-background: var(--surface-interactive-selected-bg);
+	--background-modifier-hover: var(--channel-item-hover-background);
+	--background-modifier-selected: var(--channel-item-selected-background);
+}
+
+.channelItemSurfaceSelected {
+	color: var(--surface-interactive-selected-color);
+}
+
+.channelItemFocusRing {
+	border-radius: 0.5rem;
+}

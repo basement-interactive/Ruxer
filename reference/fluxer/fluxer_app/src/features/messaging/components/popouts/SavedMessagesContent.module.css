@@ -1,0 +1,12 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.scroller {
+	flex: 1;
+	min-height: 0;
+	min-width: 0;
+	padding: 0.5rem 0.75rem 0.75rem;
+}
+
+.messageCard {
+	margin-bottom: 1rem;
+}

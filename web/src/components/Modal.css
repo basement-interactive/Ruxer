@@ -1,0 +1,183 @@
+/* Modal — ported 1:1 from reference/fluxer/fluxer_app/src/features/app/components/dialogs/Modal.module.css.
+ * Every value below is traced to the source line. Re-authored clean (not
+ * copied verbatim) but producing identical visual output.
+ *
+ * The source gates hover/active on a window-focus class chain
+ * (html.window-focused, html.unfocused-fully-interactive:not(.window-focus-activation-guard)).
+ * Our app doesn't have that machinery, so we apply hover on standard `:hover`
+ * (matching the visible behavior when the window is focused, the normal case).
+ * Hover *values* are identical to the source.
+ */
+
+/* --- Layer (Modal.module.css:10-18) --- */
+.flx-modal-layer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-index-modal, 10000);
+}
+
+/* --- Backdrop (Modal.module.css:3-8, 37-41) --- */
+.flx-modal-backdrop {
+  background: hsl(0deg 0% 0%); /* :4 */
+  inset: 0; /* :5 */
+  pointer-events: none; /* :6 */
+  position: fixed; /* :7 */
+}
+.flx-modal-backdrop--centered {
+  background: rgba(0, 0, 0, 0.35); /* :38 */
+  backdrop-filter: blur(0.5rem); /* :39 */
+  -webkit-backdrop-filter: blur(0.5rem); /* :40 */
+  pointer-events: auto;
+}
+
+/* --- Root panel (Modal.module.css:124-169) --- */
+.flx-modal-root {
+  position: relative; /* :125 */
+  margin: 0 auto; /* :126 */
+  max-height: calc(100svh - 3rem); /* :127 */
+  display: flex; /* :128 */
+  flex-direction: column; /* :129 */
+  background-color: var(--background-secondary); /* :130 */
+  border: 0.0625rem solid var(--background-header-secondary); /* :131 */
+  border-radius: 0.5rem; /* :132 */
+  box-shadow:
+    0 0 0 0.0625rem hsla(223, 7%, 20%, 0.08),
+    0 0.5rem 1.5rem -0.25rem rgba(0, 0, 0, 0.25),
+    0 1.25rem 3rem -0.5rem rgba(0, 0, 0, 0.2); /* :133-136 */
+  overflow: hidden; /* :137 */
+  pointer-events: all; /* :138 */
+}
+
+/* --- Sizes (Modal.module.css:151-169) --- */
+.flx-modal-root--medium {
+  min-height: 25rem; /* :152 */
+  width: 37.5rem; /* :153 */
+}
+.flx-modal-root--small {
+  min-height: 12.5rem; /* :157 */
+  width: 27.5rem; /* :158 */
+}
+.flx-modal-root--large {
+  min-height: 25rem; /* :162 */
+  width: 50rem; /* :163 */
+}
+.flx-modal-root--xlarge {
+  height: min(60rem, calc(100svh - 2.5rem)); /* :167 */
+  width: min(92rem, calc(100vw - 2.5rem)); /* :168 */
+}
+.flx-modal-root--fullscreen {
+  position: relative; /* :172 */
+  flex: 1 1 auto; /* :173 */
+  height: calc(100% - 0.125rem); /* :174 */
+  min-height: 0; /* :175 */
+  max-height: calc(var(--fullscreen-available-height, 100vh) - 0.125rem); /* :176 */
+  width: calc(100% - 0.125rem); /* :177 */
+  max-width: calc(clamp(60rem, 96vw, 87.5rem) - 0.125rem); /* :178 */
+  border: 0.0625rem solid var(--background-header-secondary); /* :179 */
+  border-radius: clamp(0.5rem, 1vw, 0.75rem); /* :180 */
+  box-sizing: border-box; /* :181 */
+  padding: 0; /* :182 */
+  background: var(--background-secondary); /* :183 */
+  box-shadow:
+    0 0 0 0.0625rem hsla(223, 7%, 20%, 0.08),
+    0 0.5rem 1.5rem -0.25rem rgba(0, 0, 0, 0.25),
+    0 1.25rem 3rem -0.5rem rgba(0, 0, 0, 0.2); /* :184-187 */
+  overflow: hidden; /* :188 */
+  display: flex; /* :189 */
+  flex-direction: column; /* :190 */
+  margin: auto; /* :191 */
+}
+
+/* --- Layout regions (Modal.module.css:268-339) --- */
+.flx-modal-layout {
+  flex: 0 0 auto; /* :269 */
+  position: relative; /* :270 */
+  z-index: 1; /* :271 */
+  overflow-x: hidden; /* :272 */
+  padding: 1rem; /* :273 */
+}
+.flx-modal-layout--header {
+  display: flex; /* :277 */
+  flex-direction: column; /* :278 */
+  gap: 0.875rem; /* :279 */
+  background-color: var(--background-secondary); /* :280 */
+}
+.flx-modal-layout--footer {
+  display: flex; /* :293 */
+  flex-wrap: wrap; /* :294 */
+  align-items: center; /* :295 */
+  justify-content: flex-end; /* :296 */
+  gap: 0.5rem; /* :297 */
+  background-color: var(--background-secondary); /* :298 */
+}
+.flx-modal-layout--footer > * {
+  flex: 0 0 auto; /* :301 */
+  min-width: fit-content; /* :302 */
+}
+
+/* --- Header inner (Modal.module.css:340-391) --- */
+.flx-modal-headerInner {
+  display: flex; /* :341 */
+  align-items: center; /* :342 */
+  justify-content: space-between; /* :343 */
+}
+.flx-modal-headerText {
+  display: flex; /* :345 */
+  align-items: center; /* :346 */
+  gap: 0.5rem; /* :347 */
+}
+.flx-modal-headerTitle {
+  color: var(--text-primary); /* :353 */
+  font-size: 1.125rem; /* :354 */
+  font-weight: 600; /* :355 */
+  line-height: 1.25rem; /* :356 */
+  margin: 0; /* :357 */
+}
+.flx-modal-closeBtn {
+  display: flex; /* :361 */
+  align-items: center; /* :362 */
+  justify-content: center; /* :363 */
+  width: 2rem; /* :364 */
+  height: 2rem; /* :365 */
+  background: transparent; /* :366 */
+  color: var(--text-primary-muted); /* :367 */
+  cursor: pointer; /* :368 */
+  opacity: 0.5; /* :369 */
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease,
+    opacity 0.2s ease-in-out; /* :370-373 */
+  border: none; /* :374 */
+  padding: 0.25rem; /* :375 */
+  border-radius: 0.25rem; /* :376 */
+}
+.flx-modal-closeBtn:hover {
+  background: var(--background-modifier-hover); /* :384 */
+  color: var(--text-primary); /* :385 */
+  opacity: 1; /* :386 */
+}
+.flx-modal-closeBtn:active {
+  opacity: 0.8; /* :390 */
+}
+
+/* --- Description (Modal.module.css:464-469) --- */
+.flx-modal-description {
+  display: block;
+  color: var(--text-primary-muted);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* --- Content (Modal.module.css:393-404) --- */
+.flx-modal-content {
+  flex: 1 1 auto; /* :394 */
+  height: 100%; /* :395 */
+  padding: 0 1rem 1rem; /* :396 */
+  overflow-y: auto; /* :397 */
+  -webkit-overflow-scrolling: touch; /* :398 */
+  overscroll-behavior: contain; /* :399 */
+}

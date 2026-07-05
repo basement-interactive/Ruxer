@@ -1,0 +1,30 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.feedHiddenOverlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	background-color: var(--background-tertiary);
+	border-radius: inherit;
+	overflow: hidden;
+	background-clip: padding-box;
+	z-index: 10;
+}
+
+.feedHiddenText {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--text-secondary);
+	text-align: center;
+	padding: 0 1rem;
+}
+
+.feedHiddenButton {
+	font-size: 0.875rem;
+	font-weight: 600;
+	padding: 0.5rem 1rem;
+}

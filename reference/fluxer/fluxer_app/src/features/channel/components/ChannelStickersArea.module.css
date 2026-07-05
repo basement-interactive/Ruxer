@@ -1,0 +1,96 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	border-color: var(--background-header-secondary);
+	background-color: var(--background-secondary-lighter);
+	padding: 0.5rem 1rem;
+	width: fit-content;
+}
+
+.withAttachments {
+	border-top-width: 0.0625rem;
+	border-top-style: solid;
+}
+
+.standalone {
+	border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+	border-width: 0.0625rem;
+	border-style: solid;
+}
+
+.content {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.stickerPreview {
+	position: relative;
+	display: flex;
+	height: 4rem;
+	width: 4rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius-md);
+	background-color: var(--background-tertiary);
+}
+
+.stickerImage {
+	height: 100%;
+	width: 100%;
+	border-radius: var(--radius-sm);
+	object-fit: contain;
+	padding: 0.25rem;
+}
+
+.gifBadge {
+	position: absolute;
+	top: 0.25rem;
+	left: 0.25rem;
+	border-radius: var(--radius-sm);
+	background-color: rgba(0, 0, 0, 0.6);
+	padding: 0.125rem 0.25rem;
+	font-weight: 600;
+	font-size: 0.625rem;
+	color: white;
+	line-height: 1;
+}
+
+.stickerInfo {
+	flex: 1;
+}
+
+.stickerName {
+	font-weight: 500;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.stickerDescription {
+	color: var(--text-primary-muted);
+	font-size: 0.75rem;
+}
+
+.removeButton {
+	display: flex;
+	height: 2rem;
+	width: 2rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius-md);
+	color: var(--text-primary-muted);
+	transition:
+		color 0.15s,
+		background-color 0.15s;
+	cursor: pointer;
+}
+
+.removeButton:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.icon {
+	height: 1.25rem;
+	width: 1.25rem;
+}

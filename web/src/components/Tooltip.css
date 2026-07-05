@@ -1,0 +1,106 @@
+/* Tooltip — ported 1:1 from reference/fluxer/fluxer_app/src/features/ui/tooltip/Tooltip.module.css.
+ * Every value below is traced to the source line. Re-authored clean (not copied
+ * verbatim) but producing identical visual output.
+ */
+
+.flx-tooltip-trigger {
+  display: inline-flex; /* :178 */
+  position: relative;
+}
+
+/* --- Tooltip surface (Tooltip.module.css:3-41) --- */
+.flx-tooltip {
+  --tooltip-surface: var(--settings-surface-background, var(--form-surface-background)); /* :4 */
+  --tooltip-border-width: 0.0625rem; /* :5 */
+  --tooltip-border-color: var(--settings-border-color, var(--background-modifier-accent)); /* :6 */
+  --tooltip-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.22); /* :7 */
+  --tooltip-danger-text: color-mix(in srgb, var(--status-danger) 78%, var(--text-primary) 22%); /* :8-11 */
+  --tooltip-danger-surface: color-mix(in srgb, var(--status-danger) 8%, var(--form-surface-background)); /* :12-15 */
+  --tooltip-danger-border: color-mix(in srgb, var(--status-danger) 32%, transparent); /* :16-19 */
+  --tooltip-active-surface: var(--tooltip-surface); /* :20 */
+  --tooltip-active-border-color: var(--tooltip-border-color); /* :21 */
+  --tooltip-pointer-size: 0.625rem; /* :24 */
+  --tooltip-pointer-half-size: calc(var(--tooltip-pointer-size) / 2); /* :25 */
+  position: absolute; /* positioned relative to the trigger */
+  z-index: var(--z-index-tooltip, 45000); /* :27 */
+  pointer-events: none; /* :28 */
+  will-change: opacity, transform; /* :29 */
+  box-sizing: border-box; /* :30 */
+  max-width: 11.875rem; /* :31 */
+  border: var(--tooltip-border-width) solid var(--tooltip-active-border-color); /* :32 */
+  border-radius: 0.5rem; /* :33 */
+  background: var(--tooltip-active-surface); /* :34 */
+  color: var(--text-primary); /* :35 */
+  font-size: 0.8125rem; /* :36 */
+  font-weight: 500; /* :37 */
+  line-height: 1.125rem; /* :38 */
+  word-wrap: break-word; /* :39 */
+  box-shadow: var(--tooltip-shadow); /* :40 */
+  white-space: nowrap;
+}
+
+/* Light-theme shadow override (Tooltip.module.css:43-45) */
+.theme-light .flx-tooltip,
+:root[data-theme="light"] .flx-tooltip {
+  --tooltip-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.12); /* :44 */
+}
+
+/* --- Content (Tooltip.module.css:52-65) --- */
+.flx-tooltip__content {
+  padding: 0.4375rem 0.625rem; /* :53 */
+  overflow: hidden; /* :54 */
+  white-space: normal; /* :55 */
+  word-break: break-word; /* :56 */
+  text-align: center; /* :57 */
+}
+.flx-tooltip__content--large {
+  padding: 0.625rem 0.875rem; /* :62 */
+  font-size: 0.9375rem; /* :63 */
+  line-height: 1.25rem; /* :64 */
+}
+
+/* --- Positions (Tooltip.module.css:67-111) --- */
+/* Top: tooltip appears above the trigger. */
+.flx-tooltip--top {
+  bottom: 100%; /* place above */
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.5rem;
+  transform-origin: 50% 100%; /* :68 */
+}
+/* Bottom: below the trigger. */
+.flx-tooltip--bottom,
+.flx-tooltip--center {
+  top: 100%; /* place below */
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.5rem;
+  transform-origin: 50% 0%; /* :80 */
+}
+/* Left: to the left of the trigger. */
+.flx-tooltip--left {
+  right: 100%; /* place left */
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 0.5rem;
+  transform-origin: 100% 50%; /* :92 */
+}
+/* Right: to the right of the trigger. */
+.flx-tooltip--right {
+  left: 100%; /* place right */
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0.5rem;
+  transform-origin: 0% 50%; /* :103 */
+}
+
+/* --- Variants (Tooltip.module.css:113-159) --- */
+.flx-tooltip--primary {
+  --tooltip-active-surface: var(--tooltip-surface); /* :114 */
+  --tooltip-active-border-color: var(--tooltip-border-color); /* :115 */
+}
+.flx-tooltip--danger {
+  --tooltip-active-surface: var(--tooltip-danger-surface); /* :154 */
+  --tooltip-active-border-color: var(--tooltip-danger-border); /* :155 */
+  color: var(--tooltip-danger-text); /* :158 */
+}

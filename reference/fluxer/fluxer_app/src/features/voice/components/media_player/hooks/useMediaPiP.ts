@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import {supportsDisablePictureInPicture} from '@app/features/platform/types/Browser';
+import {Logger} from '@app/features/platform/utils/AppLogger';
+import {useCallback, useEffect, useState} from 'react';
+
+const logger = new Logger('useMediaPiP');
+
+export interface UseMediaPiPOptions {
+	videoRef: React.RefObject<HTMLVideoElement | null> | React.RefObject<HTMLVideoElement>;
+	onPiPChange?: (isPiP: boolean) => void;
+}
+
+export interface UseMediaPiPReturn {
+	isPiP: boolean;
+	supportsPiP: boolean;
+	enterPiP: () => Promise<void>;
+	exitPiP: () => Promise<void>;
+	togglePiP: () => Promise<void>;
+}
+
+export function useMediaPiP(options: UseMediaPiPOptions): UseMediaPiPReturn {
+	const {videoRef, onPiPChange} = options;
+	const [isPiP, setIsPiP] = useState(false);
+	const [supportsPiP] = useState(() => {
+		if (!document.pictureInPictureEnabled) return false;
+		return true;
+	});
+	useEffect(() => {
+		const video = videoRef.current;
+		if (!video) return;
+		const handleEnterPiP = () => {
+			setIsPiP(true);
+			onPiPChange?.(true);
+		};
+		const handleLeavePiP = () => {
+			setIsPiP(false);
+			onPiPChange?.(false);
+		};
+		video.addEventListener('enterpictureinpicture', handleEnterPiP);
+		video.addEventListener('leavepictureinpicture', handleLeavePiP);
+		if (document.pictureInPictureElement === video) {
+			setIsPiP(true);
+		}
+		return () => {
+			video.removeEventListener('enterpictureinpicture', handleEnterPiP);
+			video.removeEventListener('leavepictureinpicture', handleLeavePiP);
+		};
+	}, [videoRef, onPiPChange]);
+	const enterPiP = useCallback(async () => {
+		const video = videoRef.current;
+		if (!video || !supportsPiP) return;
+		if (supportsDisablePictureInPicture(video) && video.disablePictureInPicture) return;
+		try {
+			await video.requestPictureInPicture();
+		} catch (error) {
+			logger.error('Failed to enter PiP:', error);
+		}
+	}, [videoRef, supportsPiP]);
+	const exitPiP = useCallback(async () => {
+		if (!document.pictureInPictureElement) return;
+		try {
+			await document.exitPictureInPicture();
+		} catch (error) {
+			logger.error('Failed to exit PiP:', error);
+		}
+	}, []);
+	const togglePiP = useCallback(async () => {
+		if (isPiP) {
+			await exitPiP();
+		} else {
+			await enterPiP();
+		}
+	}, [isPiP, enterPiP, exitPiP]);
+	return {
+		isPiP,
+		supportsPiP,
+		enterPiP,
+		exitPiP,
+		togglePiP,
+	};
+}

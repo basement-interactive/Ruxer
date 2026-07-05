@@ -1,0 +1,27 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	position: relative;
+	display: grid;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+}
+
+.deleteButton {
+	--right-position: -2rem;
+	position: absolute;
+	top: 0.25rem;
+	right: var(--right-position);
+	z-index: 10;
+	display: flex;
+	height: 1.5rem;
+	width: 1.5rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius-sm);
+	background: var(--background-tertiary);
+	color: var(--text-tertiary);
+	transition: all 150ms ease;
+	cursor: pointer;
+}

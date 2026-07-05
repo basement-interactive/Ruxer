@@ -1,0 +1,35 @@
+# VENDORED copy of livekit rust-sdks git rev 95187df webrtc-sys 0.3.36.
+# The upstream manifest inherited edition/license/repository + several deps from
+# the monorepo's [workspace]. Since this crate now lives OUTSIDE that workspace
+# (patched in by path from fluxer-rust), those `.workspace = true` refs can't
+# resolve — they are pinned here to the exact literals the git rev's workspace
+# defined (verified against the checkout). webrtc-sys-build stays on the git rev
+# so only THIS crate is vendored (its build subcrate is unchanged upstream).
+[package]
+name = "webrtc-sys"
+version = "0.3.36"
+edition = "2021"
+homepage = "https://livekit.io"
+license = "Apache-2.0"
+description = "Unsafe bindings to libwebrtc"
+repository = "https://github.com/livekit/rust-sdks"
+
+[features]
+default = []
+
+[dependencies]
+cxx = "1.0"
+log = "0.4"
+
+[build-dependencies]
+webrtc-sys-build = { git = "https://github.com/livekit/rust-sdks", rev = "95187dff9324e474ebb27a6ee7d2213f9a1caad3", package = "webrtc-sys-build" }
+cxx-build = "1.0"
+glob = "0.3"
+cc = { version = "1.0", features = ["parallel"] }
+pkg-config = "0.3.22"
+
+[target.'cfg(target_os = "linux")'.build-dependencies]
+pkg-config = "0.3.22"
+
+[dev-dependencies]
+env_logger = "0.11"

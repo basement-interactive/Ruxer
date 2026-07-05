@@ -1,0 +1,88 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.empty {
+	display: flex;
+	height: 8rem;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-tertiary);
+}
+
+.container {
+	display: flex;
+	height: 12rem;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0.75rem 1rem;
+}
+
+.heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-weight: 500;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.attribution {
+	height: 1rem;
+	width: auto;
+	color: var(--text-tertiary);
+}
+
+.scroller {
+	display: flex;
+	flex-direction: row;
+}
+
+.scroller > div {
+	gap: 0.25rem;
+}
+
+.gifButton {
+	position: relative;
+	display: flex;
+	height: 8rem;
+	width: 12rem;
+	flex-shrink: 0;
+	cursor: pointer;
+	flex-direction: column;
+	overflow: hidden;
+	border-radius: 0.5rem;
+	border: 0.125rem solid transparent;
+	background-color: var(--background-secondary);
+	transition: none;
+}
+
+.gifButton:hover {
+	border-color: var(--brand-primary-light);
+}
+
+.gifButtonSelected {
+	border-color: var(--brand-primary-light);
+}
+
+:global(.theme-light) .gifButton:hover {
+	border-color: var(--brand-primary);
+}
+
+:global(.theme-light) .gifButtonSelected {
+	border-color: var(--brand-primary);
+}
+
+.gifVideoWrapper {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+.gifVideo {
+	display: block;
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+}

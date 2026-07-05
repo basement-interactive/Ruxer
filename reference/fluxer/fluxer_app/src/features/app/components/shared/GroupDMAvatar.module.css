@@ -1,0 +1,49 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	position: relative;
+	flex-shrink: 0;
+}
+
+.statusDot {
+	pointer-events: auto;
+	position: absolute;
+}
+
+.iconImageContainer {
+	position: absolute;
+	inset: 0;
+	border-radius: 624.9375rem;
+	background-color: var(--background-secondary);
+	background-position: center;
+	background-size: cover;
+}
+
+.defaultIconContainer {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	border-radius: 624.9375rem;
+	background-color: var(--background-secondary);
+}
+
+.defaultIcon {
+	color: white;
+}
+
+.avatarPosition {
+	position: absolute;
+	border-radius: 624.9375rem;
+}
+
+.avatarWrapper {
+	position: absolute;
+	border-radius: 624.9375rem;
+}
+
+.multiAvatarContainer {
+	position: relative;
+	flex-shrink: 0;
+	border-radius: 624.9375rem;
+}

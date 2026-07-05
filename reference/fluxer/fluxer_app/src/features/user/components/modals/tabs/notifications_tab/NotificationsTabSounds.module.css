@@ -1,0 +1,325 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+}
+
+.hint {
+	color: var(--text-primary-muted);
+	font-size: 0.8125rem;
+	line-height: 1.2rem;
+}
+
+.customBadge {
+	border-radius: 0.25rem;
+	background-color: var(--background-modifier-accent);
+	padding: 0.125rem 0.5rem;
+	font-weight: 500;
+	color: var(--text-tertiary);
+	font-size: 0.75rem;
+	line-height: 1rem;
+}
+
+.soundLabel {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.0625rem;
+	min-width: 0;
+}
+
+.soundLabelTitle {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-width: 0;
+	max-width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.previewLink {
+	border: none;
+	background: transparent;
+	padding: 0;
+	color: var(--text-link);
+	font-size: 0.75rem;
+	line-height: 1rem;
+	cursor: pointer;
+	text-align: left;
+}
+
+.previewLink:hover:enabled {
+	text-decoration-line: underline;
+}
+
+.previewLink:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.iconButton {
+	display: flex;
+	height: 1.75rem;
+	width: 1.75rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.25rem;
+	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 150ms;
+	cursor: pointer;
+}
+
+.iconButton:enabled:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.iconButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.uploadIcon {
+	color: var(--text-primary);
+}
+
+.deleteIcon {
+	color: var(--status-danger);
+}
+
+.actionsContainer {
+	margin-top: 0.25rem;
+	display: flex;
+	gap: 0.75rem;
+}
+
+.actionButton {
+	font-weight: 500;
+	color: var(--text-link);
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	cursor: pointer;
+}
+
+.actionButton:hover {
+	text-decoration-line: underline;
+}
+
+.actionButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.masterRow {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 0.5rem;
+	background: var(--background-secondary);
+	padding: 0.75rem;
+}
+
+.masterHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	min-height: 1.75rem;
+}
+
+.masterLabel {
+	font-weight: 600;
+	font-size: 0.9375rem;
+	color: var(--text-primary);
+}
+
+.masterDescription {
+	margin: 0;
+	color: var(--text-primary-muted);
+	font-size: 0.8125rem;
+	line-height: 1.125rem;
+}
+
+.soundListFrame {
+	position: relative;
+	overflow: hidden;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 0.5rem;
+	background: var(--background-secondary);
+}
+
+.soundListFrame [data-flx='ui.switch-group.container'] {
+	margin: 0;
+}
+
+.soundListFrame [data-flx='ui.switch-group.switch-group-custom-item.group'] {
+	height: 3.5rem;
+	padding: 0 0.75rem;
+}
+
+.soundListFrame [data-flx='ui.switch-group.switch-group-custom-item.label-text'] {
+	width: 100%;
+	min-width: 0;
+}
+
+.soundListFrame [data-flx='ui.switch-group.switch-group-custom-item.extra-content'] {
+	gap: 0.375rem;
+}
+
+.soundListFrameTruncated {
+	padding-bottom: 0.25rem;
+}
+
+.soundListFade {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	height: 4rem;
+	pointer-events: none;
+	background: linear-gradient(
+		to bottom,
+		color-mix(in srgb, var(--background-secondary) 0%, transparent),
+		var(--background-secondary) 88%
+	);
+}
+
+.extraSounds {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.extraSounds > :global(.group:last-child) {
+	border-bottom: 0;
+}
+
+.revealRow {
+	display: flex;
+	justify-content: center;
+	margin-top: -0.375rem;
+}
+
+.revealButton {
+	position: relative;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.375rem;
+	min-height: 2rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: 62.4375rem;
+	background: color-mix(in srgb, var(--background-secondary) 92%, var(--text-primary) 8%);
+	padding: 0.3125rem 0.75rem;
+	color: var(--text-primary);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1rem;
+	cursor: pointer;
+	box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 0.12);
+	transition:
+		background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+		border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+		color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.revealButton:hover {
+	border-color: var(--background-modifier-hover);
+	background: color-mix(in srgb, var(--background-secondary) 88%, var(--text-primary) 12%);
+}
+
+.revealChevron {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-primary-muted);
+}
+
+.overridesList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+}
+
+.overrideRow {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+	border-radius: 0.375rem;
+	padding: 0.5rem 0.25rem;
+}
+
+.overrideRowLinked {
+	opacity: 0.78;
+}
+
+.overrideHeader {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.overrideLabel {
+	flex: 1;
+	min-width: 0;
+	font-weight: 500;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.overrideStatus {
+	font-variant-numeric: tabular-nums;
+	font-size: 0.75rem;
+	color: var(--text-primary-muted);
+	white-space: nowrap;
+}
+
+.soundToggleButton {
+	display: inline-flex;
+	height: 1.5rem;
+	width: 1.5rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.25rem;
+	color: var(--text-chat-muted);
+	cursor: pointer;
+	transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.soundToggleButton:enabled:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}
+
+.soundToggleButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.soundToggleButtonMuted {
+	color: var(--text-muted);
+}
+
+.overrideSlider {
+	--slider-track-padding: 0.5rem;
+}
+
+.masterResetButton {
+	flex: 0 0 auto;
+	width: 1.75rem;
+	height: 1.75rem;
+}

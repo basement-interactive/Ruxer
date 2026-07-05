@@ -1,0 +1,19 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.inertOverlay {
+	pointer-events: none;
+}
+
+.inertOverlay * {
+	pointer-events: none !important;
+	cursor: default !important;
+	user-select: none;
+}
+
+.inertOverlay input,
+.inertOverlay button,
+.inertOverlay select,
+.inertOverlay textarea,
+.inertOverlay a {
+	opacity: 0.75;
+}

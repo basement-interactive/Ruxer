@@ -1,0 +1,244 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.friendListItem {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+	padding: 0.75rem 1rem;
+	position: relative;
+	overflow: hidden;
+	max-width: 100%;
+}
+
+.friendListItem::before {
+	content: '';
+	position: absolute;
+	inset: 0 0.4rem 0 var(--spacing-2);
+	border-radius: 0.375rem;
+	border-top: 0.0625rem solid var(--background-modifier-accent);
+	pointer-events: none;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.friendListItem:hover::before {
+	background-color: var(--background-modifier-hover);
+	border-top-color: transparent;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.friendListItem:hover
+	+ .friendListItem::before {
+	border-top-color: transparent;
+}
+
+.contextMenuActive::before {
+	background-color: var(--background-modifier-hover) !important;
+	border-top-color: transparent !important;
+}
+
+.contextMenuActive + .friendListItem::before {
+	border-top-color: transparent;
+}
+
+.friendInfo {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex: 1 1 0;
+	width: 0;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.friendInfo > :first-child {
+	flex-shrink: 0;
+}
+
+.friendDetails {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	margin-top: 0;
+	gap: 0.0625rem;
+	flex: 1 1 0;
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+}
+
+.friendNameRow {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	min-width: 0;
+}
+
+.friendName {
+	font-weight: 600;
+	color: var(--text-primary);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	line-height: 1.25rem;
+	max-height: 1.25rem;
+	min-width: 0;
+}
+
+.friendTag {
+	font-size: 0.75rem;
+	line-height: 1rem;
+	color: var(--text-tertiary);
+	flex-shrink: 0;
+	opacity: 0;
+	transition: opacity var(--transition-fast);
+}
+
+.contextMenuActive .friendTag {
+	opacity: 1;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.friendListItem:hover
+	.friendTag {
+	opacity: 1;
+}
+
+.friendSubtext {
+	font-size: 0.6875rem;
+	line-height: 1rem;
+	color: var(--text-primary-muted);
+	font-weight: 500;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-top: -0.0625rem;
+	opacity: 0.85;
+	width: 100%;
+	min-width: 0;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.friendListItem:hover
+	.friendSubtext {
+	--emoji-show-animated: 1;
+}
+
+.contextMenuActive .friendSubtext {
+	--emoji-show-animated: 1;
+}
+
+.friendStatusOffline {
+	color: var(--text-tertiary);
+}
+
+.friendStatusOnline {
+	color: var(--text-primary-muted);
+}
+
+.friendActions {
+	--friend-action-neutral-background: color-mix(
+		in srgb,
+		var(--background-modifier-hover) 94%,
+		var(--text-primary-muted) 6%
+	);
+	--friend-action-neutral-hover-background: color-mix(
+		in srgb,
+		var(--background-modifier-hover) 84%,
+		var(--background-modifier-selected) 16%
+	);
+	--friend-action-neutral-color: var(--text-primary-muted);
+	--friend-action-neutral-hover-color: var(--text-primary);
+	--friend-action-ignore-background: color-mix(
+		in srgb,
+		var(--background-modifier-hover) 90%,
+		var(--text-primary-muted) 10%
+	);
+	--friend-action-ignore-hover-background: color-mix(
+		in srgb,
+		var(--background-modifier-hover) 80%,
+		var(--background-modifier-selected) 20%
+	);
+	--friend-action-brand-background: color-mix(in srgb, var(--background-modifier-hover) 86%, var(--brand-primary) 14%);
+	--friend-action-brand-hover-background: color-mix(
+		in srgb,
+		var(--background-modifier-selected) 78%,
+		var(--brand-primary) 22%
+	);
+	--friend-action-danger-background: color-mix(in srgb, var(--background-modifier-hover) 86%, var(--status-danger) 14%);
+	--friend-action-danger-hover-background: color-mix(
+		in srgb,
+		var(--background-modifier-selected) 76%,
+		var(--status-danger) 24%
+	);
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-shrink: 0;
+}
+
+.actionButtonMessage {
+	--action-toolbar-item-background: var(--friend-action-neutral-background);
+	--action-toolbar-item-color: var(--friend-action-neutral-color);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.actionButtonMessage:hover {
+	--action-toolbar-item-background: var(--friend-action-neutral-hover-background);
+	--action-toolbar-item-color: var(--friend-action-neutral-hover-color);
+}
+
+.actionButtonMore {
+	--action-toolbar-item-background: var(--friend-action-neutral-background);
+	--action-toolbar-item-color: var(--friend-action-neutral-color);
+}
+
+.contextMenuButtonActive,
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.actionButtonMore:hover {
+	--action-toolbar-item-background: var(--friend-action-neutral-hover-background);
+	--action-toolbar-item-color: var(--friend-action-neutral-hover-color);
+	--action-toolbar-item-scale: var(--action-toolbar-item-hover-scale);
+}
+
+.actionButtonAccept {
+	--action-toolbar-item-background: var(--friend-action-brand-background);
+	--action-toolbar-item-color: color-mix(in srgb, var(--brand-primary) 76%, var(--text-primary) 24%);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.actionButtonAccept:hover {
+	--action-toolbar-item-background: var(--friend-action-brand-hover-background);
+	--action-toolbar-item-color: color-mix(in srgb, var(--brand-primary) 82%, var(--text-primary) 18%);
+}
+
+.actionButtonIgnore {
+	--action-toolbar-item-background: var(--friend-action-ignore-background);
+	--action-toolbar-item-color: var(--text-primary);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.actionButtonIgnore:hover {
+	--action-toolbar-item-background: var(--friend-action-ignore-hover-background);
+	--action-toolbar-item-color: var(--text-primary);
+}
+
+.actionButtonCancel {
+	--action-toolbar-item-background: var(--friend-action-danger-background);
+	--action-toolbar-item-color: color-mix(in srgb, var(--status-danger) 82%, var(--text-primary) 18%);
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.actionButtonCancel:hover {
+	--action-toolbar-item-background: var(--friend-action-danger-hover-background);
+	--action-toolbar-item-color: color-mix(in srgb, var(--status-danger) 88%, var(--text-primary) 12%);
+}
+
+.iconSize {
+	height: 1.25rem;
+	width: 1.25rem;
+}

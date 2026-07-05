@@ -1,0 +1,34 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.footnote {
+	display: inline-flex;
+	align-items: center;
+	margin-top: 0.35rem;
+	color: var(--text-tertiary);
+	font-size: 0.65rem;
+	line-height: 1.2;
+	text-decoration: none;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+.footnote:hover {
+	text-decoration: underline;
+}
+
+.inlineFootnote {
+	display: inline-flex;
+	align-items: center;
+	color: inherit;
+	font-size: inherit;
+	line-height: 1.2;
+	vertical-align: middle;
+	text-decoration: none;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+.inlineFootnote:hover {
+	color: var(--text-tertiary) !important;
+	text-decoration: underline;
+}

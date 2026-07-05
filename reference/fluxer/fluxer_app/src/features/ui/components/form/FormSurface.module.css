@@ -1,0 +1,6 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.surface {
+	background-color: var(--form-surface-background);
+	transition: background-color 0.15s ease;
+}

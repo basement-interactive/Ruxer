@@ -1,0 +1,118 @@
+{
+	"name": "native_zero_copy_screen",
+	"events": [
+		{
+			"type": "nativeCapture.startRequested",
+			"options": {
+				"captureId": "capture-native-1",
+				"source": {
+					"id": "display-1",
+					"kind": "screen",
+					"title": "Display 1",
+					"width": 2560,
+					"height": 1440,
+					"displayId": "display-1"
+				},
+				"width": 2560,
+				"height": 1440,
+				"frameRate": 60,
+				"includeCursor": true,
+				"includeAudio": false,
+				"zeroCopyRequired": true
+			}
+		},
+		{
+			"type": "nativeCapture.started",
+			"operationId": 1,
+			"captureId": "capture-native-1"
+		},
+		{
+			"type": "nativeCapture.updateRequested",
+			"options": {
+				"captureId": "capture-native-1",
+				"source": {
+					"id": "display-1",
+					"kind": "screen",
+					"title": "Display 1",
+					"width": 2560,
+					"height": 1440,
+					"displayId": "display-1"
+				},
+				"width": 1920,
+				"height": 1080,
+				"frameRate": 30,
+				"includeCursor": false,
+				"includeAudio": false,
+				"zeroCopyRequired": true
+			}
+		},
+		{
+			"type": "nativeCapture.started",
+			"operationId": 2,
+			"captureId": "capture-native-1"
+		},
+		{
+			"type": "nativeCapture.stopRequested",
+			"captureId": "capture-native-1"
+		},
+		{
+			"type": "nativeCapture.stopped",
+			"operationId": 3,
+			"captureId": "capture-native-1"
+		}
+	],
+	"expectedCommands": [
+		{
+			"type": "nativeCapture.start",
+			"operationId": 1,
+			"options": {
+				"captureId": "capture-native-1",
+				"source": {
+					"id": "display-1",
+					"kind": "screen",
+					"title": "Display 1",
+					"width": 2560,
+					"height": 1440,
+					"displayId": "display-1"
+				},
+				"width": 2560,
+				"height": 1440,
+				"frameRate": 60,
+				"includeCursor": true,
+				"includeAudio": false,
+				"zeroCopyRequired": true
+			}
+		},
+		{
+			"type": "nativeCapture.update",
+			"operationId": 2,
+			"options": {
+				"captureId": "capture-native-1",
+				"source": {
+					"id": "display-1",
+					"kind": "screen",
+					"title": "Display 1",
+					"width": 2560,
+					"height": 1440,
+					"displayId": "display-1"
+				},
+				"width": 1920,
+				"height": 1080,
+				"frameRate": 30,
+				"includeCursor": false,
+				"includeAudio": false,
+				"zeroCopyRequired": true
+			}
+		},
+		{
+			"type": "nativeCapture.stop",
+			"operationId": 3,
+			"captureId": "capture-native-1"
+		}
+	],
+	"expected": {
+		"nextOperationId": 4,
+		"nativeCaptureCount": 0,
+		"lastFailureCode": null
+	}
+}

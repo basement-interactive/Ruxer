@@ -1,0 +1,58 @@
+{
+	"name": "screen_audio_routing",
+	"events": [
+		{
+			"type": "connection.connectRequested",
+			"options": {
+				"url": "wss://voice.example.test",
+				"token": "token-audio"
+			}
+		},
+		{
+			"type": "connection.connectSucceeded",
+			"operationId": 1
+		},
+		{
+			"type": "screenAudio.publishRequested",
+			"options": {
+				"sampleRate": 48000,
+				"numChannels": 2,
+				"route": "native",
+				"captureId": "capture-screen-1",
+				"tapId": "tap-screen-1"
+			}
+		},
+		{
+			"type": "screenAudio.publishSucceeded",
+			"operationId": 2
+		}
+	],
+	"expectedCommands": [
+		{
+			"type": "connection.connect",
+			"operationId": 1,
+			"options": {
+				"url": "wss://voice.example.test",
+				"token": "token-audio"
+			}
+		},
+		{
+			"type": "screenAudio.publish",
+			"operationId": 2,
+			"options": {
+				"sampleRate": 48000,
+				"numChannels": 2,
+				"route": "native",
+				"captureId": "capture-screen-1",
+				"tapId": "tap-screen-1"
+			}
+		}
+	],
+	"expected": {
+		"nextOperationId": 3,
+		"screenAudioStatus": "published",
+		"screenAudioRoute": "native",
+		"screenAudioTapId": "tap-screen-1",
+		"lastFailureCode": null
+	}
+}

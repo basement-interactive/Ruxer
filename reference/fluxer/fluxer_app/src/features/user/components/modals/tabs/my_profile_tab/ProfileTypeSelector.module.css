@@ -1,0 +1,60 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	margin-bottom: 1rem;
+}
+
+.disabled {
+	opacity: 0.5;
+}
+
+.description {
+	margin-top: 0.5rem;
+	font-size: 0.875rem;
+	color: var(--text-primary-muted);
+}
+
+.guildOption,
+.guildValue {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--spacing-1);
+	min-height: 2.25rem;
+	padding: 0 var(--spacing-1);
+	width: 100%;
+}
+
+.guildOptionGlobal {
+	gap: 0;
+	padding-left: 0;
+}
+
+.guildAvatar,
+.guildAvatarPlaceholder {
+	height: 1.75rem;
+	width: 1.75rem;
+	border-radius: 62.4375rem;
+	flex-shrink: 0;
+}
+
+.guildAvatar {
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.guildAvatarPlaceholder {
+	background: color-mix(in srgb, #0f1014 80%, var(--background-header-secondary) 20%);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: 700;
+	font-size: 0.85rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+}
+
+.guildOptionLabel {
+	font-size: 0.9rem;
+	color: var(--text-primary);
+}

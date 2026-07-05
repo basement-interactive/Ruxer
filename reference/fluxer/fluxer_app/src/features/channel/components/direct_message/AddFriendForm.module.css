@@ -1,0 +1,48 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.form {
+	width: 100%;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.containerDesktop {
+	flex-direction: row;
+	gap: 0;
+}
+
+.input {
+	width: 100%;
+}
+
+.inputDesktop {
+	padding-right: 8rem;
+}
+
+.inputError {
+	border-color: var(--status-danger);
+}
+
+.button {
+	width: 100%;
+}
+
+.inlineButton {
+	flex-shrink: 0;
+}
+
+.errorMessage {
+	margin-top: 0.5rem;
+	font-size: 0.875rem;
+	color: var(--status-danger);
+}
+
+.successMessage {
+	margin-top: 0.5rem;
+	font-size: 0.875rem;
+	color: var(--status-online);
+}

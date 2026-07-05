@@ -1,0 +1,130 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.spinnerContainer {
+	display: flex;
+	justify-content: center;
+	padding: 2rem 0;
+}
+
+.errorAlert {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+	border: 0.0625rem solid color-mix(in srgb, var(--button-danger-fill) 42%, transparent);
+	border-radius: var(--radius-md);
+	background-color: color-mix(in srgb, var(--button-danger-fill) 10%, transparent);
+	padding: 0.625rem 0.75rem;
+	font-size: 0.8125rem;
+	line-height: 1.25rem;
+	color: var(--text-primary);
+}
+
+.errorAlert svg {
+	flex: 0 0 auto;
+	margin-top: 0.125rem;
+	color: var(--button-danger-fill);
+}
+
+.warning {
+	border-radius: 0.375rem;
+	border: 0.0625rem solid rgba(234, 179, 8, 0.5);
+	background-color: rgba(234, 179, 8, 0.1);
+	padding: 1rem;
+}
+
+.warningContent {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+}
+
+.warningIcon {
+	margin-top: 0.125rem;
+	color: rgb(234, 179, 8);
+}
+
+.warningBody {
+	flex: 1;
+}
+
+.warningTitle {
+	font-weight: 600;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: rgb(234, 179, 8);
+}
+
+.warningText {
+	margin-top: 0.25rem;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: var(--text-primary-muted);
+}
+
+.formBody {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.fieldLabel {
+	margin-bottom: 0.5rem;
+	display: block;
+	font-weight: 600;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+}
+
+.inputRow {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.inputPrefix {
+	flex: 0 0 auto;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: var(--text-primary-muted);
+	white-space: nowrap;
+}
+
+.inputWrapper {
+	flex: 1;
+	min-width: 0;
+}
+
+.helpText {
+	margin-top: 0.5rem;
+	font-size: 0.75rem;
+	line-height: 1rem;
+	color: var(--text-primary-muted);
+}
+
+.usage {
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: var(--text-primary-muted);
+}
+
+.usageValue {
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	justify-content: flex-end;
+}
+
+.actions > * {
+	flex: none;
+}

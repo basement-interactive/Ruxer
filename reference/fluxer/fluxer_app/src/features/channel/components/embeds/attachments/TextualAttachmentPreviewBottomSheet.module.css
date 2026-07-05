@@ -1,0 +1,80 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+}
+
+.codeContainer {
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.codeSurface {
+	height: 100%;
+	max-height: none;
+	min-height: 0;
+}
+
+.footer {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 0.625rem;
+	padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0));
+	border-top: 0.0625rem solid var(--border-color);
+	background-color: var(--background-secondary);
+}
+
+.fileSection {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	flex: 1;
+}
+
+.fileMeta {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	gap: 0.175rem;
+}
+
+.fileName {
+	font-size: 0.8125rem;
+	line-height: 1.25;
+	color: var(--text-primary);
+	font-weight: 500;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.fileSize {
+	font-size: 0.75rem;
+	color: var(--text-tertiary);
+}
+
+.footerActions {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	flex-shrink: 0;
+}
+
+.actionButton {
+	composes: item from '@app/features/ui/action_toolbar/ActionToolbar.module.css';
+	--action-toolbar-item-size: 2.25rem;
+	--action-toolbar-item-border-width: 0;
+	--action-toolbar-item-radius: 0.5rem;
+	--action-toolbar-item-background: transparent;
+	--action-toolbar-item-color: var(--text-secondary);
+}
+
+.actionButton:active {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-primary);
+}

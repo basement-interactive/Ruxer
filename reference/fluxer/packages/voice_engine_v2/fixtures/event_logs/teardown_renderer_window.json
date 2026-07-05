@@ -1,0 +1,111 @@
+{
+	"name": "teardown_renderer_window",
+	"description": "Renderer teardown clears gateway state, disconnects media, then runs host lifecycle teardown.",
+	"steps": [
+		{
+			"name": "gateway channel observed",
+			"event": {
+				"type": "gateway.voiceStateUpdated",
+				"voiceState": {
+					"guildId": "guild-1",
+					"channelId": "channel-1",
+					"userId": "user-1",
+					"sessionId": "session-1",
+					"selfMute": false,
+					"selfDeaf": false,
+					"selfVideo": false,
+					"selfStream": false,
+					"suppress": false,
+					"requestToSpeakTimestamp": null
+				}
+			},
+			"commands": []
+		},
+		{
+			"name": "media connection requested",
+			"event": {
+				"type": "connection.connectRequested",
+				"options": {
+					"url": "wss://voice-one.example.test",
+					"token": "token-1"
+				}
+			},
+			"commands": [
+				{
+					"type": "connection.connect",
+					"operationId": 1,
+					"options": {
+						"url": "wss://voice-one.example.test",
+						"token": "token-1"
+					}
+				}
+			]
+		},
+		{
+			"name": "media connection succeeds",
+			"event": {
+				"type": "connection.connectSucceeded",
+				"operationId": 1
+			},
+			"commands": []
+		},
+		{
+			"name": "renderer teardown requested",
+			"event": {
+				"type": "lifecycle.teardownRequested",
+				"reason": "rendererDisposed"
+			},
+			"commands": [
+				{
+					"type": "gateway.voiceState.clear",
+					"operationId": 2,
+					"guildId": "guild-1"
+				}
+			]
+		},
+		{
+			"name": "gateway clear succeeds",
+			"event": {
+				"type": "gateway.voiceStateClearSucceeded",
+				"operationId": 2
+			},
+			"commands": [
+				{
+					"type": "connection.disconnect",
+					"operationId": 3,
+					"reason": "shutdown"
+				}
+			]
+		},
+		{
+			"name": "media disconnect succeeds",
+			"event": {
+				"type": "connection.disconnectSucceeded",
+				"operationId": 3
+			},
+			"commands": [
+				{
+					"type": "lifecycle.teardown",
+					"operationId": 4,
+					"reason": "rendererDisposed"
+				}
+			]
+		},
+		{
+			"name": "host teardown succeeds",
+			"event": {
+				"type": "lifecycle.teardownSucceeded",
+				"operationId": 4
+			},
+			"commands": []
+		}
+	],
+	"expected": {
+		"nextOperationId": 5,
+		"connectionStatus": "idle",
+		"activeUrl": null,
+		"desiredUrl": null,
+		"gatewayChannelId": null,
+		"lifecycleTearingDown": false
+	}
+}

@@ -1,0 +1,59 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.tooltip {
+	--slider-tooltip-surface: var(--settings-surface-background, var(--form-surface-background));
+	--slider-tooltip-border-width: 0.0625rem;
+	--slider-tooltip-border: var(--settings-border-color, var(--background-modifier-accent));
+	--slider-tooltip-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.22);
+	--slider-tooltip-pointer-size: 0.625rem;
+	--slider-tooltip-pointer-half-size: calc(var(--slider-tooltip-pointer-size) / 2);
+	position: relative;
+	z-index: var(--z-index-tooltip);
+	pointer-events: none;
+	will-change: opacity, transform;
+	box-sizing: border-box;
+	max-width: 11.875rem;
+	border: var(--slider-tooltip-border-width) solid var(--slider-tooltip-border);
+	border-radius: 0.5rem;
+	background: var(--slider-tooltip-surface);
+	color: var(--text-primary);
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1.125rem;
+	word-wrap: break-word;
+	transform-origin: 50% 100%;
+	box-shadow: var(--slider-tooltip-shadow);
+}
+
+:global(.theme-light) .tooltip {
+	--slider-tooltip-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.12);
+}
+
+.tooltipPointer {
+	display: none;
+	pointer-events: none;
+	position: absolute;
+	top: calc(100% - var(--slider-tooltip-pointer-half-size));
+	left: 50%;
+	margin-left: calc(-1 * var(--slider-tooltip-pointer-half-size));
+}
+
+.tooltipPointer.tooltipPointerBg {
+	display: block;
+	box-sizing: border-box;
+	width: var(--slider-tooltip-pointer-size);
+	height: var(--slider-tooltip-pointer-size);
+	border: 0;
+	background: var(--slider-tooltip-surface);
+	border-right: var(--slider-tooltip-border-width) solid var(--slider-tooltip-border);
+	border-bottom: var(--slider-tooltip-border-width) solid var(--slider-tooltip-border);
+	transform: rotate(45deg);
+}
+
+.tooltipContent {
+	padding: 0.4375rem 0.625rem;
+	overflow: hidden;
+	white-space: normal;
+	word-break: break-word;
+	text-align: center;
+}

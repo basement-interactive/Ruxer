@@ -1,0 +1,95 @@
+{
+	"name": "screen_share_start_update_stop",
+	"events": [
+		{
+			"type": "connection.connectRequested",
+			"options": {
+				"url": "wss://voice.example.test",
+				"token": "token-screen"
+			}
+		},
+		{
+			"type": "connection.connectSucceeded",
+			"operationId": 1
+		},
+		{
+			"type": "screen.publishRequested",
+			"options": {
+				"captureId": "capture-screen-1",
+				"width": 2560,
+				"height": 1440,
+				"codec": "h264",
+				"maxFramerate": 60,
+				"maxBitrateBps": 8000000
+			}
+		},
+		{
+			"type": "screen.publishSucceeded",
+			"operationId": 2
+		},
+		{
+			"type": "screen.updateEncodingRequested",
+			"options": {
+				"captureId": "capture-screen-1",
+				"width": 1280,
+				"height": 720,
+				"frameRate": 30,
+				"maxBitrateBps": 3000000
+			}
+		},
+		{
+			"type": "screen.updateEncodingSucceeded",
+			"operationId": 3
+		},
+		{
+			"type": "screen.unpublishRequested"
+		},
+		{
+			"type": "screen.unpublishSucceeded",
+			"operationId": 4
+		}
+	],
+	"expectedCommands": [
+		{
+			"type": "connection.connect",
+			"operationId": 1,
+			"options": {
+				"url": "wss://voice.example.test",
+				"token": "token-screen"
+			}
+		},
+		{
+			"type": "screen.publish",
+			"operationId": 2,
+			"options": {
+				"captureId": "capture-screen-1",
+				"width": 2560,
+				"height": 1440,
+				"codec": "h264",
+				"maxFramerate": 60,
+				"maxBitrateBps": 8000000
+			}
+		},
+		{
+			"type": "screen.updateEncoding",
+			"operationId": 3,
+			"options": {
+				"captureId": "capture-screen-1",
+				"width": 1280,
+				"height": 720,
+				"frameRate": 30,
+				"maxBitrateBps": 3000000
+			}
+		},
+		{
+			"type": "screen.unpublish",
+			"operationId": 4
+		}
+	],
+	"expected": {
+		"nextOperationId": 5,
+		"screenStatus": "idle",
+		"screenCaptureId": null,
+		"lastFailureCode": null
+	}
+}

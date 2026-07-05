@@ -1,0 +1,7 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.button {
+	font-weight: 600;
+	-webkit-app-region: no-drag;
+	color: var(--nagbar-background-color, inherit);
+}

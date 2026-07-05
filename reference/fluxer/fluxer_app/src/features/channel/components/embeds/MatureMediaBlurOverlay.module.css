@@ -1,0 +1,23 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.revealOverlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+}
+
+.revealButton {
+	border: none;
+	border-radius: 0.375rem;
+	background: var(--background-modifier-accent);
+	color: var(--text-primary);
+	cursor: pointer;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1;
+	padding: 0.5rem 0.75rem;
+	pointer-events: auto;
+}

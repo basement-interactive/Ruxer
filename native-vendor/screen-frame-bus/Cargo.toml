@@ -1,0 +1,18 @@
+[package]
+name = "fluxer_screen_frame_bus"
+version = "0.0.0"
+edition = "2024"
+license = "AGPL-3.0-or-later"
+publish = false
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+default = []
+wgpu = ["dep:wgpu", "fluxer_gpu_rebuild/wgpu"]
+
+[dependencies]
+parking_lot = "0.12"
+wgpu = { version = "29", optional = true }
+fluxer_gpu_rebuild = { path = "../gpu-rebuild" }

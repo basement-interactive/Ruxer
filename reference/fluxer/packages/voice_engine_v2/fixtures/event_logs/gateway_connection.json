@@ -1,0 +1,97 @@
+{
+	"name": "gateway_connection",
+	"description": "Join writes gateway voice state, observes gateway state, then connects the media session.",
+	"steps": [
+		{
+			"name": "request gateway join",
+			"event": {
+				"type": "gateway.voiceStateWriteRequested",
+				"options": {
+					"guildId": "guild-1",
+					"channelId": "channel-1",
+					"selfMute": false,
+					"selfDeaf": false
+				}
+			},
+			"commands": [
+				{
+					"type": "gateway.voiceState.write",
+					"operationId": 1,
+					"options": {
+						"guildId": "guild-1",
+						"channelId": "channel-1",
+						"selfMute": false,
+						"selfDeaf": false
+					}
+				}
+			]
+		},
+		{
+			"name": "gateway join write succeeds",
+			"event": {
+				"type": "gateway.voiceStateWriteSucceeded",
+				"operationId": 1
+			},
+			"commands": []
+		},
+		{
+			"name": "gateway voice state arrives",
+			"event": {
+				"type": "gateway.voiceStateUpdated",
+				"voiceState": {
+					"guildId": "guild-1",
+					"channelId": "channel-1",
+					"userId": "user-1",
+					"sessionId": "session-1",
+					"selfMute": false,
+					"selfDeaf": false,
+					"selfVideo": false,
+					"selfStream": false,
+					"suppress": false,
+					"requestToSpeakTimestamp": null
+				}
+			},
+			"commands": []
+		},
+		{
+			"name": "request media connection",
+			"event": {
+				"type": "connection.connectRequested",
+				"options": {
+					"url": "wss://voice-one.example.test",
+					"token": "token-1"
+				}
+			},
+			"commands": [
+				{
+					"type": "connection.connect",
+					"operationId": 2,
+					"options": {
+						"url": "wss://voice-one.example.test",
+						"token": "token-1"
+					}
+				}
+			]
+		},
+		{
+			"name": "media connection succeeds",
+			"event": {
+				"type": "connection.connectSucceeded",
+				"operationId": 2
+			},
+			"commands": []
+		}
+	],
+	"expected": {
+		"nextOperationId": 3,
+		"connectionStatus": "connected",
+		"activeUrl": "wss://voice-one.example.test",
+		"desiredUrl": "wss://voice-one.example.test",
+		"gatewayChannelId": "channel-1",
+		"lifecycleTearingDown": false,
+		"operationStatuses": {
+			"1": "succeeded",
+			"2": "succeeded"
+		}
+	}
+}

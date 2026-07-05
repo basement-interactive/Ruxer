@@ -1,0 +1,382 @@
+[
+	{
+		"name": "splits outbound camera and screen-share video by source",
+		"input": {
+			"rttMs": null,
+			"outbound": [
+				{
+					"trackSid": "cam",
+					"source": "camera",
+					"kind": "video",
+					"bitrateKbps": 500,
+					"packetsLost": 0,
+					"packetsSent": 500,
+					"fps": 30
+				},
+				{
+					"trackSid": "ss",
+					"source": "screen_share",
+					"kind": "video",
+					"bitrateKbps": 3000,
+					"packetsLost": 1,
+					"packetsSent": 100,
+					"fps": 60
+				}
+			],
+			"inbound": []
+		},
+		"expectedSummary": {
+			"network": {
+				"audioSendBitrateKbps": 0,
+				"audioRecvBitrateKbps": 0,
+				"videoSendBitrateKbps": 3500,
+				"videoRecvBitrateKbps": 0,
+				"audioPacketLossPercent": 0,
+				"videoPacketLossPercent": 1,
+				"jitterMs": 0,
+				"rttMs": null
+			},
+			"localVideo": {"trackIdentifier": "cam", "framesPerSecond": 30},
+			"localScreenShare": {"trackIdentifier": "ss", "framesPerSecond": 60}
+		}
+	},
+	{
+		"name": "normalizes screenshare alias without underscore",
+		"input": {
+			"rttMs": null,
+			"outbound": [{"trackSid": "ss", "source": "screenshare", "kind": "video", "bitrateKbps": 1000, "packetsLost": 0}],
+			"inbound": []
+		},
+		"expectedSummary": {
+			"network": {
+				"audioSendBitrateKbps": 0,
+				"audioRecvBitrateKbps": 0,
+				"videoSendBitrateKbps": 1000,
+				"videoRecvBitrateKbps": 0,
+				"audioPacketLossPercent": 0,
+				"videoPacketLossPercent": 0,
+				"jitterMs": 0,
+				"rttMs": null
+			},
+			"localVideo": null,
+			"localScreenShare": {"trackIdentifier": "ss"}
+		}
+	},
+	{
+		"name": "preserves native screen-share codec dimensions fps and diagnostics",
+		"input": {
+			"rttMs": 1,
+			"outbound": [
+				{
+					"trackSid": "TR_screen",
+					"source": "screenshare",
+					"kind": "video",
+					"codec": "video/H265",
+					"bitrateKbps": 2500,
+					"packetsLost": 0,
+					"fps": 14,
+					"width": 1280,
+					"height": 720,
+					"sourceWidth": 2176,
+					"sourceHeight": 1200,
+					"targetBitrateKbps": 50000,
+					"configuredFps": 60,
+					"targetFps": 60,
+					"effectiveFps": 58.7,
+					"framesProduced": 120,
+					"framesAccepted": 119,
+					"framesDropped": 1,
+					"framesCoalesced": 0,
+					"framesCaptured": 118,
+					"captureFailures": 0,
+					"maxQueueAgeMs": 12.5,
+					"maxPushLatencyMs": 8.25,
+					"adaptiveSendTier": "full",
+					"adaptiveSendReason": "disabled"
+				}
+			],
+			"inbound": []
+		},
+		"expectedSummary": {
+			"network": {
+				"audioSendBitrateKbps": 0,
+				"audioRecvBitrateKbps": 0,
+				"videoSendBitrateKbps": 2500,
+				"videoRecvBitrateKbps": 0,
+				"audioPacketLossPercent": 0,
+				"videoPacketLossPercent": 0,
+				"jitterMs": 0,
+				"rttMs": 1
+			},
+			"localScreenShare": {
+				"trackIdentifier": "TR_screen",
+				"codec": "video/H265",
+				"framesPerSecond": 58.7,
+				"configuredFramesPerSecond": 60,
+				"targetFramesPerSecond": 60,
+				"effectiveFramesPerSecond": 58.7,
+				"frameWidth": 1280,
+				"frameHeight": 720,
+				"sourceFrameWidth": 2176,
+				"sourceFrameHeight": 1200,
+				"targetBitrateKbps": 50000,
+				"framesProduced": 120,
+				"framesAccepted": 119,
+				"framesDropped": 1,
+				"framesCaptured": 118,
+				"maxQueueAgeMs": 12.5,
+				"maxPushLatencyMs": 8.25,
+				"adaptiveSendTier": "full",
+				"adaptiveSendReason": "disabled"
+			}
+		}
+	},
+	{
+		"name": "coalesces duplicate native outbound rows for one screen-share publication",
+		"input": {
+			"rttMs": null,
+			"outbound": [
+				{
+					"trackSid": "TR_screen",
+					"source": "screen_share",
+					"kind": "video",
+					"codec": "video/H265",
+					"bitrateKbps": 269.9,
+					"packetsLost": 0,
+					"fps": 3,
+					"effectiveFps": 53.9,
+					"configuredFps": 60,
+					"targetFps": 60,
+					"width": 2176,
+					"height": 1200,
+					"sourceWidth": 2176,
+					"sourceHeight": 1200,
+					"targetBitrateKbps": 50000,
+					"framesProduced": 1904,
+					"framesAccepted": 1904,
+					"framesDropped": 64,
+					"framesCoalesced": 64,
+					"framesCaptured": 1839,
+					"captureFailures": 0,
+					"maxQueueAgeMs": 18,
+					"maxPushLatencyMs": 18,
+					"adaptiveSendTier": "full",
+					"adaptiveSendReason": "adaptiveDisabled"
+				},
+				{
+					"trackSid": "TR_screen",
+					"source": "screenshare",
+					"kind": "video",
+					"codec": "video/H265",
+					"bitrateKbps": 4614.1,
+					"packetsLost": 0,
+					"fps": 30
+				}
+			],
+			"inbound": []
+		},
+		"expectedSummary": {
+			"network": {
+				"audioSendBitrateKbps": 0,
+				"audioRecvBitrateKbps": 0,
+				"videoSendBitrateKbps": 4884,
+				"videoRecvBitrateKbps": 0,
+				"audioPacketLossPercent": 0,
+				"videoPacketLossPercent": 0,
+				"jitterMs": 0,
+				"rttMs": null
+			},
+			"localScreenShare": {
+				"trackIdentifier": "TR_screen",
+				"codec": "video/H265",
+				"bitrateKbps": 4884,
+				"framesPerSecond": 53.9,
+				"configuredFramesPerSecond": 60,
+				"targetFramesPerSecond": 60,
+				"frameWidth": 2176,
+				"frameHeight": 1200,
+				"targetBitrateKbps": 50000,
+				"adaptiveSendTier": "full",
+				"adaptiveSendReason": "adaptiveDisabled"
+			}
+		}
+	},
+	{
+		"name": "splits screen-share audio from microphone audio",
+		"input": {
+			"rttMs": null,
+			"outbound": [
+				{"trackSid": "mic", "source": "microphone", "kind": "audio", "bitrateKbps": 48, "packetsLost": 0},
+				{"trackSid": "ss-audio", "source": "screen_share_audio", "kind": "audio", "bitrateKbps": 96, "packetsLost": 0}
+			],
+			"inbound": []
+		},
+		"expectedSummary": {
+			"network": {
+				"audioSendBitrateKbps": 144,
+				"audioRecvBitrateKbps": 0,
+				"videoSendBitrateKbps": 0,
+				"videoRecvBitrateKbps": 0,
+				"audioPacketLossPercent": 0,
+				"videoPacketLossPercent": 0,
+				"jitterMs": 0,
+				"rttMs": null
+			},
+			"localAudio": {"trackIdentifier": "mic"},
+			"localScreenShareAudio": {"trackIdentifier": "ss-audio"}
+		}
+	},
+	{
+		"name": "rolls up inbound audio video jitter rtt and callback drops",
+		"input": {
+			"rttMs": 25,
+			"droppedVideoFrameCallbacks": 3,
+			"outbound": [],
+			"inbound": [
+				{
+					"participantSid": "PA_1",
+					"trackSid": "a",
+					"kind": "audio",
+					"bitrateKbps": 32,
+					"packetsLost": 2,
+					"packetsReceived": 98,
+					"jitterMs": 8
+				},
+				{
+					"participantSid": "PA_1",
+					"trackSid": "v",
+					"kind": "video",
+					"bitrateKbps": 900,
+					"packetsLost": 0,
+					"packetsReceived": 1500
+				}
+			]
+		},
+		"expectedSummary": {
+			"network": {
+				"audioSendBitrateKbps": 0,
+				"audioRecvBitrateKbps": 32,
+				"videoSendBitrateKbps": 0,
+				"videoRecvBitrateKbps": 900,
+				"audioPacketLossPercent": 2,
+				"videoPacketLossPercent": 0,
+				"jitterMs": 8,
+				"rttMs": 25
+			},
+			"remoteAudio": {"trackIdentifier": "a"},
+			"remoteVideo": {"trackIdentifier": "v"},
+			"remoteScreenShare": null
+		}
+	},
+	{
+		"name": "uses worst case audio packet loss across send and receive",
+		"input": {
+			"rttMs": null,
+			"outbound": [
+				{
+					"trackSid": "a",
+					"source": "microphone",
+					"kind": "audio",
+					"bitrateKbps": 30,
+					"packetsLost": 5,
+					"packetsSent": 100
+				}
+			],
+			"inbound": [
+				{
+					"participantSid": "PA_1",
+					"trackSid": "b",
+					"kind": "audio",
+					"bitrateKbps": 30,
+					"packetsLost": 12,
+					"packetsReceived": 88
+				}
+			]
+		},
+		"expectedSummary": {
+			"network": {
+				"audioSendBitrateKbps": 30,
+				"audioRecvBitrateKbps": 30,
+				"videoSendBitrateKbps": 0,
+				"videoRecvBitrateKbps": 0,
+				"audioPacketLossPercent": 12,
+				"videoPacketLossPercent": 0,
+				"jitterMs": 0,
+				"rttMs": null
+			}
+		}
+	},
+	{
+		"name": "reports inbound video loss as a windowed percentage not a raw packet count",
+		"input": {
+			"rttMs": 1,
+			"outbound": [],
+			"inbound": [
+				{
+					"participantSid": "PA_1",
+					"trackSid": "v",
+					"kind": "video",
+					"bitrateKbps": 147,
+					"packetsLost": 13,
+					"packetsReceived": 4000
+				}
+			]
+		},
+		"expectedSummary": {
+			"network": {
+				"audioPacketLossPercent": 0,
+				"videoPacketLossPercent": 0.3,
+				"rttMs": 1
+			},
+			"remoteVideo": {"trackIdentifier": "v"}
+		}
+	},
+	{
+		"name": "handles empty stats as zero network and null tracks",
+		"input": {
+			"rttMs": null,
+			"outbound": [],
+			"inbound": []
+		},
+		"expectedSummary": {
+			"network": {
+				"audioSendBitrateKbps": 0,
+				"audioRecvBitrateKbps": 0,
+				"videoSendBitrateKbps": 0,
+				"videoRecvBitrateKbps": 0,
+				"audioPacketLossPercent": 0,
+				"videoPacketLossPercent": 0,
+				"jitterMs": 0,
+				"rttMs": null
+			},
+			"localAudio": null,
+			"localVideo": null,
+			"remoteAudio": null,
+			"remoteVideo": null
+		}
+	},
+	{
+		"name": "prefers first non-zero bitrate track when several candidates exist",
+		"input": {
+			"rttMs": null,
+			"outbound": [
+				{"trackSid": "silent", "source": "microphone", "kind": "audio", "bitrateKbps": 0, "packetsLost": 0},
+				{"trackSid": "live", "source": "microphone", "kind": "audio", "bitrateKbps": 40, "packetsLost": 0}
+			],
+			"inbound": []
+		},
+		"expectedSummary": {
+			"network": {
+				"audioSendBitrateKbps": 40,
+				"audioRecvBitrateKbps": 0,
+				"videoSendBitrateKbps": 0,
+				"videoRecvBitrateKbps": 0,
+				"audioPacketLossPercent": 0,
+				"videoPacketLossPercent": 0,
+				"jitterMs": 0,
+				"rttMs": null
+			},
+			"localAudio": {"trackIdentifier": "live"}
+		}
+	}
+]

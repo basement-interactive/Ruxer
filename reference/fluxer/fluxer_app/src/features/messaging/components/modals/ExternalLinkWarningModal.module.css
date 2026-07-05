@@ -1,0 +1,87 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding-bottom: 1.5rem;
+}
+
+.iconContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.iconCircle {
+	display: flex;
+	width: 3rem;
+	height: 3rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: var(--background-modifier-accent);
+}
+
+.warningIcon {
+	color: #eab308;
+}
+
+.textContainer {
+	text-align: center;
+}
+
+.title {
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.description {
+	margin-top: 0.25rem;
+	font-size: 0.875rem;
+	color: var(--text-secondary);
+}
+
+.urlSection {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.urlLabel {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--text-secondary);
+}
+
+.urlBox {
+	overflow: hidden;
+	border-radius: 0.5rem;
+	border: 0.0625rem solid var(--background-modifier-accent);
+	background: var(--background-tertiary);
+	padding: 0.75rem 1rem;
+}
+
+.urlText {
+	word-break: break-all;
+	font-family: monospace;
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.checkboxLabel {
+	font-size: 0.875rem;
+	color: var(--text-primary);
+}
+
+.button {
+	width: 100%;
+}
+
+@media (min-width: 640px) {
+	.button {
+		width: auto;
+	}
+}

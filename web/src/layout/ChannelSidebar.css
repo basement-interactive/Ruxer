@@ -1,0 +1,31 @@
+/* ChannelSidebar — ported 1:1 from reference/fluxer/fluxer_app/src/features/app/components/layout/GuildNavbar.module.css
+ * (the sidebar container) + GuildHeader.module.css (the guild header bar).
+ * Every value below is traced to the source line. Re-authored clean (not copied
+ * verbatim) but producing identical visual output.
+ */
+
+/* --- Sidebar container (GuildNavbar.module.css:3-16) --- */
+.channel-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: var(--layout-sidebar-width, 16.875rem); /* :9 */
+  flex-shrink: 0;
+  /* Bound the height explicitly so the inner scroll area can shrink + scroll
+     rather than relying on implicit align-items:stretch. */
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  background: var(--background-secondary); /* :14 */
+  min-width: 0;
+  overflow: hidden; /* :13 */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.channel-sidebar-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,296 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-2);
+	padding: var(--spacing-3);
+	background-color: var(--background-secondary);
+	border: 0.0625rem solid var(--background-modifier-accent);
+	border-radius: var(--radius-lg);
+	max-width: 25rem;
+	width: 100%;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-3);
+}
+
+.playButton {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	flex-shrink: 0;
+	padding: 0;
+	border: none;
+	background-color: var(--brand-primary);
+	border-radius: var(--radius-full);
+	color: var(--text-on-brand-primary);
+	cursor: pointer;
+	transition:
+		filter 150ms ease,
+		transform 150ms ease;
+}
+
+.playButton:hover {
+	filter: brightness(1.1);
+}
+
+.playButton:active {
+	transform: translateY(0.0625rem);
+}
+
+.playButtonIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.loadingSpinnerDesktop {
+	position: absolute;
+	inset: -0.1875rem;
+	border-radius: var(--radius-full);
+	border: 0.125rem solid transparent;
+	border-top-color: var(--text-on-brand-primary);
+	animation: spin 0.8s linear infinite;
+	pointer-events: none;
+}
+
+.fileInfo {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.fileName {
+	display: flex;
+	align-items: baseline;
+	gap: 0;
+	margin: 0;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--text-primary);
+	line-height: 1.3;
+}
+
+.fileNameTruncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.fileExtension {
+	flex-shrink: 0;
+	color: var(--text-tertiary);
+}
+
+.fileMeta {
+	margin: 0;
+	font-size: 0.75rem;
+	color: var(--text-tertiary);
+}
+
+.progressSection {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-2);
+	min-width: 15rem;
+}
+
+.progressBar {
+	flex: 1;
+	min-width: 7.5rem;
+}
+
+.time {
+	font-family: var(--font-mono, monospace);
+	font-size: 0.6875rem;
+	line-height: 1;
+	color: var(--text-tertiary);
+	white-space: nowrap;
+	min-width: 4.375rem;
+	text-align: right;
+}
+
+.controls {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--spacing-2);
+}
+
+.controlsLeft {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-1);
+}
+
+.controlsRight {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-1);
+}
+
+.volumeControl {
+	color: var(--text-secondary);
+}
+
+.volumeControl button {
+	color: var(--text-secondary);
+}
+
+.volumeControl button:hover {
+	color: var(--text-primary);
+}
+
+.actionButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--text-secondary);
+	cursor: pointer;
+	border-radius: var(--radius-sm);
+	transition:
+		color 150ms ease,
+		background-color 150ms ease;
+}
+
+.actionButton:hover {
+	color: var(--text-primary);
+	background-color: var(--background-tertiary);
+}
+.mobileContainer {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-3);
+	padding: var(--spacing-2) var(--spacing-3);
+	border-radius: var(--radius-2xl);
+	background-color: var(--background-secondary);
+	min-width: 12.5rem;
+}
+
+.mobilePlayButton {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	flex-shrink: 0;
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: var(--brand-primary);
+	color: var(--text-on-brand-primary);
+	cursor: pointer;
+}
+
+.loadingSpinner {
+	position: absolute;
+	inset: -0.1875rem;
+	border-radius: var(--radius-full);
+	border: 0.125rem solid transparent;
+	border-top-color: var(--text-on-brand-primary);
+	animation: spin 0.8s linear infinite;
+	pointer-events: none;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.mobileContent {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-1);
+}
+
+.mobileFileInfo {
+	display: flex;
+	align-items: baseline;
+	font-size: var(--font-size-xs);
+	line-height: 1.3;
+	color: var(--text-primary);
+}
+
+.mobileFileName {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 500;
+}
+
+.mobileFileMeta {
+	flex-shrink: 0;
+	color: var(--text-tertiary);
+}
+
+.mobileContainerActive .mobileFileMeta {
+	color: color-mix(in srgb, var(--text-on-brand-primary) 70%, transparent);
+}
+
+.mobileProgressContainer {
+	display: flex;
+	align-items: center;
+	height: 0.75rem;
+	cursor: pointer;
+}
+
+.mobileProgressTrack {
+	position: relative;
+	width: 100%;
+	height: 0.25rem;
+	background-color: var(--text-tertiary);
+	border-radius: var(--radius-sm);
+	overflow: hidden;
+}
+
+.mobileProgressTrackActive {
+	background-color: color-mix(in srgb, var(--text-on-brand-primary) 40%, transparent);
+}
+
+.mobileProgressFill {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	background-color: var(--brand-primary-light);
+	border-radius: var(--radius-sm);
+	transition: width 50ms linear;
+}
+
+.mobileProgressFillActive {
+	background-color: var(--text-on-brand-primary);
+}
+
+.mobileTimestamp {
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	color: var(--text-secondary);
+	min-width: 2rem;
+	text-align: right;
+}
+
+:global(.theme-light) .mobileProgressFill:not(.mobileProgressFillActive) {
+	background-color: var(--brand-primary);
+}

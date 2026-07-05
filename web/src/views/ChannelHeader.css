@@ -1,0 +1,185 @@
+/* ChannelHeader — ported 1:1 from reference/fluxer/fluxer_app/src/features/channel/components/ChannelHeader.module.css.
+ * Every value below is traced to the source line. Re-authored clean (not copied
+ * verbatim) but producing identical visual output.
+ */
+
+/* --- Header container (ChannelHeader.module.css:3-22) --- */
+.channel-header {
+  display: grid; /* :12 */
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto); /* :13 */
+  align-items: center; /* :14 */
+  gap: var(--spacing-4, 1rem); /* :15 */
+  height: var(--layout-header-height, 3.5rem); /* :16 */
+  min-height: var(--layout-header-height, 3.5rem); /* :17 */
+  border-bottom: 0.0625rem solid var(--user-area-divider-color); /* :18 */
+  background-color: var(--background-secondary-lighter); /* :19 */
+  padding: 0 var(--spacing-4, 1rem); /* :20 */
+  color: var(--text-primary); /* :21 */
+  flex-shrink: 0;
+  z-index: 3; /* :11 */
+}
+
+/* --- Left section (ChannelHeader.module.css:185-191, 234-341) --- */
+.channel-header-left {
+  position: relative; /* :186 */
+  display: flex; /* :187 */
+  align-items: center; /* :188 */
+  min-width: 0; /* :189 */
+  overflow: hidden; /* :190 */
+  gap: var(--spacing-2, 0.5rem); /* :241 (leftContentContainer gap) */
+  flex: 1;
+}
+
+/* --- Channel icon (ChannelHeader.module.css:360-365) --- */
+.header-hash {
+  height: 1.5rem; /* :361 */
+  width: 1.5rem; /* :362 */
+  flex-shrink: 0; /* :363 */
+  color: var(--text-primary-muted); /* :364 (channel-header-text-muted) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Channel name (ChannelHeader.module.css:331-341) --- */
+.channel-header-name {
+  font-weight: 500; /* :335 */
+  white-space: nowrap; /* :336 */
+  overflow: hidden; /* :337 */
+  text-overflow: ellipsis; /* :338 */
+  line-height: 1.5rem; /* :339 */
+  max-height: 1.5rem; /* :340 */
+  color: var(--text-primary);
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* --- Topic divider (ChannelHeader.module.css:384-388) --- */
+.channel-header-divider {
+  margin: 0 var(--spacing-2, 0.5rem); /* :385 */
+  flex-shrink: 0; /* :386 */
+  color: var(--background-modifier-hover); /* :387 (channel-header-divider-color) */
+  width: 0.0625rem;
+  height: 1.25rem;
+  background-color: currentColor;
+}
+
+/* --- Topic (ChannelHeader.module.css:390-421) --- */
+.channel-header-topic {
+  font-size: 0.8125rem; /* :411 */
+  line-height: 1.125rem; /* :412 */
+  max-height: 1.125rem; /* :413 */
+  color: var(--text-tertiary); /* :414 (channel-header-text-tertiary) */
+  white-space: nowrap; /* :415 */
+  overflow: hidden; /* :418 */
+  text-overflow: ellipsis; /* :419 */
+  min-width: 0;
+  flex: 1;
+}
+
+/* --- Right section (ChannelHeader.module.css:469-478) --- */
+.channel-header-right {
+  position: relative; /* :470 */
+  display: flex; /* :471 */
+  align-items: center; /* :472 */
+  justify-content: flex-end; /* :473 */
+  gap: var(--spacing-2, 0.5rem); /* :474 */
+  flex-shrink: 0; /* :475 */
+  min-width: 0; /* :476 */
+}
+
+/* --- Icon buttons (ChannelHeader.module.css:494-518) --- */
+.header-toggle {
+  display: flex; /* :495 */
+  align-items: center; /* :496 */
+  justify-content: center; /* :497 */
+  height: 2rem; /* :498 */
+  width: 2rem; /* :499 */
+  flex-shrink: 0; /* :500 */
+  cursor: pointer; /* :501 */
+  border-radius: var(--radius-full, 624.9375rem); /* :502 */
+  border: none; /* :503 */
+  background-color: transparent; /* :504 */
+  color: var(--text-primary-muted); /* :510 (iconButtonDefault) */
+  transition: color var(--transition-fast, 100ms ease); /* :505 */
+}
+.header-toggle:hover {
+  color: var(--text-primary); /* :517 */
+}
+.header-toggle.active {
+  color: var(--text-primary); /* :522 (iconButtonSelected) */
+  background-color: transparent; /* :523 */
+}
+
+/* --- Button icons (ChannelHeader.module.css:577-580) --- */
+.header-toggle svg {
+  height: 1.5rem; /* :578 (buttonIcon) */
+  width: 1.5rem; /* :579 */
+}
+
+/* --- Notification dropdown (matches ContextMenu.module.css anatomy) --- */
+.notif-dropdown-wrapper {
+  position: relative;
+}
+.notif-dropdown {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  min-width: 13rem;
+  max-width: 21.5rem;
+  padding: 0.375rem;
+  background-color: var(--form-surface-background);
+  border: 0.0625rem solid var(--background-modifier-accent);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.24);
+  z-index: var(--z-index-popout, 15000);
+  display: flex;
+  flex-direction: column;
+}
+.notif-dropdown-title {
+  padding: 0.25rem 0.5rem 0.125rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+}
+.notif-dropdown-item {
+  all: unset;
+  display: grid;
+  grid-template-columns: 1rem 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3125rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.125rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  min-height: 2rem;
+}
+.notif-dropdown-item:hover {
+  background-color: var(--surface-interactive-hover-bg);
+  color: var(--text-primary);
+}
+.notif-dropdown-item.selected {
+  color: var(--text-primary);
+}
+.notif-dropdown-item.danger {
+  color: color-mix(in srgb, var(--status-danger) 78%, var(--text-primary) 22%);
+}
+.notif-dropdown-item.danger:hover {
+  background-color: color-mix(in srgb, var(--status-danger) 6%, var(--surface-interactive-hover-bg));
+}
+.notif-dropdown-item svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--brand-primary);
+}
+.notif-dropdown-separator {
+  height: 0.0625rem;
+  margin: 0.25rem 0.125rem;
+  background-color: var(--background-modifier-accent);
+  opacity: 0.55;
+}

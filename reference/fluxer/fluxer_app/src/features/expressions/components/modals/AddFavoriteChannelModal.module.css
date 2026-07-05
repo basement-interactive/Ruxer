@@ -1,0 +1,89 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.footer {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+	gap: 0.5rem;
+}
+
+.footer > * {
+	flex: 1;
+	min-width: fit-content;
+}
+
+.selectContainer {
+	margin-bottom: 1rem;
+}
+
+.checkboxLabel {
+	margin-bottom: 0.75rem;
+	display: flex;
+	cursor: pointer;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.checkboxRow {
+	margin-bottom: 0.75rem;
+}
+
+.checkboxText {
+	font-size: 0.875rem;
+	color: var(--text-secondary);
+}
+
+.scrollerContainer {
+	flex: 1;
+	min-height: 0;
+}
+
+.channelList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.emptyState {
+	padding: 1rem 0;
+	text-align: center;
+	font-size: 0.875rem;
+	color: var(--text-tertiary);
+}
+
+.categoryHeader {
+	margin-top: 0.5rem;
+	padding: 0.25rem 0.5rem;
+	font-weight: 600;
+	color: var(--text-tertiary);
+	font-size: 0.75rem;
+	text-transform: uppercase;
+}
+
+.channelRow {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	border-radius: 0.375rem;
+	padding: 0.5rem;
+}
+
+.channelIconContainer {
+	flex-shrink: 0;
+}
+
+.channelIcon {
+	height: 1.25rem;
+	width: 1.25rem;
+	color: var(--text-primary-muted);
+}
+
+.channelName {
+	flex: 1;
+	color: var(--text-primary);
+}
+
+.channelActions {
+	flex-shrink: 0;
+}

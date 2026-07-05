@@ -1,0 +1,74 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.track {
+	position: absolute;
+	z-index: 2;
+	opacity: 0;
+	transition: opacity 0.15s ease-out;
+}
+
+.visible {
+	opacity: 1;
+}
+
+.vertical {
+	inset-block-start: var(--scroller-track-block-start-inset, 0);
+	inset-block-end: var(--scroller-track-block-end-inset, 0);
+	inset-inline-end: 0;
+	width: var(--scroller-track-size);
+}
+
+.horizontal {
+	inset-inline: 0;
+	inset-block-end: 0;
+	height: var(--scroller-track-size);
+}
+
+.thumb {
+	position: absolute;
+	background-color: var(--scrollbar-thumb-bg);
+	transition: background-color 0.2s ease;
+	will-change: transform;
+	cursor: default;
+}
+
+.thumb::before {
+	content: '';
+	position: absolute;
+	inset: -0.25rem;
+}
+
+.vertical .thumb {
+	top: 0;
+	inset-inline-end: var(--scroller-thumb-inline-end, 0.125rem);
+	width: max(0.125rem, calc(var(--scroller-track-size) - 0.25rem));
+	border-radius: 62.4375rem;
+}
+
+.horizontal .thumb {
+	inset-block-end: 0.125rem;
+	inset-inline-start: 0;
+	height: max(0.125rem, calc(var(--scroller-track-size) - 0.25rem));
+	border-radius: 62.4375rem;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.thumb:hover {
+	background-color: var(--scrollbar-thumb-bg-hover);
+	cursor: grab;
+}
+
+.thumb.active {
+	background-color: var(--scrollbar-thumb-bg-hover);
+	cursor: grabbing;
+}
+
+.regular.vertical .thumb {
+	inset-inline-end: 0.25rem;
+	width: max(0.25rem, calc(var(--scroller-track-size) - 0.5rem));
+}
+
+.regular.horizontal .thumb {
+	inset-block-end: 0.25rem;
+	height: max(0.25rem, calc(var(--scroller-track-size) - 0.5rem));
+}

@@ -1,0 +1,88 @@
+{
+	"name": "watched streams drive subscription commands",
+	"events": [
+		{"type": "connection.connectRequested", "options": {"url": "wss://voice", "token": "token"}},
+		{"type": "connection.connectSucceeded", "operationId": 1},
+		{
+			"type": "watchedStream.watchRequested",
+			"stream": {
+				"participantIdentity": "alice",
+				"source": "screen",
+				"trackSid": null,
+				"quality": "high",
+				"enabled": true
+			}
+		},
+		{
+			"type": "room.trackPublished",
+			"track": {
+				"participantIdentity": "alice",
+				"participantSid": "PA_alice",
+				"trackSid": "TR_screen",
+				"trackName": "screen",
+				"kind": "video",
+				"source": "screen",
+				"muted": false
+			}
+		},
+		{
+			"type": "watchedStream.watchRequested",
+			"stream": {
+				"participantIdentity": "alice",
+				"source": "screen",
+				"trackSid": "TR_screen",
+				"quality": "low",
+				"enabled": true
+			}
+		},
+		{"type": "watchedStream.unwatchRequested", "stream": {"participantIdentity": "alice", "source": "screen"}}
+	],
+	"expected": {
+		"watchedStreams": [],
+		"remoteTrackSubscriptions": {
+			"alice:screen": {
+				"participantIdentity": "alice",
+				"source": "screen",
+				"subscribed": false,
+				"enabled": false,
+				"quality": "low"
+			}
+		},
+		"commands": [
+			{"type": "connection.connect", "operationId": 1, "options": {"url": "wss://voice", "token": "token"}},
+			{
+				"type": "remoteTrackSubscription.set",
+				"operationId": 2,
+				"options": {
+					"participantIdentity": "alice",
+					"source": "screen",
+					"subscribed": true,
+					"enabled": true,
+					"quality": "high"
+				}
+			},
+			{
+				"type": "remoteTrackSubscription.set",
+				"operationId": 3,
+				"options": {
+					"participantIdentity": "alice",
+					"source": "screen",
+					"subscribed": true,
+					"enabled": true,
+					"quality": "low"
+				}
+			},
+			{
+				"type": "remoteTrackSubscription.set",
+				"operationId": 4,
+				"options": {
+					"participantIdentity": "alice",
+					"source": "screen",
+					"subscribed": false,
+					"enabled": false,
+					"quality": "low"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,228 @@
+/* UserArea — ported 1:1 from reference/fluxer/fluxer_app/src/features/app/components/layout/UserArea.module.css.
+ * Every value below is traced to the source line. Re-authored clean (not copied
+ * verbatim) but producing identical visual output.
+ */
+
+/* --- Outer wrapper: a vertical column stacking [voice strip?][self-card row]
+   (UserArea.module.css:3-10 .userAreaInnerWrapper) --- */
+.user-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--panel-control-bg);
+  flex-shrink: 0;
+  border-top: 0.0625rem solid var(--user-area-divider-color); /* separator :13-14 */
+}
+
+/* --- Self-card row: the centered avatar/name/actions bar
+   (UserArea.module.css:17-27 .userAreaContainer) --- */
+.user-area-row {
+  display: flex; /* :18 */
+  align-items: center; /* :19 */
+  gap: var(--spacing-3, 0.75rem); /* :20 */
+  padding: var(--user-area-padding-y, 1.125rem) var(--user-area-padding-x, 1rem); /* :22 */
+  box-sizing: border-box; /* :23 */
+  width: 100%;
+  min-height: var(--layout-user-area-height, 4.5rem); /* :26 */
+}
+
+/* --- User info (UserArea.module.css:42-56) --- */
+.user-area-main {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 0.5rem); /* :45 */
+  flex: 1; /* :46 */
+  min-width: 0; /* :47 */
+  cursor: pointer; /* :48 */
+  padding: 0 var(--spacing-2, 0.5rem); /* :49 */
+  border-radius: var(--radius-md, 0.375rem); /* :51 */
+  height: var(--user-area-content-height, 2.25rem); /* :52 */
+  background: transparent;
+  transition: background-color var(--transition-normal, 200ms ease); /* :54 */
+}
+.user-area-main:hover {
+  background-color: color-mix(in srgb, var(--text-primary) 3%, transparent); /* :71 */
+}
+
+/* --- Avatar (status handled by the flx-avatar component) --- */
+.user-area-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+/* Legacy status dot (for components not yet using flx-avatar) */
+.user-area-status {
+  position: absolute;
+  right: -0.125rem;
+  bottom: -0.125rem;
+  width: 0.625rem; /* 10px — geometry for 32px avatar (GenerateAvatarMasks.ts:25) */
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--status-online);
+  border: 0.1875rem solid var(--panel-control-bg); /* ring = surrounding bg */
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+/* --- User text (UserArea.module.css:74-106) --- */
+.user-area-text {
+  display: flex; /* :75 */
+  flex-direction: column; /* :76 */
+  flex: 1; /* :77 */
+  min-width: 0; /* :78 */
+  gap: 0.0625rem; /* :81 */
+}
+.user-area-name {
+  font-weight: 500; /* :85 */
+  font-size: 0.875rem; /* :86 */
+  line-height: 1.125rem; /* :87 */
+  color: var(--text-primary); /* :88 */
+  white-space: nowrap; /* :89 */
+  overflow: hidden; /* :90 */
+  text-overflow: ellipsis; /* :91 */
+  max-width: 100%; /* :92 */
+}
+.user-area-tag {
+  font-size: 0.6875rem; /* :96 */
+  line-height: 1rem; /* :97 */
+  color: var(--text-primary-muted); /* :98 */
+  font-weight: 500; /* :99 */
+  overflow: hidden; /* :100 */
+  text-overflow: ellipsis; /* :101 */
+  white-space: nowrap; /* :102 */
+  max-width: 100%; /* :103 */
+  margin-top: -0.0625rem; /* :104 */
+  opacity: 0.85; /* :105 */
+}
+
+/* --- Controls (UserArea.module.css:197-255) --- */
+.user-area-actions {
+  display: flex; /* :198 */
+  align-items: center; /* :199 */
+  gap: var(--spacing-1, 0.25rem); /* :200 */
+  flex-shrink: 0; /* :201 */
+  padding-left: var(--spacing-3, 0.75rem); /* :202 */
+}
+.user-area-btn {
+  display: flex; /* :206 */
+  align-items: center; /* :207 */
+  justify-content: center; /* :208 */
+  height: 2rem; /* :209 */
+  width: 2rem; /* :210 */
+  background-color: transparent; /* :211 */
+  color: var(--control-button-normal-text); /* :212 */
+  border: none; /* :213 */
+  border-radius: var(--radius-md, 0.375rem); /* :214 */
+  cursor: pointer; /* :215 */
+  padding: 0; /* :217 */
+}
+.user-area-btn:hover {
+  background-color: color-mix(in srgb, var(--control-button-normal-text) 10%, transparent); /* :227 */
+  color: var(--control-button-hover-text); /* :228 */
+}
+.user-area-btn.active {
+  background-color: color-mix(in srgb, var(--control-button-danger-text) 10%, transparent); /* :232 */
+  color: var(--control-button-danger-text); /* :233 */
+}
+.user-area-btn.active:hover {
+  background-color: color-mix(in srgb, var(--control-button-danger-text) 20%, transparent); /* :238 */
+  color: var(--control-button-danger-text); /* :239 */
+}
+.user-area-btn:disabled {
+  cursor: not-allowed; /* :243 */
+  opacity: 0.5; /* :244 */
+}
+
+/* --- Control icon (UserArea.module.css:253-255) --- */
+.user-area-btn svg {
+  height: 1.25rem; /* :254 */
+  width: 1.25rem; /* :255 */
+}
+/* --- Connected-voice strip (above the self-card) --- */
+.voice-connection-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--background-modifier-accent);
+}
+.voice-connection-status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.voice-connection-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--status-idle, #f0b232);
+}
+.voice-connection-dot.connected {
+  background: var(--status-online, #23a55a);
+}
+.voice-connection-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.voice-connection-state {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--status-idle, #f0b232);
+}
+.voice-connection-state.connected {
+  color: var(--status-online, #23a55a);
+}
+.voice-connection-channel {
+  font-size: 0.75rem;
+  color: var(--text-tertiary-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.voice-connection-disconnect {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-md, 0.375rem);
+  background: transparent;
+  color: var(--text-primary-muted);
+  cursor: pointer;
+}
+.voice-connection-disconnect:hover {
+  background: var(--status-danger, #f23f43);
+  color: #fff;
+}
+.voice-connection-media {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem;
+}
+.voice-connection-media-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.375rem;
+  border: none;
+  border-radius: var(--radius-md, 0.375rem);
+  background: var(--background-modifier-hover);
+  color: var(--text-primary-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.voice-connection-media-btn:hover {
+  background: var(--background-modifier-selected);
+  color: var(--text-primary);
+}
+.voice-connection-media-btn.active {
+  background: var(--brand-primary, #5865f2);
+  color: #fff;
+}

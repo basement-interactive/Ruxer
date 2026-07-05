@@ -1,0 +1,607 @@
+/* Fluxer design tokens — ported 1:1 from the real client source.
+ *
+ * Source of truth (read-only, in ./reference/fluxer/):
+ *   - fluxer_app/src/app/globals.css            — z-index, radii, spacing, layout, scrollbar, focus, emoji, base type
+ *   - fluxer_app/scripts/GenerateColorSystem.ts — color families, scales, brand/status/buttons/borders/shadows/transitions
+ *   - fluxer_app/scripts/GenerateThemeVariables.ts — runtime font stack + accessibility defaults
+ *   - fluxer_static/fonts/ibm-plex.css / bricolage.css — font-face (Fluxer Sans = IBM Plex Sans, Fluxer Mono = IBM Plex Mono)
+ *
+ * Theme mechanism: `:root` carries dark defaults (the default theme is dark).
+ * `.theme-light` / `.theme-coal` / `.theme-dark_legacy` are class overrides on
+ * the root element. `--saturation-factor` defaults to 1 (accessibility lever);
+ * all `calc(N% * var(--saturation-factor))` resolve to `N%` at the default.
+ *
+ * Every value below is traced to a source file:line in
+ * docs/design-system-extracted.md. No value is invented.
+ */
+
+:root {
+	/* --- Saturation / accessibility levers (globals.css:69) --- */
+	--saturation-factor: 1;
+	--user-select: auto;
+
+	/* --- Typography (GenerateThemeVariables.ts:31-44, globals.css:199-202) --- */
+	/* 'Fluxer Sans' = IBM Plex Sans (fluxer_static/fonts/ibm-plex.css:4).
+	   'Fluxer Mono' = IBM Plex Mono. Display = Bricolage Grotesque. */
+	--font-sans: 'Fluxer Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	--font-mono: 'Fluxer Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+	--font-display: 'Bricolage Grotesque', var(--font-sans);
+	--font-keybind: -apple-system, BlinkMacSystemFont, var(--font-sans);
+	--font-size: 1rem; /* runtime accessibility lever */
+	--chat-horizontal-padding: 1rem;
+	--message-group-spacing: 1rem;
+	--link-decoration: none;
+	--markup-strikethrough-color: currentColor;
+	--font-size-xs: 0.75rem; /* globals.css:122 */
+
+	/* --- z-index layers (globals.css:74-87) --- */
+	--z-index-base: 0;
+	--z-index-elevated-1: 10;
+	--z-index-elevated-2: 20;
+	--z-index-elevated-3: 30;
+	--z-index-modal: 10000;
+	--z-index-popout: 15000;
+	--z-index-modal-swap: 25000;
+	--z-index-popout-above-swap: 30000;
+	--z-index-overlay: 40000;
+	--z-index-contextmenu: 44000;
+	--z-index-tooltip: 45000;
+	--z-index-toast: 50000;
+	--z-index-titlebar: 100000;
+	--native-titlebar-height: 2rem;
+
+	/* --- Border radii (globals.css:90-97, 120) --- */
+	--radius-sm: 0.25rem;
+	--radius-md: 0.375rem;
+	--radius-lg: 0.5rem;
+	--radius-xl: 0.75rem;
+	--radius-2xl: 1rem;
+	--radius-full: 624.9375rem;
+	--media-border-radius: 0.25rem;
+	--spoiler-border-radius: 0.375rem;
+
+	/* --- Spacing scale (globals.css:126-139) --- */
+	--spacing-0: 0;
+	--spacing-1: 0.25rem;
+	--spacing-1-5: 0.375rem;
+	--spacing-2: 0.5rem;
+	--spacing-3: 0.75rem;
+	--spacing-4: 1rem;
+	--spacing-5: 1.25rem;
+	--spacing-6: 1.5rem;
+	--spacing-8: 2rem;
+	--spacing-10: 2.5rem;
+	--spacing-12: 3rem;
+	--spacing-16: 4rem;
+	--spacing-20: 5rem;
+	--spacing-24: 6rem;
+
+	/* --- Layout dimensions (globals.css:99-164) --- */
+	--layout-guild-list-width: 4.5rem;
+	--layout-sidebar-width: 16.875rem;
+	--layout-header-height: 3.5rem;
+	--footer-row-height: 4.5rem;
+	--input-container-min-height: var(--footer-row-height);
+	--input-container-padding: 0.625rem;
+	--input-wrapper-padding-x: 0.5rem;
+	--input-wrapper-padding-bottom: 0.5rem;
+	--textarea-top-bar-height: 2.5rem;
+	--textarea-line-height: 1.375rem;
+	--layout-user-area-height: var(--input-container-min-height);
+	--layout-user-area-reserved-height: 0;
+	--layout-mobile-bottom-nav-reserved-height: 0;
+	--user-area-content-height: 2.25rem;
+	--user-area-padding-y: calc((var(--layout-user-area-height) - var(--user-area-content-height)) / 2);
+	--user-area-padding-x: var(--spacing-4);
+	--voice-connection-padding-y: var(--spacing-2);
+	--footer-row-padding-y: var(--user-area-padding-y);
+	--layout-header-popout-width: calc(var(--layout-sidebar-width) - (var(--spacing-4) * 2));
+	--layout-gap: var(--spacing-4);
+	--layout-gap-sm: var(--spacing-2);
+	--layout-gap-lg: var(--spacing-6);
+	--content-padding: var(--spacing-4);
+	--content-padding-sm: var(--spacing-3);
+	--content-padding-lg: var(--spacing-6);
+	--guild-icon-size: 2.75rem;
+	--guild-icon-gap: var(--spacing-2);
+	--mobile-bottom-nav-height: 3.75rem;
+	--typing-indicator-height: 1rem;
+	--typing-pill-height: 1rem;
+	--slowmode-indicator-height: 1rem;
+	--scroller-spacer-height: 1.75rem;
+	--typing-avatar-size: 0.75rem;
+	--typing-indicator-animation-size: 1rem;
+	--typing-indicator-gap: 0;
+
+	/* --- Emoji sizing (globals.css:123-124) --- */
+	--emoji-size-emoji: 1.5em;
+	--emoji-size-jumbo-emoji: 3rem;
+
+	/* --- Focus (globals.css:175) --- */
+	--focus-primary: #00b0f4;
+
+	/* --- Form/surface interactive (globals.css:167-173) [dark overrides below from color-system] --- */
+	--form-surface-background: var(--background-tertiary);
+	--surface-interactive-hover-bg: var(--background-modifier-hover);
+	--surface-interactive-selected-bg: var(--background-modifier-selected);
+	--surface-interactive-selected-color: var(--text-primary);
+
+	/* ============================================================
+	 * Dark (root) color tokens — GenerateColorSystem.ts:434-592
+	 * (the default theme; `:root` block in the generated CSS)
+	 * ============================================================ */
+
+	/* Surface scale — darkSurface (GenerateColorSystem.ts:316-333, computed easeOut) */
+	--background-primary: hsl(258, 10%, 5%);
+	--background-secondary: hsl(258, 10%, 10.6%);
+	--background-secondary-lighter: hsl(258, 10%, 12.45%);
+	--background-secondary-alt: hsl(258, 10%, 14.15%);
+	--background-channel-header: hsl(258, 10%, 15.56%);
+	--guild-list-foreground: hsl(258, 10%, 16.54%);
+	--background-tertiary: hsl(258, 10%, 17.3%);
+	--background-header-secondary: hsl(258, 10%, 19.25%);
+	--background-header-primary: hsl(258, 10%, 19.25%);
+	--background-textarea: hsl(258, 10%, 22.11%);
+	--background-header-primary-hover: hsl(258, 10%, 23.59%);
+
+	/* Text scale — darkText (GenerateColorSystem.ts:351-365, computed easeInOut) */
+	--text-tertiary-secondary: hsl(258, 10%, 60%);
+	--text-tertiary-muted: hsl(258, 10%, 62.88%);
+	--text-tertiary: hsl(258, 10%, 70.4%);
+	--text-primary-muted: hsl(258, 10%, 81.42%);
+	--text-chat-muted: hsl(258, 10%, 81.42%);
+	--text-secondary: hsl(258, 10%, 91.28%);
+	--text-chat: hsl(258, 10%, 93.96%);
+	--text-primary: hsl(258, 10%, 96%);
+
+	/* Panel control (GenerateColorSystem.ts:437-447) */
+	--panel-control-bg: color-mix(in srgb, var(--background-secondary-alt) 80%, hsl(258, calc(10% * var(--saturation-factor)), 2%) 20%);
+	--panel-control-border: hsla(258, calc(30% * var(--saturation-factor)), 65%, 0.45);
+	--panel-control-divider: hsla(258, calc(30% * var(--saturation-factor)), 55%, 0.35);
+	--panel-control-highlight: hsla(0, 0%, 100%, 0.04);
+
+	/* Background modifiers (GenerateColorSystem.ts:448-451) */
+	--background-modifier-hover: hsla(258, calc(10% * var(--saturation-factor)), 100%, 0.05);
+	--background-modifier-selected: hsla(258, calc(10% * var(--saturation-factor)), 100%, 0.1);
+	--background-modifier-accent: hsla(258, calc(13% * var(--saturation-factor)), 80%, 0.15);
+	--background-modifier-accent-focus: hsla(258, calc(13% * var(--saturation-factor)), 80%, 0.22);
+
+	/* Control buttons (GenerateColorSystem.ts:452-459) */
+	--control-button-normal-bg: transparent;
+	--control-button-normal-text: var(--text-primary-muted);
+	--control-button-hover-bg: hsl(258, calc(10% * var(--saturation-factor)), 22%);
+	--control-button-hover-text: var(--text-primary);
+	--control-button-active-bg: hsl(258, calc(10% * var(--saturation-factor)), 24%);
+	--control-button-active-text: var(--text-primary);
+	--control-button-danger-text: hsl(1, calc(77% * var(--saturation-factor)), 60%);
+	--control-button-danger-hover-bg: hsl(1, calc(77% * var(--saturation-factor)), 20%);
+
+	/* Brand (GenerateColorSystem.ts:460-475) */
+	--brand-primary: hsl(242, calc(70% * var(--saturation-factor)), 55%);
+	--brand-secondary: hsl(242, calc(60% * var(--saturation-factor)), 49%);
+	--brand-primary-light: hsl(242, 100%, 84%);
+	--brand-primary-fill: hsl(0, 0%, 100%);
+	--plutonium: var(--brand-primary);
+	--plutonium-hover: var(--brand-secondary);
+	--plutonium-text: var(--text-on-brand-primary);
+	--plutonium-icon: hsl(38, calc(92% * var(--saturation-factor)), 50%);
+	--invite-verified-icon-color: var(--text-on-brand-primary);
+
+	/* Status (GenerateColorSystem.ts:464-470) */
+	--status-online: hsl(152, calc(72% * var(--saturation-factor)), 40%);
+	--status-idle: hsl(45, calc(93% * var(--saturation-factor)), 50%);
+	--status-dnd: hsl(0, calc(84% * var(--saturation-factor)), 60%);
+	--status-offline: hsl(218, calc(11% * var(--saturation-factor)), 65%);
+	--status-danger: hsl(1, calc(77% * var(--saturation-factor)), 55%);
+	--status-warning: var(--status-idle);
+	--text-warning: hsl(45, calc(93% * var(--saturation-factor)), 55%);
+
+	/* Links + selection (GenerateColorSystem.ts:476-479) */
+	--text-link: hsl(198, calc(92% * var(--saturation-factor)), 70%);
+	--text-on-brand-primary: hsl(0, 0%, 98%);
+	--text-selection: hsla(198, calc(92% * var(--saturation-factor)), 70%, 0.35);
+
+	/* Markup (GenerateColorSystem.ts:480-506) */
+	--markup-mention-text: var(--text-link);
+	--markup-mention-fill: color-mix(in srgb, var(--text-link) 20%, transparent);
+	--markup-mention-border: hsla(198, calc(92% * var(--saturation-factor)), 70%, 0.3);
+	--markup-jump-link-text: var(--text-link);
+	--markup-jump-link-fill: color-mix(in srgb, var(--text-link) 12%, transparent);
+	--markup-jump-link-hover-fill: color-mix(in srgb, var(--text-link) 20%, transparent);
+	--markup-everyone-text: hsl(250, calc(80% * var(--saturation-factor)), 75%);
+	--markup-everyone-fill: color-mix(in srgb, hsl(250, calc(80% * var(--saturation-factor)), 75%) 18%, transparent);
+	--markup-everyone-border: hsla(250, calc(80% * var(--saturation-factor)), 75%, 0.3);
+	--markup-here-text: hsl(45, calc(90% * var(--saturation-factor)), 70%);
+	--markup-here-fill: color-mix(in srgb, hsl(45, calc(90% * var(--saturation-factor)), 70%) 18%, transparent);
+	--markup-here-border: hsla(45, calc(90% * var(--saturation-factor)), 70%, 0.3);
+	--markup-interactive-hover-text: var(--text-link);
+	--markup-interactive-hover-fill: color-mix(in srgb, var(--text-link) 30%, transparent);
+
+	/* Interactive (oklab mixes — kept as-is, GenerateColorSystem.ts:508-522) */
+	--interactive-muted: color-mix(in oklab, hsl(228, calc(10% * var(--saturation-factor)), 35%) 100%, hsl(245, calc(100% * var(--saturation-factor)), 80%) 40%);
+	--interactive-active: color-mix(in oklab, hsl(0, calc(0% * var(--saturation-factor)), 100%) 100%, hsl(245, calc(100% * var(--saturation-factor)), 80%) 40%);
+
+	/* Buttons (GenerateColorSystem.ts:523-550) */
+	--button-primary-fill: hsl(139, calc(55% * var(--saturation-factor)), 44%);
+	--button-primary-active-fill: hsl(136, calc(60% * var(--saturation-factor)), 38%);
+	--button-primary-text: hsl(0, 0%, 100%);
+	--button-secondary-fill: hsla(0, 0%, 100%, 0.1);
+	--button-secondary-active-fill: hsla(0, 0%, 100%, 0.15);
+	--button-secondary-text: hsl(0, 0%, 100%);
+	--button-secondary-active-text: var(--button-secondary-text);
+	--button-danger-fill: hsl(359, calc(70% * var(--saturation-factor)), 54%);
+	--button-danger-active-fill: hsl(359, calc(65% * var(--saturation-factor)), 45%);
+	--button-danger-text: hsl(0, 0%, 100%);
+	--button-danger-outline-border: 1px solid hsl(359, calc(70% * var(--saturation-factor)), 54%);
+	--button-danger-outline-text: hsl(0, 0%, 100%);
+	--button-danger-outline-active-fill: hsl(359, calc(65% * var(--saturation-factor)), 48%);
+	--button-danger-outline-active-border: transparent;
+	--button-ghost-text: hsl(0, 0%, 100%);
+	--button-inverted-fill: hsl(0, 0%, 100%);
+	--button-inverted-text: hsl(0, 0%, 0%);
+	--button-outline-border: 1px solid hsla(0, 0%, 100%, 0.3);
+	--button-outline-text: hsl(0, 0%, 100%);
+	--button-outline-active-fill: hsla(0, 0%, 100%, 0.15);
+	--button-outline-active-border: 1px solid hsla(0, 0%, 100%, 0.4);
+
+	/* Theme border (GenerateColorSystem.ts:551-552) */
+	--theme-border: transparent;
+	--theme-border-width: 0px;
+
+	/* Background aliases (GenerateColorSystem.ts:553-561) */
+	--bg-primary: var(--background-primary);
+	--bg-secondary: var(--background-secondary);
+	--bg-tertiary: var(--background-tertiary);
+	--bg-hover: var(--background-modifier-hover);
+	--bg-active: var(--background-modifier-selected);
+	--bg-blockquote: var(--background-secondary-alt);
+	--bg-table-header: var(--background-tertiary);
+	--bg-table-row-odd: var(--background-primary);
+	--bg-table-row-even: var(--background-secondary);
+
+	/* Borders (GenerateColorSystem.ts:562-564) */
+	--border-color: hsla(258, calc(10% * var(--saturation-factor)), 50%, 0.2);
+	--border-color-hover: hsla(258, calc(10% * var(--saturation-factor)), 50%, 0.3);
+	--border-color-focus: hsla(198, calc(92% * var(--saturation-factor)), 70%, 0.45);
+
+	/* Accents (GenerateColorSystem.ts:565-570) */
+	--accent-primary: var(--brand-primary);
+	--accent-success: var(--status-online);
+	--accent-warning: var(--status-idle);
+	--accent-danger: var(--status-dnd);
+	--accent-info: var(--text-link);
+	--accent-purple: hsl(278, calc(85% * var(--saturation-factor)), 65%);
+
+	/* Alerts (GenerateColorSystem.ts:571-575) */
+	--alert-note-color: hsl(198, calc(92% * var(--saturation-factor)), 70%);
+	--alert-tip-color: hsl(152, calc(72% * var(--saturation-factor)), 45%);
+	--alert-important-color: hsl(278, calc(85% * var(--saturation-factor)), 65%);
+	--alert-warning-color: hsl(45, calc(93% * var(--saturation-factor)), 55%);
+	--alert-caution-color: hsl(359, calc(75% * var(--saturation-factor)), 60%);
+
+	/* Shadows (GenerateColorSystem.ts:576-579) */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+	--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+	--shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+	--shadow-xl: 0 10px 20px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+
+	/* Transitions (GenerateColorSystem.ts:580-582) */
+	--transition-fast: 100ms ease;
+	--transition-normal: 200ms ease;
+	--transition-slow: 300ms ease;
+
+	/* Spoiler (GenerateColorSystem.ts:583-584) */
+	--spoiler-overlay-color: rgba(0, 0, 0, 0.2);
+	--spoiler-overlay-hover-color: rgba(0, 0, 0, 0.3);
+
+	/* Scrollbar (GenerateColorSystem.ts:585-587 — overrides globals.css:171-173 for dark) */
+	--scrollbar-thumb-bg: rgba(121, 122, 124, 0.4);
+	--scrollbar-thumb-bg-hover: rgba(121, 122, 124, 0.7);
+	--scrollbar-track-bg: transparent;
+
+	/* User-area divider (GenerateColorSystem.ts:589-591) */
+	--user-area-divider-color: color-mix(in srgb, var(--background-modifier-hover) 70%, transparent);
+
+	/* --- Code/ANSI tokens (GenerateColorSystem.ts:47-172, DARK_CODE_TOKENS) ---
+	 * These are extensive; the key ones are below. Full set in the source. */
+	--code-text: color-mix(in srgb, var(--text-secondary) 82%, hsl(340, calc(50% * var(--saturation-factor)), 90%) 18%);
+	--text-code: var(--code-text);
+	--code-muted: color-mix(in srgb, var(--text-code) 42%, var(--text-tertiary) 58%);
+	--code-inline-bg: color-mix(in srgb, var(--background-secondary-alt) 88%, var(--background-tertiary) 12%);
+	--bg-code: var(--code-inline-bg);
+	--code-block-bg: color-mix(in srgb, var(--background-secondary-alt) 92%, var(--background-primary) 8%);
+	--bg-code-block: var(--code-block-bg);
+	--code-block-border: color-mix(in srgb, var(--border-color) 90%, var(--text-code) 10%);
+	--code-block-highlight: color-mix(in srgb, var(--text-primary) 10%, transparent);
+	--ansi-inverse-text: var(--code-block-bg);
+	--ansi-inverse-bg: var(--text-code);
+}
+
+/* macOS native widens the guild list (globals.css:178-180) */
+html.platform-native.platform-macos {
+	--layout-guild-list-width: 4.75rem;
+}
+
+/* ============================================================
+ * Light theme — GenerateColorSystem.ts:593-682 (`.theme-light`)
+ * Applied via either the `.theme-light` class (the source mechanism) or the
+ * `[data-theme="light"]` attribute (our app's mechanism). Both selectors apply
+ * the same overrides so the tokens work regardless of which mechanism the app
+ * uses to switch themes.
+ * ============================================================ */
+.theme-light,
+:root[data-theme="light"] {
+	/* Surface scale — lightSurface (GenerateColorSystem.ts:366-383, computed easeIn) */
+	--background-header-primary-hover: hsl(220, 10%, 86%);
+	--background-header-primary: hsl(220, 10%, 86.18%);
+	--background-header-secondary: hsl(220, 10%, 86.58%);
+	--guild-list-foreground: hsl(220, 10%, 87.41%);
+	--background-tertiary: hsl(220, 10%, 88.03%);
+	--background-channel-header: hsl(220, 10%, 89.88%);
+	--background-secondary-alt: hsl(220, 10%, 93.06%);
+	--background-secondary: hsl(220, 10%, 96.28%);
+	--background-secondary-lighter: hsl(220, 10%, 98.44%);
+	--background-textarea: hsl(220, 10%, 95.68%);
+	--background-primary: hsl(220, 10%, 98.5%);
+
+	/* Text scale — lightText (GenerateColorSystem.ts:384-398, computed easeOut) */
+	--text-primary: hsl(220, 10%, 15%);
+	--text-chat: hsl(220, 10%, 21%);
+	--text-secondary: hsl(220, 10%, 33.81%);
+	--text-chat-muted: hsl(220, 10%, 42.22%);
+	--text-primary-muted: hsl(220, 10%, 42.22%);
+	--text-tertiary: hsl(220, 10%, 47.76%);
+	--text-tertiary-secondary: hsl(220, 10%, 51.66%);
+	--text-tertiary-muted: hsl(220, 10%, 53.82%);
+
+	/* Panel control (GenerateColorSystem.ts:596-599) */
+	--panel-control-bg: color-mix(in srgb, var(--background-secondary) 65%, hsl(0, 0%, 100%) 35%);
+	--panel-control-border: hsla(220, calc(25% * var(--saturation-factor)), 45%, 0.25);
+	--panel-control-divider: hsla(220, calc(30% * var(--saturation-factor)), 35%, 0.2);
+	--panel-control-highlight: hsla(0, 0%, 100%, 0.65);
+
+	/* Background modifiers (GenerateColorSystem.ts:600-603) */
+	--background-modifier-hover: hsla(220, calc(10% * var(--saturation-factor)), 10%, 0.05);
+	--background-modifier-selected: hsla(220, calc(10% * var(--saturation-factor)), 10%, 0.1);
+	--background-modifier-accent: hsla(220, calc(10% * var(--saturation-factor)), 40%, 0.22);
+	--background-modifier-accent-focus: hsla(220, calc(10% * var(--saturation-factor)), 40%, 0.32);
+
+	/* Control buttons (GenerateColorSystem.ts:604-611) */
+	--control-button-normal-bg: transparent;
+	--control-button-normal-text: hsl(220, calc(10% * var(--saturation-factor)), 50%);
+	--control-button-hover-bg: hsl(220, calc(10% * var(--saturation-factor)), 88%);
+	--control-button-hover-text: hsl(220, calc(10% * var(--saturation-factor)), 20%);
+	--control-button-active-bg: hsl(220, calc(10% * var(--saturation-factor)), 85%);
+	--control-button-active-text: hsl(220, calc(10% * var(--saturation-factor)), 15%);
+	--control-button-danger-text: hsl(359, calc(70% * var(--saturation-factor)), 50%);
+	--control-button-danger-hover-bg: hsl(359, calc(70% * var(--saturation-factor)), 95%);
+
+	/* Links + selection (GenerateColorSystem.ts:612-615) */
+	--text-link: hsl(198, calc(92% * var(--saturation-factor)), 45%);
+	--text-selection: hsla(210, calc(90% * var(--saturation-factor)), 50%, 0.2);
+
+	/* Markup (GenerateColorSystem.ts:615-635) */
+	--markup-mention-border: hsla(198, calc(92% * var(--saturation-factor)), 45%, 0.4);
+	--markup-jump-link-fill: color-mix(in srgb, var(--text-link) 8%, transparent);
+	--markup-everyone-text: hsl(250, calc(70% * var(--saturation-factor)), 45%);
+	--markup-everyone-fill: color-mix(in srgb, hsl(250, calc(70% * var(--saturation-factor)), 45%) 12%, transparent);
+	--markup-everyone-border: hsla(250, calc(70% * var(--saturation-factor)), 45%, 0.4);
+	--markup-here-text: hsl(40, calc(85% * var(--saturation-factor)), 40%);
+	--markup-here-fill: color-mix(in srgb, hsl(40, calc(85% * var(--saturation-factor)), 40%) 12%, transparent);
+	--markup-here-border: hsla(40, calc(85% * var(--saturation-factor)), 40%, 0.4);
+
+	/* Status (GenerateColorSystem.ts:636-639) */
+	--status-online: hsl(152, calc(70% * var(--saturation-factor)), 40%);
+	--status-idle: hsl(45, calc(90% * var(--saturation-factor)), 45%);
+	--status-dnd: hsl(359, calc(70% * var(--saturation-factor)), 50%);
+	--status-offline: hsl(210, calc(10% * var(--saturation-factor)), 55%);
+	--status-warning: var(--status-idle);
+
+	/* Plutonium (GenerateColorSystem.ts:640-644) */
+	--plutonium: var(--brand-primary);
+	--plutonium-hover: var(--brand-secondary);
+	--plutonium-text: var(--text-on-brand-primary);
+	--plutonium-icon: hsl(38, calc(92% * var(--saturation-factor)), 45%);
+	--invite-verified-icon-color: var(--brand-primary);
+
+	/* Borders (GenerateColorSystem.ts:645-647) */
+	--border-color: hsla(220, calc(10% * var(--saturation-factor)), 40%, 0.15);
+	--border-color-hover: hsla(220, calc(10% * var(--saturation-factor)), 40%, 0.25);
+	--border-color-focus: hsla(210, calc(90% * var(--saturation-factor)), 50%, 0.4);
+
+	/* Background aliases (GenerateColorSystem.ts:648-656) */
+	--bg-primary: var(--background-primary);
+	--bg-secondary: var(--background-secondary);
+	--bg-tertiary: var(--background-tertiary);
+	--bg-hover: var(--background-modifier-hover);
+	--bg-active: var(--background-modifier-selected);
+	--bg-blockquote: var(--background-secondary-alt);
+	--bg-table-header: var(--background-tertiary);
+	--bg-table-row-odd: var(--background-primary);
+	--bg-table-row-even: var(--background-secondary);
+
+	/* Alerts (GenerateColorSystem.ts:657-661) */
+	--alert-note-color: hsl(198, calc(92% * var(--saturation-factor)), 45%);
+	--alert-tip-color: hsl(150, calc(80% * var(--saturation-factor)), 35%);
+	--alert-important-color: hsl(278, calc(85% * var(--saturation-factor)), 50%);
+	--alert-warning-color: hsl(45, calc(90% * var(--saturation-factor)), 45%);
+	--alert-caution-color: hsl(358, calc(80% * var(--saturation-factor)), 50%);
+
+	/* Spoiler (GenerateColorSystem.ts:662-663) */
+	--spoiler-overlay-color: rgba(0, 0, 0, 0.1);
+	--spoiler-overlay-hover-color: rgba(0, 0, 0, 0.15);
+
+	/* Buttons (GenerateColorSystem.ts:664-680) */
+	--button-secondary-fill: hsla(220, calc(10% * var(--saturation-factor)), 10%, 0.1);
+	--button-secondary-active-fill: hsla(220, calc(10% * var(--saturation-factor)), 10%, 0.15);
+	--button-secondary-text: hsl(220, calc(10% * var(--saturation-factor)), 15%);
+	--button-secondary-active-text: hsl(220, calc(10% * var(--saturation-factor)), 10%);
+	--button-ghost-text: hsl(220, calc(10% * var(--saturation-factor)), 20%);
+	--button-inverted-fill: hsl(0, 0%, 100%);
+	--button-inverted-text: hsl(0, 0%, 10%);
+	--button-outline-border: 1px solid hsla(220, calc(10% * var(--saturation-factor)), 40%, 0.3);
+	--button-outline-text: hsl(220, calc(10% * var(--saturation-factor)), 20%);
+	--button-outline-active-fill: hsla(220, calc(10% * var(--saturation-factor)), 10%, 0.1);
+	--button-outline-active-border: 1px solid hsla(220, calc(10% * var(--saturation-factor)), 40%, 0.5);
+	--button-danger-outline-border: 1px solid hsl(359, calc(70% * var(--saturation-factor)), 50%);
+	--button-danger-outline-text: hsl(359, calc(70% * var(--saturation-factor)), 45%);
+	--button-danger-outline-active-fill: hsl(359, calc(70% * var(--saturation-factor)), 50%);
+
+	/* User-area divider (GenerateColorSystem.ts:681) */
+	--user-area-divider-color: hsla(220, calc(10% * var(--saturation-factor)), 40%, 0.2);
+
+	/* Form/surface + scrollbar (globals.css:183-189) */
+	--form-surface-background: var(--background-primary);
+	--surface-interactive-hover-bg: var(--background-modifier-hover);
+	--surface-interactive-selected-bg: var(--background-modifier-selected);
+	--surface-interactive-selected-color: var(--text-primary);
+	--scrollbar-thumb-bg: color-mix(in srgb, var(--background-header-secondary) 40%, var(--text-secondary) 60%);
+	--scrollbar-thumb-bg-hover: color-mix(in srgb, var(--background-header-secondary) 30%, var(--text-primary) 70%);
+	--scrollbar-track-bg: color-mix(in srgb, var(--background-secondary) 50%, transparent);
+
+	/* Light code tokens (GenerateColorSystem.ts:173-295, LIGHT_CODE_TOKENS) */
+	--code-text: color-mix(in srgb, var(--text-secondary) 72%, hsl(340, calc(50% * var(--saturation-factor)), 38%) 28%);
+	--text-code: var(--code-text);
+	--code-muted: color-mix(in srgb, var(--text-code) 34%, var(--text-tertiary) 66%);
+	--code-inline-bg: color-mix(in srgb, var(--background-secondary-alt) 92%, var(--text-code) 8%);
+	--bg-code: var(--code-inline-bg);
+	--code-block-bg: color-mix(in srgb, var(--background-primary) 88%, var(--background-secondary) 12%);
+	--bg-code-block: var(--code-block-bg);
+	--code-block-border: color-mix(in srgb, var(--border-color) 92%, var(--text-code) 8%);
+	--code-block-highlight: color-mix(in srgb, hsl(0, 0%, 100%) 82%, transparent);
+	--ansi-inverse-text: var(--code-block-bg);
+	--ansi-inverse-bg: var(--text-code);
+	--ansi-fg-black: var(--text-primary);
+}
+
+/* ============================================================
+ * Base element styling — ported from globals.css:192-515
+ * (so our app inherits the same base rules the real client sets)
+ * ============================================================ */
+html {
+	background-color: var(--background-secondary);
+	color: var(--text-primary);
+	overflow: hidden;
+	overscroll-behavior: none;
+	user-select: var(--user-select);
+	-webkit-user-select: var(--user-select);
+	font-family: var(--font-sans);
+	font-size: 16px;
+	line-height: 1.5;
+	font-optical-sizing: auto;
+}
+
+html.platform-native {
+	--custom-zoom: 100;
+	font-size: calc(var(--custom-zoom, 100) * 1%);
+}
+
+body {
+	scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+	margin: 0;
+	padding: 0;
+}
+
+button,
+input,
+select,
+textarea,
+a {
+	touch-action: manipulation;
+	outline: none;
+}
+
+input,
+textarea,
+select,
+button {
+	font-family: inherit;
+	font-size: inherit;
+}
+
+input {
+	color-scheme: dark;
+}
+.theme-light input {
+	color-scheme: light;
+}
+
+b,
+strong {
+	font-weight: 600;
+}
+
+a {
+	color: var(--text-link);
+	text-decoration: none;
+}
+@media (hover: hover) {
+	a:hover {
+		color: var(--text-link);
+		text-decoration: underline;
+	}
+}
+
+code {
+	font-family: var(--font-mono);
+	font-size: 0.85em;
+	line-height: 1.5;
+	padding: 0.15em 0.3em;
+	margin: -0.15em 0;
+	border-radius: var(--radius-sm);
+	border: 0.0625rem solid var(--code-block-border);
+	color: var(--text-code);
+	background-color: var(--bg-code);
+	white-space: pre-wrap;
+	box-decoration-break: clone;
+	-webkit-box-decoration-break: clone;
+}
+
+pre {
+	padding: var(--pre-padding, 1em);
+	overflow: auto;
+	border-radius: var(--radius-md);
+	border: 0.0625rem solid var(--code-block-border);
+	background-color: var(--bg-code-block);
+}
+
+pre code {
+	padding: 0;
+	margin: 0;
+	border: 0;
+	background-color: transparent;
+	white-space: inherit;
+}
+
+blockquote {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	background-color: transparent;
+}
+
+/* Reduced motion (globals.css:510-515) */
+html.reduced-motion * {
+	animation-duration: 0.01ms;
+	animation-iteration-count: 1;
+	transition-duration: 0.01ms;
+	scroll-behavior: auto;
+}
+
+/* High-contrast fallback (globals.css:473-488) */
+@media (prefers-contrast: more) {
+	:root {
+		--text-primary: hsl(0, 0%, 100%);
+		--text-secondary: hsl(0, 0%, 90%);
+		--text-tertiary: hsl(0, 0%, 80%);
+		--text-link: hsl(210, 100%, 70%);
+		--border-color: hsl(0, 0%, 50%);
+	}
+	.theme-light {
+		--text-primary: hsl(0, 0%, 0%);
+		--text-secondary: hsl(0, 0%, 10%);
+		--text-tertiary: hsl(0, 0%, 20%);
+		--text-link: hsl(210, 100%, 40%);
+		--border-color: hsl(0, 0%, 40%);
+	}
+}

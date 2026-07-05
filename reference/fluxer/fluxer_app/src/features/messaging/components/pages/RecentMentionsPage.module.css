@@ -1,0 +1,7 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.icon {
+	width: 1.5rem;
+	height: 1.5rem;
+	color: var(--text-primary-muted);
+}

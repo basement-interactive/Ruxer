@@ -1,0 +1,97 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.toolbar {
+	--action-toolbar-surface: var(--form-surface-background);
+	--action-toolbar-border: var(--background-modifier-accent);
+	--action-toolbar-radius: 0.5rem;
+	--action-toolbar-gap: 0.125rem;
+	--action-toolbar-padding: 0.1875rem;
+	--action-toolbar-shadow: 0 0.375rem 0.875rem rgb(0 0 0 / 0.18);
+	--action-toolbar-shadow-light: 0 0.375rem 0.875rem rgb(0 0 0 / 0.1);
+	display: grid;
+	box-sizing: border-box;
+	align-items: center;
+	justify-content: flex-start;
+	grid-auto-flow: column;
+	gap: var(--action-toolbar-gap);
+	padding: var(--action-toolbar-padding);
+	background: var(--action-toolbar-surface);
+	border: 0.0625rem solid var(--action-toolbar-border);
+	border-radius: var(--action-toolbar-radius);
+	box-shadow: var(--action-toolbar-shadow);
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+:global(.theme-light) .toolbar {
+	box-shadow: var(--action-toolbar-shadow-light);
+}
+
+.item {
+	--action-toolbar-item-size: 1.75rem;
+	--action-toolbar-item-radius: 0.375rem;
+	--action-toolbar-item-background: transparent;
+	--action-toolbar-item-border: transparent;
+	--action-toolbar-item-border-width: 0.0625rem;
+	--action-toolbar-item-color: var(--text-tertiary);
+	--action-toolbar-item-hover-scale: 1.035;
+	--action-toolbar-item-scale: 1;
+	display: inline-grid;
+	position: relative;
+	box-sizing: border-box;
+	place-items: center;
+	width: var(--action-toolbar-item-size);
+	min-width: var(--action-toolbar-item-size);
+	height: var(--action-toolbar-item-size);
+	padding: 0;
+	border: var(--action-toolbar-item-border-width) solid var(--action-toolbar-item-border);
+	border-radius: var(--action-toolbar-item-radius);
+	background: var(--action-toolbar-item-background);
+	color: var(--action-toolbar-item-color);
+	cursor: pointer;
+	transform: scale(var(--action-toolbar-item-scale));
+	transition: none;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+		.item:hover:not(:disabled):not([aria-disabled='true']) {
+		--action-toolbar-item-scale: var(--action-toolbar-item-hover-scale);
+	}
+}
+
+.item:disabled,
+.item[aria-disabled='true'] {
+	cursor: not-allowed;
+	--action-toolbar-item-scale: 1;
+}
+
+.roundItem {
+	--action-toolbar-item-radius: 624.9375rem;
+}
+
+.fluidItem {
+	width: auto;
+	min-width: 0;
+	height: auto;
+}
+
+.textItem {
+	--action-toolbar-text-item-height: 1.5rem;
+	--action-toolbar-text-item-padding: 0 0.5rem;
+	width: auto;
+	min-width: 0;
+	height: var(--action-toolbar-text-item-height);
+	padding: var(--action-toolbar-text-item-padding);
+	font-weight: 600;
+	font-size: 0.6875rem;
+	line-height: 1.25rem;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.icon {
+	transition: none;
+}

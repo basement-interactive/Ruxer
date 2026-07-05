@@ -1,0 +1,124 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.container {
+	text-align: center;
+}
+
+.title {
+	margin-bottom: 0.5rem;
+	text-align: center;
+	font-size: 1.25rem;
+	font-weight: 600;
+	letter-spacing: 0.025em;
+	color: var(--text-primary);
+}
+
+.description {
+	margin-bottom: 1.5rem;
+	text-align: center;
+	font-size: 0.875rem;
+	color: var(--text-tertiary);
+}
+
+.expiredDescription {
+	margin-bottom: 1.5rem;
+	text-align: center;
+	font-size: 0.875rem;
+	color: var(--text-tertiary);
+}
+
+.codeSection {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 1.5rem 0;
+}
+
+.codeLabel {
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--text-tertiary);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin: 0;
+}
+
+.codeDisplay {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 1rem 1.5rem;
+	background-color: var(--background-tertiary);
+	border: 0.125rem solid var(--background-modifier-accent);
+	border-radius: 0.75rem;
+	filter: blur(0.375rem);
+	transition: filter 0.15s ease;
+	cursor: pointer;
+	user-select: none;
+}
+
+.codeDisplay:hover {
+	filter: blur(0);
+	user-select: text;
+}
+
+.codeChar {
+	font-family: var(--font-mono);
+	font-size: 2rem;
+	font-weight: 700;
+	color: var(--text-primary);
+	letter-spacing: 0.1em;
+}
+
+.codeSeparator {
+	font-family: var(--font-mono);
+	font-size: 2rem;
+	font-weight: 700;
+	color: var(--text-tertiary);
+	margin: 0 0.25rem;
+}
+
+.timer {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--text-tertiary);
+	font-variant-numeric: tabular-nums;
+}
+
+.spinner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	padding: 1.5rem 0;
+}
+
+.spinnerIcon {
+	width: 1.5rem;
+	height: 1.5rem;
+	border: 0.1875rem solid var(--background-modifier-accent);
+	border-top-color: var(--brand-primary);
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.error {
+	background-color: hsla(0, calc(100% * var(--saturation-factor)), 50%, 0.1);
+	border: 0.0625rem solid hsla(0, calc(100% * var(--saturation-factor)), 50%, 0.2);
+	border-radius: 0.5rem;
+	padding: 0.75rem;
+	font-size: 0.875rem;
+	color: var(--status-danger);
+	margin: 1rem 0;
+	text-align: center;
+}

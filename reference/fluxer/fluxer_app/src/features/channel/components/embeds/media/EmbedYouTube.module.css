@@ -1,0 +1,118 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.thumbnail {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	border-radius: var(--radius-sm);
+	background: var(--background-primary);
+	cursor: pointer;
+}
+
+.thumbnailPlaceholder {
+	position: absolute;
+	inset: 0;
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+}
+
+.overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.4);
+}
+
+.posterImage {
+	position: absolute;
+	inset: 0;
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+}
+
+.thumbnailClickTarget {
+	position: absolute;
+	inset: 0;
+	border: 0;
+	padding: 0;
+	background: transparent;
+	cursor: pointer;
+}
+
+.controlsContainer {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.buttonGroup {
+	pointer-events: auto;
+	display: flex;
+	align-items: center;
+	gap: 0.125rem;
+	padding: 0.25rem;
+	border: 0.0625rem solid rgba(255, 255, 255, 0.12);
+	border-radius: 1rem;
+	background: rgba(3, 3, 4, 0.86);
+	backdrop-filter: blur(1rem) saturate(1.2);
+	-webkit-backdrop-filter: blur(1rem) saturate(1.2);
+	box-shadow:
+		0 0.75rem 1.875rem rgba(0, 0, 0, 0.4),
+		inset 0 0.0625rem 0 rgba(255, 255, 255, 0.075);
+}
+
+.buttonGroup button {
+	border-radius: 0.8125rem;
+	cursor: pointer;
+}
+
+.buttonGroup button > div {
+	height: 2.125rem;
+	width: 2.125rem;
+	border-radius: 0.6875rem;
+	background: transparent;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.buttonGroup button > div svg {
+	width: 1.3125rem;
+	height: 1.3125rem;
+}
+
+:global(:where(html.window-focused, html.unfocused-fully-interactive):not(.window-focus-activation-guard))
+	.buttonGroup.buttonGroup
+	button:hover
+	> div[class] {
+	background: rgba(255, 255, 255, 0.12);
+}
+
+.container {
+	display: grid;
+	width: 100%;
+	user-select: none;
+	-webkit-user-select: none;
+	overflow: hidden;
+	border-radius: var(--radius-sm);
+}
+
+.videoContainer {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	border-radius: var(--radius-sm);
+	background: var(--background-primary);
+}
+
+.iframe {
+	position: absolute;
+	inset: 0;
+	height: 100%;
+	width: 100%;
+	border: none;
+}

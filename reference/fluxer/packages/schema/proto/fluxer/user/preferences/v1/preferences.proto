@@ -1,0 +1,261 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+syntax = "proto3";
+
+package fluxer.user.preferences.v1;
+
+import "fluxer/user/preferences/v1/accessibility.proto";
+import "fluxer/user/preferences/v1/pickers.proto";
+
+message SyncedPreferences {
+  AccessibilitySettings accessibility = 1;
+  AccessibilityOverrides accessibility_overrides = 2;
+  TextualPreviewSettings textual_preview = 3;
+
+  EmojiPickerState emoji_picker = 20;
+  StickerPickerState sticker_picker = 21;
+  MemesPickerState memes_picker = 22;
+  EmojiState emoji = 23;
+  EmojiStickerLayoutSettings emoji_sticker_layout = 24;
+  FavoriteGifSettings favorite_gifs = 25;
+
+  FavoritesState favorites = 40;
+  RecentMentionsSettings recent_mentions = 41;
+  SidebarPreferences sidebar = 42;
+  MemberListState member_list = 43;
+  UnreadChannelsState unread_channels = 44;
+  MentionFrecencyState mention_frecency = 45;
+
+  NagbarDismissals nagbars = 60;
+  DismissedUpsells dismissed_upsells = 61;
+  GuildNsfwAgreements guild_nsfw_agreements = 62;
+  WhatsNewState whats_new = 63;
+
+  PrivacyPreferences privacy = 80;
+  LocalUserSpamOverrides local_spam_overrides = 81;
+  bool sanitize_urls = 82;
+
+  SoundSettings sound = 100;
+  SpellcheckSettings spellcheck = 101;
+  SearchEngineSettings search_engines = 102;
+  PermissionLayoutSettings permission_layout = 103;
+  GuildMemberLayoutSettings guild_member_layout = 104;
+  GuildFolderExpandedState guild_folders = 105;
+  HiddenGuildListButtons hidden_guild_buttons = 106;
+  KeyboardModeIntroState keyboard_mode_intro = 107;
+  InputMonitoringPromptsState input_monitoring = 108;
+  VoicePromptsState voice_prompts = 109;
+  SudoPromptState sudo_prompt = 110;
+  KeybindSettings keybinds = 111;
+  ChatInputSettings chat_input = 112;
+
+}
+
+message SpellcheckSettings {
+  optional bool enabled = 1;
+  repeated string languages = 2;
+  repeated string personal_dictionary = 3;
+  optional bool auto_detect = 4;
+  optional string engine = 5;
+}
+
+message SearchEngineSettings {
+  optional string text_search_engine_id = 1;
+  optional string reverse_image_search_engine_id = 2;
+  optional string translation_provider_id = 3;
+}
+
+message PrivacyPreferences {
+  bool disable_stream_previews = 1;
+  optional bool show_active_now = 2;
+  optional bool preupload_message_attachments = 3;
+}
+
+message LocalUserSpamOverrides {
+  repeated string spammer_user_ids = 1;
+  repeated string not_spammer_user_ids = 2;
+}
+
+message TextualPreviewSettings {
+  bool wrap_text = 1;
+}
+
+message SidebarPreferences {
+  bool inline_dms_collapsed = 1;
+  optional bool show_collapsed_unread_dms_badge = 2;
+  optional bool show_incoming_friend_request_badge = 3;
+}
+
+message MemberListState {
+  optional bool members_open = 1;
+}
+
+message UnreadChannelsState {
+  repeated string collapsed_channel_ids = 1;
+}
+
+message RecentMentionsSettings {
+  optional bool include_everyone = 1;
+  optional bool include_roles = 2;
+  optional bool include_guilds = 3;
+}
+
+message MentionFrecencyState {
+  message Entry {
+    string user_id = 1;
+    uint32 count = 2;
+    int64 last_at_ms = 3;
+  }
+  message Scope {
+    string guild_id = 1;
+    repeated Entry entries = 2;
+  }
+  repeated Scope scopes = 1;
+}
+
+message FavoritesState {
+  repeated FavoriteChannel channels = 1;
+  repeated FavoriteCategory categories = 2;
+  repeated string collapsed_category_ids = 3;
+  bool hide_muted_channels = 4;
+  bool muted = 5;
+}
+
+message FavoriteChannel {
+  string channel_id = 1;
+  string guild_id = 2;
+  optional string parent_id = 3;
+  int32 position = 4;
+  optional string nickname = 5;
+}
+
+message FavoriteCategory {
+  string id = 1;
+  string name = 2;
+  int32 position = 3;
+}
+
+message NagbarDismissals {
+  bool ios_install = 1;
+  bool pwa_install = 2;
+  bool push_notification = 3;
+  bool desktop_notification = 4;
+  bool premium_grace_period = 5;
+  bool premium_expired = 6;
+  bool premium_onboarding = 7;
+  bool premium_trial_expiring = 8;
+  bool gift_inventory = 9;
+  bool desktop_download = 10;
+  bool guild_membership_cta = 11;
+  bool visionary_mfa = 12;
+  bool legacy_phone_unlink = 14;
+  map<string, bool> pending_bulk_deletion = 15;
+  map<string, bool> invites_disabled = 16;
+  map<string, bool> guild_mfa_requirement = 17;
+}
+
+message DismissedUpsells {
+  bool picker_premium = 1;
+}
+
+message GuildNsfwAgreements {
+  repeated string agreed_channel_ids = 1;
+  repeated string agreed_guild_ids = 2;
+  repeated string agreed_category_ids = 3;
+}
+
+message WhatsNewState {
+  optional string last_dismissed_entry_id = 1;
+}
+
+message PermissionLayoutSettings {
+  PermissionLayoutMode layout = 1;
+  PermissionGridMode grid = 2;
+}
+
+enum PermissionLayoutMode {
+  PERMISSION_LAYOUT_MODE_UNSPECIFIED = 0;
+  PERMISSION_LAYOUT_MODE_COMFY = 1;
+  PERMISSION_LAYOUT_MODE_DENSE = 2;
+}
+
+enum PermissionGridMode {
+  PERMISSION_GRID_MODE_UNSPECIFIED = 0;
+  PERMISSION_GRID_MODE_SINGLE = 1;
+  PERMISSION_GRID_MODE_GRID = 2;
+}
+
+message GuildMemberLayoutSettings {
+  GuildMemberViewMode mode = 1;
+}
+
+enum GuildMemberViewMode {
+  GUILD_MEMBER_VIEW_MODE_UNSPECIFIED = 0;
+  GUILD_MEMBER_VIEW_MODE_TABLE = 1;
+  GUILD_MEMBER_VIEW_MODE_GRID = 2;
+}
+
+message GuildFolderExpandedState {
+  repeated fixed64 expanded_folder_ids = 1;
+}
+
+message HiddenGuildListButtons {
+  bool download_button = 1;
+  bool help_button = 2;
+}
+
+message KeyboardModeIntroState {
+  bool seen = 1;
+}
+
+message InputMonitoringPromptsState {
+  bool seen_cta = 1;
+}
+
+message VoicePromptsState {
+  bool skip_hide_own_camera_confirm = 1;
+  bool skip_hide_own_screenshare_confirm = 2;
+}
+
+message SudoPromptState {
+  optional MfaMethod last_used_mfa_method = 1;
+}
+
+message KeybindSettings {
+  repeated CustomKeybind custom_keybinds = 1;
+  string transmit_mode = 2;
+  optional uint32 push_to_talk_release_delay_ms = 3;
+}
+
+message CustomKeybind {
+  string id = 1;
+  optional string action = 2;
+  KeybindCombo combo = 3;
+  bool enabled = 4;
+}
+
+message KeybindCombo {
+  string key = 1;
+  optional string code = 2;
+  bool ctrl_or_meta = 3;
+  bool ctrl = 4;
+  bool alt = 5;
+  bool shift = 6;
+  bool meta = 7;
+  optional bool global = 8;
+  optional bool enabled = 9;
+  bool modifier_only = 10;
+  bool both_sides = 11;
+  optional uint32 mouse_button = 12;
+  optional uint32 gamepad_button = 13;
+}
+
+enum MfaMethod {
+  MFA_METHOD_UNSPECIFIED = 0;
+  MFA_METHOD_TOTP = 1;
+  MFA_METHOD_WEBAUTHN = 3;
+}
+
+message ChatInputSettings {
+  optional bool convert_emoticons = 1;
+}

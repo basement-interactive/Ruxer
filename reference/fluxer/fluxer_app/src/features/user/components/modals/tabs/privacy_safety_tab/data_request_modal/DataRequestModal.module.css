@@ -1,0 +1,110 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+.step {
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+}
+
+.stepTitle {
+	font-size: 1.0625rem;
+	font-weight: 700;
+	line-height: 1.3;
+	color: var(--text-primary);
+	margin: 0;
+}
+
+.stepBody {
+	font-size: 0.875rem;
+	line-height: 1.5;
+	color: var(--text-secondary);
+	margin: 0;
+}
+
+.dateFields {
+	display: flex;
+	flex-direction: column;
+	gap: 0.625rem;
+}
+
+.helper {
+	font-size: 0.75rem;
+	color: var(--text-tertiary);
+	line-height: 1.4;
+	margin: 0;
+}
+
+.errorText {
+	color: var(--status-danger);
+	font-size: 0.75rem;
+}
+
+.communityList {
+	display: flex;
+	flex-direction: column;
+	max-height: 17.5rem;
+	overflow-y: auto;
+	border-radius: 0.625rem;
+	border: 0.0625rem solid var(--background-header-secondary);
+	background: var(--background-secondary);
+	padding: 1.5rem 0.5rem 1.5rem 1.25rem;
+}
+
+.communityListEmpty {
+	padding: 1rem;
+	text-align: center;
+	font-size: 0.8125rem;
+	color: var(--text-tertiary);
+}
+
+.guildRowLabel {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.625rem;
+	min-width: 0;
+}
+
+.guildRowName {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.summaryList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.625rem;
+	padding: 0.875rem;
+	border-radius: 0.625rem;
+	border: 0.0625rem solid var(--background-header-secondary);
+	background: var(--background-secondary);
+}
+
+.summaryRow {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.summaryRowLabel {
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--text-tertiary);
+}
+
+.summaryRowValue {
+	font-size: 0.875rem;
+	color: var(--text-primary);
+	line-height: 1.4;
+}
+
+.dangerNotice {
+	padding: 0.75rem 0.875rem;
+	border-radius: 0.625rem;
+	border: 0.0625rem solid var(--status-danger);
+	color: var(--text-primary);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+}

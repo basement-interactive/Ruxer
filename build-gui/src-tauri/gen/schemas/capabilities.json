@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"Default capability for the build GUI window","local":true,"windows":["main"],"permissions":["core:default","core:event:default","dialog:default","opener:default"]}}
