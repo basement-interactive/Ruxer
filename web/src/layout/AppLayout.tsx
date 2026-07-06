@@ -31,6 +31,7 @@ import { TranslateProviderPickerModal } from "../components/TranslateProviderPic
 import { ThemeStudio, initCustomTheme } from "../components/ThemeStudio";
 import { UserProfileModal } from "../components/UserProfileModal";
 import { BanMemberModal } from "../components/BanMemberModal";
+import { OnboardingModal } from "../components/OnboardingModal";
 import { ui, messages, guilds, settings, voice, toasts } from "../stores";
 import "./AppLayout.css";
 
@@ -128,6 +129,7 @@ export const AppLayout = observer(function AppLayout() {
           double-mounted and overlapped this; keep only the modal.) */}
       <UserProfileModal />
       <BanMemberModal />
+      <OnboardingModal />
       <ContextMenu />
       <SettingsModal />
       <ToastContainer />

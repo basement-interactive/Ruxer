@@ -1,0 +1,115 @@
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-secondary, #2b2d31);
+}
+.onboarding-card {
+  width: min(92vw, 460px);
+  background: var(--bg-main, #313338);
+  border-radius: 14px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.onboarding-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  min-height: 220px;
+  justify-content: center;
+}
+.onboarding-logo {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--brand, #5865f2);
+  letter-spacing: -0.5px;
+}
+.onboarding-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-normal, #f2f3f5);
+}
+.onboarding-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary, #b5bac1);
+  margin: 0;
+  max-width: 34ch;
+}
+.onboarding-note {
+  font-size: 14px;
+  color: var(--green, #23a55a);
+  font-weight: 600;
+}
+.onboarding-note.muted {
+  color: var(--text-muted, #949ba4);
+}
+.onboarding-secondary {
+  margin-top: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--brand, #5865f2);
+  background: transparent;
+  color: var(--brand, #5865f2);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.onboarding-secondary:hover {
+  background: var(--brand, #5865f2);
+  color: #fff;
+}
+.onboarding-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.onboarding-dots {
+  display: flex;
+  gap: 6px;
+}
+.onboarding-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bg-modifier-accent, #4e5058);
+}
+.onboarding-dot.on {
+  background: var(--brand, #5865f2);
+}
+.onboarding-actions {
+  display: flex;
+  gap: 8px;
+}
+.onboarding-back {
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-normal, #dbdee1);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.onboarding-next {
+  padding: 9px 20px;
+  border-radius: 8px;
+  border: none;
+  background: var(--brand, #5865f2);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.onboarding-next:hover {
+  background: #4752c4;
+}

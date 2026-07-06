@@ -2498,6 +2498,9 @@ export class UiStore {
   callExpanded = false;
   // Ban-member modal target (guild + user), or null when closed.
   banTarget: { guildId: Snowflake; userId: Snowflake } | null = null;
+  // First-launch onboarding overlay. Opened once (localStorage-gated) after the
+  // first successful login; user can also reopen it from settings later.
+  onboardingOpen = false;
   // Gateway connection status, driven by `gateway_status` Tauri events.
   // One of: "connecting" | "connected" | "reconnecting" | "disconnected".
   // Defaults to "disconnected" (no banner) until the first real
@@ -2785,6 +2788,28 @@ export class UiStore {
 
   @action openBanModal(guildId: Snowflake, userId: Snowflake) {
     this.banTarget = { guildId, userId };
+  }
+
+  /// Open the onboarding overlay once per install (first login). Reopenable via
+  /// `openOnboarding(true)`.
+  @action maybeShowOnboarding() {
+    try {
+      if (localStorage.getItem("ui.onboarded") !== "1") this.onboardingOpen = true;
+    } catch {
+      /* localStorage unavailable — skip */
+    }
+  }
+
+  @action openOnboarding(force = false) {
+    if (force) this.onboardingOpen = true;
+    else this.maybeShowOnboarding();
+  }
+
+  @action finishOnboarding() {
+    this.onboardingOpen = false;
+    try {
+      localStorage.setItem("ui.onboarded", "1");
+    } catch {}
   }
 
   @action closeBanModal() {

@@ -71,6 +71,7 @@ export const App = observer(function App() {
     if (session.isLoggedIn && !preloadStarted.current) {
       preloadStarted.current = true;
       preloadIdentityMedia().catch(() => {});
+      ui.maybeShowOnboarding();
     } else if (!session.isLoggedIn) {
       preloadStarted.current = false;
     }
