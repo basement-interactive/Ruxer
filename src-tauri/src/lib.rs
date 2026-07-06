@@ -614,6 +614,9 @@ pub fn run() {
             discovery_categories,
             discovery_join,
             list_read_state,
+            list_saved_messages,
+            save_message,
+            unsave_message,
             list_pins,
             pin_message,
             unpin_message,
@@ -1481,11 +1484,13 @@ async fn list_messages(
     channel_id: Snowflake,
     limit: Option<i32>,
     before: Option<Snowflake>,
+    around: Option<Snowflake>,
 ) -> CmdResult<Vec<fluxer::models::Message>> {
     let c = client(&state).await?;
     let params = fluxer::models::ListParams {
         limit,
         before,
+        around,
         ..Default::default()
     };
     c.messages().list(&channel_id, params).await.map_err(Into::into)
@@ -2223,6 +2228,39 @@ async fn list_read_state(
 // ---------------------------------------------------------------------------
 // Pins
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Saved messages (bookmarks)
+// ---------------------------------------------------------------------------
+
+#[tauri::command]
+async fn list_saved_messages(
+    state: State<'_, AppState>,
+) -> CmdResult<Vec<fluxer::models::SavedMessageEntry>> {
+    let c = client(&state).await?;
+    c.users().saved_messages(Some(100)).await.map_err(Into::into)
+}
+
+#[tauri::command]
+async fn save_message(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    message_id: Snowflake,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.users().save_message(&channel_id, &message_id)
+        .await
+        .map_err(Into::into)
+}
+
+#[tauri::command]
+async fn unsave_message(
+    state: State<'_, AppState>,
+    message_id: Snowflake,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.users().unsave_message(&message_id).await.map_err(Into::into)
+}
 
 #[tauri::command]
 async fn list_pins(

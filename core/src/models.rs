@@ -565,6 +565,20 @@ pub mod attachment_flags {
     pub const IS_ANIMATED: i32 = 32;
 }
 
+/// A saved-message (bookmark) entry from `GET /users/@me/saved-messages`.
+/// `status` is `"available"` (message populated) or `"missing_permissions"`
+/// (kept as a String for forward compatibility).
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct SavedMessageEntry {
+    pub id: Snowflake,
+    pub channel_id: Snowflake,
+    pub message_id: Snowflake,
+    #[serde(default)]
+    pub status: String,
+    #[serde(default)]
+    pub message: Option<Message>,
+}
+
 /// A read state entry for a channel.
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ReadState {

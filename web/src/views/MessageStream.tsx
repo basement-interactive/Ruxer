@@ -81,6 +81,22 @@ export const MessageStream = observer(function MessageStream({
     setAtBottom(true);
   };
 
+  // Jump-to-message (bookmarks/pins): when a pending jump targets this
+  // channel and the row is rendered, scroll it into view and flash it.
+  const pendingJump = messages.pendingJump;
+  useEffect(() => {
+    if (!pendingJump || pendingJump.channelId !== channelId) return;
+    const el = scrollRef.current?.querySelector(
+      `[data-message-id="${pendingJump.messageId}"]`,
+    );
+    if (!el) return; // row not rendered yet; retry on next msgs change
+    wasNearBottom.current = false;
+    el.scrollIntoView({ block: "center" });
+    el.classList.add("message-flash");
+    window.setTimeout(() => el.classList.remove("message-flash"), 2000);
+    messages.clearPendingJump();
+  }, [pendingJump, channelId, msgs.length]);
+
   return (
     <div className="message-stream" ref={scrollRef} onScroll={onScroll}>
       <div className="message-stream-inner">
@@ -108,7 +124,9 @@ export const MessageStream = observer(function MessageStream({
           return (
             <React.Fragment key={m.id}>
               {showDivider && <DayDivider timestamp={m.timestamp} />}
-              <MessageRow message={m} groupable={groupable} />
+              <div data-message-id={m.id}>
+                <MessageRow message={m} groupable={groupable} />
+              </div>
             </React.Fragment>
           );
         })}

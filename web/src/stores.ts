@@ -1083,6 +1083,45 @@ export class MessagesStore {
     this.byChannel.set(channelId, [...list]);
   }
 
+  // Jump-to-message (bookmarks/pins/search): the target row to scroll to and
+  // flash once the channel is open and its messages are present.
+  pendingJump: { channelId: Snowflake; messageId: Snowflake } | null = null;
+
+  /// Navigate to a message anywhere: switch guild/DM view, open the channel,
+  /// load a context window around the target when it isn't already loaded,
+  /// then let MessageStream scroll to + flash the row via `pendingJump`.
+  async jumpTo(channelId: Snowflake, messageId: Snowflake) {
+    const inGuild = guilds.findChannel(channelId);
+    runInAction(() => {
+      if (inGuild) {
+        const gi = guilds.guilds.findIndex((g) => g.id === inGuild.guildId);
+        if (gi >= 0 && (ui.side !== "guild" || ui.selectedGuildIndex !== gi)) {
+          ui.selectGuild(gi);
+        }
+      }
+      ui.openChannel(channelId);
+    });
+    if (!this.getMessages(channelId).some((m) => m.id === messageId)) {
+      try {
+        const msgs = await api.listMessages(channelId, 50, undefined, messageId);
+        runInAction(() => {
+          this.byChannel.set(channelId, msgs.map(normalizeMessage));
+          this.loaded.add(channelId);
+        });
+      } catch (e) {
+        toasts.error("Failed to load message", String(e));
+        return;
+      }
+    }
+    runInAction(() => {
+      this.pendingJump = { channelId, messageId };
+    });
+  }
+
+  @action clearPendingJump() {
+    this.pendingJump = null;
+  }
+
   /// Drop every reaction of one emoji from a message. Mirrors the
   /// MESSAGE_REACTION_REMOVE_EMOJI reducer; used optimistically for the
   /// moderator "Remove Reaction" action in the reactions modal.
@@ -1103,6 +1142,136 @@ export class MessagesStore {
 
   @action applyPinsChanged(channelId: Snowflake) {
     this.pinsByChannel.delete(channelId);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Saved messages (bookmarks) store — the user's server-side bookmark list.
+// Fetched lazily on first popout open; live-synced via SAVED_MESSAGE_CREATE /
+// SAVED_MESSAGE_DELETE gateway events. Save is NOT optimistic (the gateway
+// echo inserts the entry); unsave IS optimistic (matching the reference).
+// ---------------------------------------------------------------------------
+
+export class SavedMessagesStore {
+  /// Saved messages, newest-first (snowflake id descending).
+  savedMessages: Message[] = [];
+  /// Entries whose message is inaccessible ("You lost access…" cards).
+  missing: { id: Snowflake; channelId: Snowflake; messageId: Snowflake }[] = [];
+  fetched = false;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  isSaved(messageId: Snowflake): boolean {
+    return (
+      this.savedMessages.some((m) => m.id === messageId) ||
+      this.missing.some((e) => e.messageId === messageId)
+    );
+  }
+
+  async fetch() {
+    try {
+      const entries = await api.listSavedMessages();
+      runInAction(() => {
+        const saved: Message[] = [];
+        const missing: SavedMessagesStore["missing"] = [];
+        for (const e of entries) {
+          if (e.status === "available" && e.message) {
+            saved.push(normalizeMessage(e.message));
+          } else {
+            missing.push({ id: e.id, channelId: e.channel_id, messageId: e.message_id });
+          }
+        }
+        saved.sort((a, b) => b.id.localeCompare(a.id, undefined, { numeric: true }));
+        this.savedMessages = saved;
+        this.missing = missing;
+        this.fetched = true;
+      });
+    } catch (e) {
+      runInAction(() => {
+        this.savedMessages = [];
+        this.missing = [];
+        this.fetched = false;
+      });
+      toasts.error("Failed to load bookmarks", String(e));
+    }
+  }
+
+  /// Bookmark a message. The list updates when the gateway echoes
+  /// SAVED_MESSAGE_CREATE (deliberately not optimistic).
+  async save(channelId: Snowflake, messageId: Snowflake) {
+    try {
+      await api.saveMessage(channelId, messageId);
+      toasts.success("Added to bookmarks");
+    } catch (e) {
+      const code = (e as { code?: string }).code;
+      if (code === "MAX_BOOKMARKS") {
+        toasts.error(
+          "Bookmark limit reached",
+          "You're at the bookmark cap. Remove one to add another.",
+        );
+      } else {
+        toasts.error("Failed to bookmark message", String(e));
+      }
+    }
+  }
+
+  /// Remove a bookmark — optimistic (no rollback on failure, matching the
+  /// reference; a failed DELETE resolves on the next refetch).
+  async unsave(messageId: Snowflake) {
+    this.applyDelete(messageId);
+    try {
+      await api.unsaveMessage(messageId);
+      toasts.success("Removed from bookmarks");
+    } catch (e) {
+      toasts.error("Failed to remove bookmark", String(e));
+    }
+  }
+
+  toggle(message: Message) {
+    if (this.isSaved(message.id)) void this.unsave(message.id);
+    else void this.save(message.channel_id, message.id);
+  }
+
+  /// SAVED_MESSAGE_CREATE — payload is the full wire message.
+  @action applyCreate(wire: Message) {
+    if (!wire?.id) return;
+    if (!this.savedMessages.some((m) => m.id === wire.id)) {
+      this.savedMessages = [normalizeMessage(wire), ...this.savedMessages];
+    }
+    this.missing = this.missing.filter((e) => e.messageId !== wire.id);
+  }
+
+  /// SAVED_MESSAGE_DELETE / optimistic unsave / MESSAGE_DELETE.
+  @action applyDelete(messageId: Snowflake) {
+    this.savedMessages = this.savedMessages.filter((m) => m.id !== messageId);
+    this.missing = this.missing.filter(
+      (e) => e.messageId !== messageId && e.id !== messageId,
+    );
+  }
+
+  /// MESSAGE_UPDATE — keep the saved copy fresh.
+  @action applyMessageUpdate(msg: Message) {
+    const i = this.savedMessages.findIndex((m) => m.id === msg.id);
+    if (i >= 0) {
+      const next = [...this.savedMessages];
+      next[i] = normalizeMessage(msg);
+      this.savedMessages = next;
+    }
+  }
+
+  /// CHANNEL_DELETE — drop every entry from that channel.
+  @action applyChannelDelete(channelId: Snowflake) {
+    this.savedMessages = this.savedMessages.filter((m) => m.channel_id !== channelId);
+    this.missing = this.missing.filter((e) => e.channelId !== channelId);
+  }
+
+  /// Reset on logout / gateway reconnect so the next open refetches.
+  @action reset() {
+    this.savedMessages = [];
+    this.missing = [];
+    this.fetched = false;
   }
 }
 
@@ -2347,6 +2516,13 @@ export class UiStore {
     this.reportTarget = null;
   }
 
+  // Bookmarks popout (channel-header anchored) open state.
+  bookmarksOpen = false;
+
+  @action toggleBookmarks(open?: boolean) {
+    this.bookmarksOpen = open ?? !this.bookmarksOpen;
+  }
+
   // Forward-message modal target: the message being forwarded (null = closed).
   forwardTarget: Message | null = null;
 
@@ -2601,6 +2777,7 @@ export class UiStore {
 export const session = new SessionStore();
 export const guilds = new GuildsStore();
 export const messages = new MessagesStore();
+export const saved = new SavedMessagesStore();
 export const dms = new DmsStore();
 export const relationships = new RelationshipsStore();
 export const presence = new PresenceStore();
@@ -2690,6 +2867,7 @@ export function clearStores() {
   settings.clear();
   toasts.clear();
   readState.clear();
+  saved.reset();
   guilds.guilds = [];
   guilds.channelsByGuild.clear();
   guilds.membersByGuild.clear();
@@ -2734,7 +2912,14 @@ export async function startGatewayListener() {
         | "connected"
         | "reconnecting"
         | "disconnected";
-      runInAction(() => ui.setGatewayStatus(status));
+      runInAction(() => {
+        // A (re)connect invalidates the bookmark list — events during the
+        // outage were lost, so drop it and refetch on next open.
+        if (status === "connected" && ui.gatewayStatus !== "connected") {
+          saved.reset();
+        }
+        ui.setGatewayStatus(status);
+      });
     }).then(() => {}, (e) => toasts.error("Gateway status listener failed", String(e))),
   ]);
   // Typing expiry loop.
@@ -2822,13 +3007,26 @@ function handleGatewayEvent(name: string, data: any) {
       const msg = data as Message;
       if (msg?.channel_id && msg?.id) {
         messages.applyMessageUpdate(msg);
+        saved.applyMessageUpdate(msg);
       }
       break;
     }
     case "MESSAGE_DELETE": {
       const cid = data?.channel_id;
       const mid = data?.id;
-      if (cid && mid) messages.applyMessageDelete(cid, mid);
+      if (cid && mid) {
+        messages.applyMessageDelete(cid, mid);
+        saved.applyDelete(mid);
+      }
+      break;
+    }
+    // --- Saved messages (bookmarks) ---
+    case "SAVED_MESSAGE_CREATE": {
+      if (data?.id) saved.applyCreate(data as Message);
+      break;
+    }
+    case "SAVED_MESSAGE_DELETE": {
+      if (data?.message_id) saved.applyDelete(data.message_id);
       break;
     }
     case "MESSAGE_DELETE_BULK": {
@@ -2949,6 +3147,7 @@ function handleGatewayEvent(name: string, data: any) {
       const id = data?.id;
       if (id) {
         dms.remove(id);
+        saved.applyChannelDelete(id);
         if (data?.guild_id) {
           runInAction(() => {
             const chs = guilds.channelsByGuild.get(data.guild_id);

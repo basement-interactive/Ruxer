@@ -146,4 +146,47 @@ impl Users {
             .send_json(reqwest::Method::PATCH, "users/@me/settings", patch)
             .await
     }
+
+    /// `GET /users/@me/saved-messages` — the current user's bookmarks.
+    pub async fn saved_messages(
+        &self,
+        limit: Option<i32>,
+    ) -> Result<Vec<crate::models::SavedMessageEntry>> {
+        let path = match limit {
+            Some(n) => format!("users/@me/saved-messages?limit={}", n),
+            None => "users/@me/saved-messages".to_string(),
+        };
+        self.0.get(&path).await
+    }
+
+    /// `POST /users/@me/saved-messages` — bookmark a message. The server
+    /// confirms via a SAVED_MESSAGE_CREATE gateway event (not the response).
+    pub async fn save_message(
+        &self,
+        channel_id: &Snowflake,
+        message_id: &Snowflake,
+    ) -> Result<()> {
+        #[derive(serde::Serialize)]
+        struct Body<'a> {
+            channel_id: &'a Snowflake,
+            message_id: &'a Snowflake,
+        }
+        self.0
+            .send_json(
+                reqwest::Method::POST,
+                "users/@me/saved-messages",
+                &Body {
+                    channel_id,
+                    message_id,
+                },
+            )
+            .await
+    }
+
+    /// `DELETE /users/@me/saved-messages/{message_id}` — remove a bookmark.
+    pub async fn unsave_message(&self, message_id: &Snowflake) -> Result<()> {
+        self.0
+            .delete::<()>(&format!("users/@me/saved-messages/{}", message_id))
+            .await
+    }
 }

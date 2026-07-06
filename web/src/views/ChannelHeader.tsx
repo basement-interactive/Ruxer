@@ -8,6 +8,7 @@ import { ui, voice } from "../stores";
 import type { Channel } from "../types";
 import { channelType } from "../types";
 import { dmLabel } from "../stores";
+import { BookmarksPopout } from "../layout/BookmarksPopout";
 import "./ChannelHeader.css";
 
 export const ChannelHeader = observer(function ChannelHeader({
@@ -24,6 +25,7 @@ export const ChannelHeader = observer(function ChannelHeader({
   const inThisCall = voice.connected && voice.pendingChannelId === channel.id;
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const bookmarksRef = useRef<HTMLDivElement>(null);
 
   // Close notification dropdown on outside click.
   useEffect(() => {
@@ -36,6 +38,18 @@ export const ChannelHeader = observer(function ChannelHeader({
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, [notifOpen]);
+
+  // Close the bookmarks popout on outside click.
+  useEffect(() => {
+    if (!ui.bookmarksOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (bookmarksRef.current && !bookmarksRef.current.contains(e.target as Node)) {
+        ui.toggleBookmarks(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [ui.bookmarksOpen]);
 
   return (
     <header className="channel-header">
@@ -118,10 +132,28 @@ export const ChannelHeader = observer(function ChannelHeader({
         >
           <PinIcon />
         </button>
+        <div className="notif-dropdown-wrapper" ref={bookmarksRef}>
+          <button
+            className={`header-toggle ${ui.bookmarksOpen ? "active" : ""}`}
+            onClick={() => ui.toggleBookmarks()}
+            title="Bookmarks"
+          >
+            <BookmarkIcon filled={ui.bookmarksOpen} />
+          </button>
+          {ui.bookmarksOpen && <BookmarksPopout />}
+        </div>
       </div>
     </header>
   );
 });
+
+function BookmarkIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4.5L5 21V4a1 1 0 0 1 1-1z" />
+    </svg>
+  );
+}
 
 function HashIcon() {
   return (

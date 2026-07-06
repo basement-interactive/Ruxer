@@ -113,3 +113,17 @@
   color: var(--text-primary); /* :105 */
   transform: translateY(-0.125rem);
 }
+/* Jump-to-message flash: pulse the target row's background after a bookmark/
+   pin/search jump lands, then fade back out. */
+@keyframes message-flash {
+  0% {
+    background: var(--bg-modifier-selected, rgba(255, 255, 255, 0.08));
+  }
+  100% {
+    background: transparent;
+  }
+}
+.message-flash {
+  animation: message-flash 2s ease-out;
+  border-radius: var(--r-sm, 4px);
+}

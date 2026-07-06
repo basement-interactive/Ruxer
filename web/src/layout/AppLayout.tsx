@@ -39,6 +39,10 @@ export const AppLayout = observer(function AppLayout() {
       } else if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "f") {
         e.preventDefault();
         ui.openSearch();
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "i") {
+        // Ctrl/Cmd+I: toggle the bookmarks popout (reference: inbox toggle).
+        e.preventDefault();
+        ui.toggleBookmarks();
       }
     };
     window.addEventListener("keydown", onKey);

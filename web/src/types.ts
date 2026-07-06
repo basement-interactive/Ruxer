@@ -193,6 +193,15 @@ export interface Reaction {
   me?: boolean;
 }
 
+/// A saved-message (bookmark) entry (GET /users/@me/saved-messages).
+export interface SavedMessageEntry {
+  id: Snowflake;
+  channel_id: Snowflake;
+  message_id: Snowflake;
+  status: "available" | "missing_permissions";
+  message: Message | null;
+}
+
 /// One page of "who reacted" users (GET .../reactions/{emoji}/users).
 export interface ReactionUsersPage {
   items: User[];

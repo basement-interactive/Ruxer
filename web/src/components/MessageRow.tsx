@@ -4,7 +4,7 @@
 
 import { observer } from "mobx-react-lite";
 import { useState, useEffect } from "react";
-import { messages, session, ui, relationships, guilds, dms, dmLabel } from "../stores";
+import { messages, session, ui, relationships, guilds, dms, dmLabel, saved } from "../stores";
 import type { ContextMenuItem } from "../stores";
 import type { Message, MessageSnapshot } from "../types";
 import { Avatar } from "./Avatar";
@@ -408,6 +408,11 @@ function openContextMenu(message: Message, x: number, y: number) {
     { kind: "action", label: "Copy Message Link", onClick: () => navigator.clipboard?.writeText(`${message.channel_id}/${message.id}`).catch(() => {}) },
     { kind: "separator" },
     { kind: "action", label: "Pin Message", onClick: () => messages.pin(message.channel_id, message.id, !message.pinned).catch(() => {}) },
+    {
+      kind: "action",
+      label: saved.isSaved(message.id) ? "Remove Bookmark" : "Bookmark Message",
+      onClick: () => saved.toggle(message),
+    },
     {
       kind: "action",
       label: "Create Thread",

@@ -24,6 +24,7 @@ import type {
   ReadState,
   Relationship,
   Role,
+  SavedMessageEntry,
   Snowflake,
   Webhook,
   Sticker,
@@ -323,8 +324,8 @@ export const api = {
   deleteWebhook: (webhookId: Snowflake) =>
     call<void>("delete_webhook", { webhookId }),
 
-  listMessages: (channelId: Snowflake, limit?: number, before?: Snowflake) =>
-    call<Message[]>("list_messages", { channelId, limit, before }),
+  listMessages: (channelId: Snowflake, limit?: number, before?: Snowflake, around?: Snowflake) =>
+    call<Message[]>("list_messages", { channelId, limit, before, around }),
   /// Send a message, optionally with file attachments. Each `AttachmentInput`
   /// points to a local file path picked via the native file dialog; the Tauri
   /// backend reads the bytes and sends them as multipart `files[N]` parts in
@@ -443,6 +444,13 @@ export const api = {
 
   // --- Read state (D.18) ---
   listReadState: () => call<ReadState[]>("list_read_state"),
+
+  // --- Saved messages (bookmarks) ---
+  listSavedMessages: () => call<SavedMessageEntry[]>("list_saved_messages"),
+  saveMessage: (channelId: Snowflake, messageId: Snowflake) =>
+    call<void>("save_message", { channelId, messageId }),
+  unsaveMessage: (messageId: Snowflake) =>
+    call<void>("unsave_message", { messageId }),
 
   listPins: (channelId: Snowflake) =>
     call<Message[]>("list_pins", { channelId }),
