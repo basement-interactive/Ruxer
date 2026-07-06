@@ -174,6 +174,19 @@ impl Guilds {
     /// `POST /guilds/{guild_id}/roles` — create a role. `name` is required;
     /// `color` (RGB int, 0 = none) + `permissions` (bitfield as a string) are
     /// optional.
+    /// `PATCH /guilds/{guild_id}/roles` — bulk role position update (reorder).
+    /// `positions` is an array of `{id, position}`. Returns 204 No Content.
+    pub async fn reorder_roles(
+        &self,
+        guild_id: &Snowflake,
+        positions: &serde_json::Value,
+    ) -> Result<()> {
+        let path = format!("guilds/{}/roles", guild_id);
+        self.0
+            .send_json(reqwest::Method::PATCH, &path, positions)
+            .await
+    }
+
     pub async fn create_role(
         &self,
         guild_id: &Snowflake,

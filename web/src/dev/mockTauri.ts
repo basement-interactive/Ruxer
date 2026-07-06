@@ -192,6 +192,8 @@ function installMockTauri(): void {
       case "list_scheduled_messages":
       case "list_active_threads":
       case "list_guild_roles":
+        return String(args.guildId) === GUILD_ID ? [ { id: GUILD_ID, name: "@everyone", position: 0, color: 0, permissions: "0" }, { id: "400", name: "Admin", position: 2, color: 15158332, permissions: "8" }, { id: "401", name: "Member", position: 1, color: 3447003, permissions: "0" } ] : [];
+      case "__list_guild_roles_orig__":
       case "list_guild_emojis":
       case "list_guild_stickers":
       case "list_guild_bans":

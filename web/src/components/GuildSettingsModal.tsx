@@ -721,6 +721,30 @@ const RolesPane = observer(function RolesPane({ guildId }: { guildId: Snowflake 
 
   const active = roles?.find((r) => r.id === selected) ?? null;
 
+  // Roles are listed highest-position-first; Move Up raises the role in the
+  // hierarchy by swapping positions with the adjacent role. The server rejects
+  // moving @everyone or above the caller's highest role.
+  const moveRole = async (i: number, dir: -1 | 1) => {
+    if (!roles) return;
+    const j = i + dir;
+    if (j < 0 || j >= roles.length) return;
+    const a = roles[i];
+    const b = roles[j];
+    try {
+      await api.reorderRoles(guildId, [
+        { id: a.id, position: b.position },
+        { id: b.id, position: a.position },
+      ]);
+      const next = roles.map((r) =>
+        r.id === a.id ? { ...a, position: b.position } : r.id === b.id ? { ...b, position: a.position } : r,
+      );
+      next.sort((x, y) => y.position - x.position);
+      setRoles(next);
+    } catch (e) {
+      toasts.error("Failed to reorder role", String(e));
+    }
+  };
+
   return (
     <section className="gs-pane-section gs-roles">
       <div className="gs-roles-header">
@@ -733,22 +757,41 @@ const RolesPane = observer(function RolesPane({ guildId }: { guildId: Snowflake 
       {!roles && !err && <div className="gs-empty muted">Loading…</div>}
       <div className="gs-roles-split">
         <div className="gs-roles-list">
-          {roles?.map((r) => {
+          {roles?.map((r, i) => {
             const hex = roleColor(r.color);
             return (
-              <button
-                key={r.id}
-                className={`gs-role-item ${selected === r.id ? "selected" : ""}`}
-                onClick={() => setSelected(r.id)}
-              >
-                <span
-                  className="gs-role-dot"
-                  style={{ background: hex ?? "var(--text-muted)" }}
-                />
-                <span className="nowrap" style={hex ? { color: hex } : undefined}>
-                  {r.name}
-                </span>
-              </button>
+              <div key={r.id} className="gs-role-row">
+                <button
+                  className={`gs-role-item ${selected === r.id ? "selected" : ""}`}
+                  onClick={() => setSelected(r.id)}
+                >
+                  <span
+                    className="gs-role-dot"
+                    style={{ background: hex ?? "var(--text-muted)" }}
+                  />
+                  <span className="nowrap" style={hex ? { color: hex } : undefined}>
+                    {r.name}
+                  </span>
+                </button>
+                <div className="gs-role-move">
+                  <button
+                    className="gs-role-move-btn"
+                    title="Move up"
+                    disabled={i === 0}
+                    onClick={() => moveRole(i, -1)}
+                  >
+                    ▲
+                  </button>
+                  <button
+                    className="gs-role-move-btn"
+                    title="Move down"
+                    disabled={i >= (roles?.length ?? 0) - 1}
+                    onClick={() => moveRole(i, 1)}
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
             );
           })}
           {roles?.length === 0 && <div className="gs-empty muted">No roles.</div>}

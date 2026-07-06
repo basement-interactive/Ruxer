@@ -591,6 +591,7 @@ pub fn run() {
             list_auth_sessions,
             logout_auth_sessions,
             update_guild,
+            reorder_roles,
             reorder_channels,
             get_guild_vanity,
             set_guild_vanity,
@@ -2202,6 +2203,21 @@ async fn update_guild(
 ) -> CmdResult<serde_json::Value> {
     let c = client(&state).await?;
     c.guilds().update(&guild_id, &patch).await.map_err(Into::into)
+}
+
+/// Bulk-reorder a guild's roles (PATCH /guilds/{id}/roles). `positions` is an
+/// array of `{id, position}`.
+#[tauri::command]
+async fn reorder_roles(
+    state: State<'_, AppState>,
+    guild_id: String,
+    positions: serde_json::Value,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.guilds()
+        .reorder_roles(&guild_id, &positions)
+        .await
+        .map_err(Into::into)
 }
 
 /// Bulk-reorder a guild's channels (PATCH /guilds/{id}/channels). `positions`

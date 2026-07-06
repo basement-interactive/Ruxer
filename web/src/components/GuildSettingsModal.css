@@ -516,3 +516,14 @@
 .gs-icon-edit:hover .gs-icon-edit-overlay {
   opacity: 1;
 }
+
+/* Role reorder rows */
+.gs-role-row { display: flex; align-items: center; gap: 4px; }
+.gs-role-row .gs-role-item { flex: 1; min-width: 0; }
+.gs-role-move { display: flex; flex-direction: column; }
+.gs-role-move-btn {
+  border: none; background: none; color: var(--text-muted, #949ba4);
+  cursor: pointer; font-size: 9px; line-height: 1; padding: 1px 4px;
+}
+.gs-role-move-btn:hover:not(:disabled) { color: var(--text-normal, #dbdee1); }
+.gs-role-move-btn:disabled { opacity: 0.3; cursor: default; }

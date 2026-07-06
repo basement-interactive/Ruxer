@@ -201,6 +201,9 @@ export const api = {
   /// Bulk-reorder a guild's channels (PATCH /guilds/{id}/channels).
   reorderChannels: (guildId: Snowflake, positions: { id: Snowflake; position: number }[]) =>
     call<void>("reorder_channels", { guildId, positions }),
+  /// Bulk-reorder a guild's roles (PATCH /guilds/{id}/roles).
+  reorderRoles: (guildId: Snowflake, positions: { id: Snowflake; position: number }[]) =>
+    call<void>("reorder_roles", { guildId, positions }),
   /// The guild's vanity invite `{ code, uses }` (GET /guilds/{id}/vanity-url).
   getGuildVanity: (guildId: Snowflake) =>
     call<{ code?: string | null; uses?: number }>("get_guild_vanity", { guildId }),
