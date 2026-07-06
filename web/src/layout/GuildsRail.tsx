@@ -4,7 +4,7 @@
 // hover/selection, with a white selection pill on the left edge.
 
 import { observer } from "mobx-react-lite";
-import { guilds, ui, toasts } from "../stores";
+import { guilds, ui, toasts, messages, readState } from "../stores";
 import { api } from "../api";
 import type { ContextMenuItem } from "../stores";
 import type { Guild } from "../types";
@@ -54,9 +54,12 @@ const GuildRailItem = observer(function GuildRailItem({
   index: number;
 }) {
   const selected = ui.side === "guild" && ui.selectedGuildIndex === index;
-  // Unread state — check readState for this guild (simplified: show pill when
-  // there are unread messages, matching GuildListItem.tsx:234).
-  const hasUnread = false; // TODO: wire to GuildReadState.hasRead(guild.id)
+  // Unread state — aggregate over the guild's channels: the white pill shows
+  // when any channel has unread messages; the red badge shows the total unread
+  // mention count (matching the reference GuildListItem pill + badge).
+  const guildChannels = guilds.channelsByGuild.get(guild.id) ?? [];
+  const mentionCount = guildChannels.reduce((n, c) => n + readState.mentionsFor(c.id), 0);
+  const hasUnread = mentionCount > 0 || guildChannels.some((c) => messages.unread.has(c.id));
   return (
     <div
       className={`guild-rail-item ${selected ? "selected" : ""} ${hasUnread ? "unread" : ""}`}
@@ -85,7 +88,26 @@ const GuildRailItem = observer(function GuildRailItem({
             label: "Server Settings",
             onClick: () => ui.openGuildSettings(guild.id),
           },
-          { kind: "action", label: "Mark as Read", onClick: () => {} },
+          {
+            kind: "action",
+            label: "Mark as Read",
+            onClick: () => {
+              const chans = (guilds.channelsByGuild.get(guild.id) ?? []).filter(
+                (c) => messages.unread.has(c.id) || readState.mentionsFor(c.id) > 0,
+              );
+              // Server-side bulk ack (clears unread/mentions across devices) for
+              // channels that have a last message; then clear locally so the
+              // pill + badge update immediately.
+              const acks = chans
+                .filter((c) => c.last_message_id)
+                .map((c) => ({ channel_id: c.id, message_id: c.last_message_id as string }));
+              if (acks.length > 0) api.ackBulkRead(acks).catch(() => {});
+              for (const c of chans) {
+                messages.markRead(c.id);
+                readState.clearMentions(c.id);
+              }
+            },
+          },
           { kind: "separator" },
           {
             kind: "action",
@@ -131,6 +153,9 @@ const GuildRailItem = observer(function GuildRailItem({
       >
         <GuildIcon guild={guild} size={44} />
       </button>
+      {mentionCount > 0 && (
+        <span className="guild-rail-badge">{mentionCount > 99 ? "99+" : mentionCount}</span>
+      )}
       <span className="guild-rail-tooltip">{guild.name}</span>
     </div>
   );

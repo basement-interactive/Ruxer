@@ -9,7 +9,7 @@
 // run when a real Tauri backend is present.
 
 import { runInAction } from "mobx";
-import { ui, voice, guilds } from "../stores";
+import { ui, voice, guilds, messages, readState } from "../stores";
 import type { VoiceParticipant } from "../voice/LiveKitRoom";
 
 const MOCK_GUILD = "100";
@@ -84,6 +84,16 @@ export function applyDevScene(): void {
   else if (scene === "onboarding") setTimeout(() => runInAction(() => ui.openOnboarding(true)), 700);
   else if (scene === "profile") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openProfile("2", { x: 400, y: 200 })), 900); }
   else if (scene === "channel-settings") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openChannelSettings("201")), 900); }
+  else if (scene === "guild-unread") {
+    seedTextChannel();
+    // Mark #random unread and give #general 3 mentions so the guild rail shows
+    // the white unread pill + the red "3" mention badge.
+    setTimeout(() => runInAction(() => {
+      messages.unread.add("202");
+      readState.apply("201", { mention_count: 3, last_message_id: "401" });
+      ui.selectDm(); // deselect the guild so the pill isn't hidden by selection
+    }), 1200);
+  }
   else if (scene === "channel") seedTextChannel();
 }
 

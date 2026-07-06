@@ -229,3 +229,27 @@
 .guild-rail-item:hover .guild-rail-tooltip {
   opacity: 1;
 }
+/* Guild mention badge — red counter at the bottom-right of the guild icon,
+   matching the reference GuildListItem NumberBadge. */
+.guild-rail-badge {
+  position: absolute;
+  bottom: -0.125rem;
+  right: -0.125rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  border-radius: var(--radius-full, 624.9375rem);
+  background: var(--red, #f23f43);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  /* Ring that punches the badge out of the icon, like the reference. */
+  border: 0.1875rem solid var(--background-tertiary, #1e1f22);
+  box-sizing: content-box;
+  pointer-events: none;
+  z-index: 3;
+}
