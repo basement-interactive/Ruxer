@@ -12,7 +12,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { guilds, ui, toasts, session } from "../stores";
 import { api } from "../api";
 import { Modal } from "./Modal";
-import type { AuditLog, GuildBan, Invite, Role, Snowflake, Sticker, User, Webhook } from "../types";
+import type { AuditLog, GuildBan, Invite, Member, Role, Snowflake, Sticker, User, Webhook } from "../types";
 import { channelType } from "../types";
 import { GuildIcon } from "./GuildIcon";
 import {
@@ -396,6 +396,8 @@ const MembersPane = observer(function MembersPane({ guildId }: { guildId: Snowfl
   const [q, setQ] = useState("");
   const [roles, setRoles] = useState<Role[]>([]);
   const [editing, setEditing] = useState<Snowflake | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [indexing, setIndexing] = useState(false);
 
   useEffect(() => {
     api
@@ -404,10 +406,86 @@ const MembersPane = observer(function MembersPane({ guildId }: { guildId: Snowfl
       .catch(() => {});
   }, [guildId]);
 
+  // Server-side member search (debounced). The local member list is only the
+  // slice the gateway has streamed; for big guilds a name may not be loaded, so
+  // we ask the server. Results are MERGED into the store so the existing
+  // filter + kick/role handlers work on them unchanged.
+  useEffect(() => {
+    const term = q.trim();
+    if (!term) {
+      setSearching(false);
+      setIndexing(false);
+      return;
+    }
+    let cancelled = false;
+    setSearching(true);
+    const handle = setTimeout(() => {
+      api
+        .searchGuildMembers(guildId, term, 25)
+        .then((raw) => {
+          if (cancelled) return;
+          const resp = raw as {
+            members?: {
+              user_id?: string;
+              username?: string;
+              discriminator?: string;
+              global_name?: string | null;
+              nickname?: string | null;
+              role_ids?: string[];
+              joined_at?: number;
+              is_bot?: boolean;
+            }[];
+            indexing?: boolean;
+          };
+          setIndexing(resp.indexing ?? false);
+          const mapped: Member[] = (resp.members ?? [])
+            .filter((r) => r.user_id)
+            .map((r) => ({
+              user: {
+                id: r.user_id as string,
+                username: r.username ?? "",
+                discriminator: r.discriminator ?? "0",
+                global_name: r.global_name ?? null,
+                bot: r.is_bot ?? false,
+              },
+              nick: r.nickname ?? null,
+              roles: r.role_ids ?? [],
+              // joined_at is a Unix timestamp; treat sub-1e12 values as seconds.
+              joined_at: r.joined_at
+                ? new Date(r.joined_at < 1e12 ? r.joined_at * 1000 : r.joined_at).toISOString()
+                : new Date(0).toISOString(),
+            }));
+          if (mapped.length > 0) {
+            runInAction(() => {
+              const list = guilds.membersByGuild.get(guildId) ?? [];
+              const byId = new Map(list.map((m) => [m.user.id, m]));
+              for (const m of mapped) if (!byId.has(m.user.id)) byId.set(m.user.id, m);
+              guilds.membersByGuild.set(guildId, [...byId.values()]);
+            });
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (!cancelled) setSearching(false);
+        });
+    }, 300);
+    return () => {
+      cancelled = true;
+      clearTimeout(handle);
+    };
+  }, [guildId, q]);
+
+  // Client filter over the (now server-augmented) store — matches display name,
+  // username, or nickname so a username-only hit from the server still shows.
   const filtered = q.trim()
-    ? members.filter((m) =>
-        (m.user.global_name ?? m.user.username).toLowerCase().includes(q.trim().toLowerCase()),
-      )
+    ? members.filter((m) => {
+        const t = q.trim().toLowerCase();
+        return (
+          (m.user.global_name ?? "").toLowerCase().includes(t) ||
+          m.user.username.toLowerCase().includes(t) ||
+          (m.nick ?? "").toLowerCase().includes(t)
+        );
+      })
     : members;
 
   const setMemberRole = async (userId: Snowflake, roleId: Snowflake, on: boolean) => {
@@ -437,7 +515,15 @@ const MembersPane = observer(function MembersPane({ guildId }: { guildId: Snowfl
     <section className="gs-pane-section">
       <h2 className="gs-pane-title">Members — {members.length}</h2>
       <input className="gs-input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search members…" />
+      {q.trim() && (searching || indexing) && (
+        <div className="muted small" style={{ padding: "4px 2px" }}>
+          {searching ? "Searching the server…" : "Members are still being indexed — results may be incomplete."}
+        </div>
+      )}
       <div className="gs-list">
+        {q.trim() && !searching && filtered.length === 0 && (
+          <div className="muted small" style={{ padding: "8px 2px" }}>No members match “{q.trim()}”.</div>
+        )}
         {filtered.map((m) => (
           <div key={m.user.id} className="gs-member-row">
             <div className="gs-list-row">

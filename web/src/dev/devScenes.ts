@@ -63,6 +63,20 @@ export function applyDevScene(): void {
   else if (scene === "guild-overview") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openGuildSettings("100", "overview")), 1400); }
   else if (scene === "guild-invites") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openGuildSettings("100", "invites")), 1400); }
   else if (scene === "guild-roles") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openGuildSettings("100", "roles")), 1400); }
+  else if (scene === "guild-members") {
+    seedTextChannel();
+    setTimeout(() => runInAction(() => ui.openGuildSettings("100", "members")), 1400);
+    // Type a query into the member search to exercise server-side search
+    // (surfaces "moderator"/"modbot" which are NOT in the local member list).
+    setTimeout(() => {
+      const input = document.querySelector<HTMLInputElement>(".gs-input");
+      if (input) {
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+        setter?.call(input, "mod");
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    }, 2200);
+  }
   else if (scene === "guild-audit") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openGuildSettings("100", "audit")), 1400); }
   else if (scene === "guild-webhooks") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openGuildSettings("100", "webhooks")), 1400); }
   else if (scene === "ban") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openBanModal("100", "2")), 1400); }

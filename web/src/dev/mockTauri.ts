@@ -202,6 +202,20 @@ function installMockTauri(): void {
       case "list_guild_roles":
         return String(args.guildId) === GUILD_ID ? [ { id: GUILD_ID, name: "@everyone", position: 0, color: 0, permissions: "0" }, { id: "400", name: "Admin", position: 2, color: 15158332, permissions: "8" }, { id: "401", name: "Member", position: 1, color: 3447003, permissions: "0" } ] : [];
       case "__list_guild_roles_orig__":
+      case "search_guild_members": {
+        // Server-side search returns matches including members NOT in the local
+        // list (id "9" is not seeded) — proves the store gets augmented.
+        const term = String(args.query ?? "").toLowerCase();
+        const pool = [
+          { user_id: "3", username: "linus", discriminator: "0003", global_name: "Linus", nickname: null, role_ids: [], joined_at: 1719792000, is_bot: false },
+          { user_id: "9", username: "moderator", discriminator: "0009", global_name: "Mod Squad", nickname: "Mod", role_ids: ["101"], joined_at: 1719792000, is_bot: false },
+          { user_id: "10", username: "modbot", discriminator: "0010", global_name: "ModBot", nickname: null, role_ids: [], joined_at: 1719792000, is_bot: true },
+        ];
+        const matched = pool.filter((m) =>
+          m.username.includes(term) || (m.global_name ?? "").toLowerCase().includes(term) || (m.nickname ?? "").toLowerCase().includes(term),
+        );
+        return { guild_id: GUILD_ID, members: matched, page_result_count: matched.length, total_result_count: matched.length, indexing: false };
+      }
       case "list_guild_emojis":
       case "list_guild_stickers":
       case "list_guild_bans":
