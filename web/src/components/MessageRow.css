@@ -425,12 +425,6 @@
 .attachment-file:hover {
   background: var(--background-modifier-hover);
 }
-.attachment-file.spoiler {
-  filter: blur(0.5rem);
-}
-.attachment-file.spoiler:hover {
-  filter: none;
-}
 .attachment-file-name {
   font-weight: 600;
 }

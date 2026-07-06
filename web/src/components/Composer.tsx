@@ -25,7 +25,7 @@ export const Composer = observer(function Composer({
   channelId: Snowflake;
 }) {
   const [text, setText] = useState(() => drafts.get(channelId));
-  const [attachments, setAttachments] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<{ path: string; spoiler: boolean }[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [gifPickerOpen, setGifPickerOpen] = useState(false);
 
@@ -112,8 +112,8 @@ export const Composer = observer(function Composer({
     const replyTo = ui.replyTarget?.messageId;
     // B.6: send text + attachments in one multipart request. The Tauri backend
     // reads each file's bytes and builds the multipart body; we just pass the
-    // paths (plus an optional spoiler flag, defaulting to false).
-    const inputs = attachments.map((path) => ({ path, spoiler: false }));
+    // paths plus the per-file spoiler mark (sent as attachment flags bit 8).
+    const inputs = attachments.map((a) => ({ path: a.path, spoiler: a.spoiler }));
     await messages.send(channelId, content, replyTo, inputs);
     ui.clearReplyTarget();
     setAttachments([]);
@@ -208,7 +208,15 @@ export const Composer = observer(function Composer({
       });
       if (selected) {
         const paths = Array.isArray(selected) ? selected : [selected];
-        setAttachments((a) => [...a, ...paths]);
+        // Files named SPOILER_* arrive pre-marked (parity with the official
+        // client's upload path).
+        setAttachments((a) => [
+          ...a,
+          ...paths.map((path) => ({
+            path,
+            spoiler: (path.split(/[\\/]/).pop() ?? "").startsWith("SPOILER_"),
+          })),
+        ]);
       }
     } catch (e) {
       console.error("file dialog failed", e);
@@ -285,12 +293,24 @@ export const Composer = observer(function Composer({
       {/* Attachment chips */}
       {attachments.length > 0 && (
         <div className="composer-attachments">
-          {attachments.map((path, i) => (
-            <div key={i} className="attachment-chip">
-              <span className="nowrap">{path.split(/[\\/]/).pop()}</span>
+          {attachments.map((a, i) => (
+            <div key={i} className={"attachment-chip" + (a.spoiler ? " spoiler" : "")}>
+              {a.spoiler && <span className="attachment-spoiler-tag">SPOILER</span>}
+              <span className="nowrap">{a.path.split(/[\\/]/).pop()}</span>
+              <button
+                className="attachment-spoiler-toggle"
+                title={a.spoiler ? "Remove spoiler" : "Spoiler attachment"}
+                onClick={() =>
+                  setAttachments((list) =>
+                    list.map((x, j) => (j === i ? { ...x, spoiler: !x.spoiler } : x)),
+                  )
+                }
+              >
+                {a.spoiler ? <EyeSlashIcon /> : <EyeIcon />}
+              </button>
               <button
                 className="attachment-remove"
-                onClick={() => setAttachments((a) => a.filter((_, j) => j !== i))}
+                onClick={() => setAttachments((list) => list.filter((_, j) => j !== i))}
               >
                 ✕
               </button>
@@ -557,6 +577,26 @@ function PlusIcon() {
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function EyeSlashIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3l18 18" />
+      <path d="M10.6 5.2A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1" />
+      <path d="M6.1 6.6A17 17 0 0 0 2 12s3.5 7 10 7c1.5 0 2.9-.35 4.1-.9" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
     </svg>
   );
 }

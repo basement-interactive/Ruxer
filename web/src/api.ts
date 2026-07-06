@@ -265,6 +265,9 @@ export const api = {
   deleteGuildSticker: (guildId: Snowflake, stickerId: Snowflake) =>
     call<void>("delete_guild_sticker", { guildId, stickerId }),
   premiumState: () => call<PremiumState>("premium_state"),
+  /// Partial update of the current user's settings (PATCH /users/@me/settings).
+  updateUserSettings: (patch: Record<string, unknown>) =>
+    call<unknown>("update_user_settings", { patch }),
   saveTheme: (css: string) => call<unknown>("save_theme", { css }),
   // UI editor advanced mode: run a sandboxed LuaU layout script in the Rust
   // sandbox (src-tauri/src/ui_editor.rs). Returns the array of presentation ops

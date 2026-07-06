@@ -547,10 +547,22 @@ pub struct Attachment {
     pub height: Option<i32>,
     #[serde(default)]
     pub description: Option<String>,
-    /// Discord-style spoiler flag (filename wrapped in `||`); Fluxer may also
-    /// surface this as a dedicated boolean.
+    /// Attachment bitfield from the server (`MessageAttachmentFlags`):
+    /// IS_SPOILER = 8, CONTAINS_EXPLICIT_MEDIA = 16, IS_ANIMATED = 32. The
+    /// API carries spoiler state ONLY here — there is no boolean field.
+    #[serde(default)]
+    pub flags: i32,
+    /// Legacy convenience flag kept for older callers; the server never sends
+    /// it (see `flags` bit 8).
     #[serde(default)]
     pub spoiler: bool,
+}
+
+/// Bitfield flags for message attachments (`MessageAttachmentFlags`).
+pub mod attachment_flags {
+    pub const IS_SPOILER: i32 = 8;
+    pub const CONTAINS_EXPLICIT_MEDIA: i32 = 16;
+    pub const IS_ANIMATED: i32 = 32;
 }
 
 /// A read state entry for a channel.

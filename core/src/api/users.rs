@@ -137,4 +137,13 @@ impl Users {
             .send_json(reqwest::Method::POST, "users/@me/themes", &Body { css })
             .await
     }
+
+    /// `PATCH /users/@me/settings` — partial update of the current user's
+    /// settings (e.g. `{"render_spoilers": 1}`). Loosely typed on both sides:
+    /// the settings object is large and the UI reads it defensively.
+    pub async fn update_settings(&self, patch: &serde_json::Value) -> Result<serde_json::Value> {
+        self.0
+            .send_json(reqwest::Method::PATCH, "users/@me/settings", patch)
+            .await
+    }
 }

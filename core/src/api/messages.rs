@@ -60,8 +60,11 @@ pub struct AttachmentPayload {
     pub filename: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    /// `MessageAttachmentFlags` bitfield. The API has no `spoiler` boolean —
+    /// spoiler marking goes through IS_SPOILER (8) here; the server sanitizes
+    /// to IS_SPOILER | CONTAINS_EXPLICIT_MEDIA.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub spoiler: Option<bool>,
+    pub flags: Option<i32>,
 }
 
 impl CreateMessage {
@@ -125,7 +128,11 @@ impl CreateMessage {
             id,
             filename: Some(file.filename.clone()),
             description: file.description.clone(),
-            spoiler: Some(file.spoiler),
+            flags: if file.spoiler {
+                Some(crate::models::attachment_flags::IS_SPOILER)
+            } else {
+                None
+            },
         });
         self
     }

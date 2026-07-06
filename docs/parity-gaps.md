@@ -34,8 +34,8 @@ High priority:
 - [x] Reaction users list — hover tooltip + reactions modal (per-emoji tabs, pagination, remove controls, live gateway sync). DONE (also fixed the page-envelope deserialization bug that silently broke the tooltip)
 
 Medium:
-- [ ] Timestamp styles — 9 `<t:epoch:style>` formats + relative + tooltip. ref: markdown/renderers/TimestampRenderer.tsx
-- [ ] Spoiler click-to-reveal — click, stays revealed, sync, spoiler media. ref: utils/SpoilerUtils.ts
+- [x] Timestamp styles — 9 `<t:epoch:style>` formats + live relative + tooltip. DONE
+- [x] Spoiler click-to-reveal — text (inline+block), spoiler media overlay, embed URL sync, composer marking, RenderSpoilers setting + PATCH persistence. DONE (IF_MODERATOR behaves as ON_CLICK until a channel-permission resolver exists)
 - [ ] Jumbo emoji — enlarge when message is emoji-only. ref: utils/markdown/JumboDetector.ts
 - [ ] Saved messages / bookmarks — toggle + saved list + gateway events. ref: features/messaging/state/SavedMessages.ts
 

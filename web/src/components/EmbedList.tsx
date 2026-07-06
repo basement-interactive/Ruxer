@@ -10,24 +10,70 @@
 // Media URLs (images, thumbnails, video) are routed through the on-disk media
 // cache via `useAssetUrl` for native browser caching + CORS avoidance.
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { observer } from "mobx-react-lite";
 import type { Embed } from "../types";
 import { useAssetUrl } from "../utils/mediaCache";
 import { ui } from "../stores";
+import { canonicalizeMediaUrl, extractSpoileredUrls, useSpoilerState } from "../utils/spoilers";
 import { AudioPlayer } from "./AudioPlayer";
 import { FormattedText } from "./ContentRenderer";
+import { SpoilerOverlay } from "./SpoilerOverlay";
 import "./EmbedList.css";
 
-export function EmbedList({ embeds }: { embeds: Embed[] }) {
+export function EmbedList({
+  embeds,
+  messageContent,
+}: {
+  embeds: Embed[];
+  /// The carrier message's raw content — used to detect embeds whose source
+  /// URL sits inside a ||spoiler|| span (they render behind a spoiler overlay
+  /// synced with the text spoiler).
+  messageContent?: string;
+}) {
   if (!embeds || embeds.length === 0) return null;
+  const spoileredUrls = useMemo(
+    () => extractSpoileredUrls(messageContent),
+    [messageContent],
+  );
   return (
     <div className="embed-list">
       {embeds.map((e, i) => (
-        <EmbedItem key={i} embed={e} />
+        <MaybeSpoileredEmbed key={i} embed={e} spoileredUrls={spoileredUrls} />
       ))}
     </div>
   );
 }
+
+/// Wraps an embed in a SpoilerOverlay when any of its source URLs came from a
+/// ||spoiler|| span in the message content. Sync keys tie the overlay to the
+/// text spoiler: revealing either reveals both.
+const MaybeSpoileredEmbed = observer(function MaybeSpoileredEmbed({
+  embed,
+  spoileredUrls,
+}: {
+  embed: Embed;
+  spoileredUrls: Set<string>;
+}) {
+  const matches = useMemo(() => {
+    if (spoileredUrls.size === 0) return [];
+    const candidates = [embed.url, embed.image?.url, embed.thumbnail?.url, embed.video?.url];
+    const out: string[] = [];
+    for (const c of candidates) {
+      if (!c) continue;
+      const key = canonicalizeMediaUrl(c);
+      if (key && spoileredUrls.has(key)) out.push(key);
+    }
+    return [...new Set(out)];
+  }, [embed, spoileredUrls]);
+  const { hidden, reveal } = useSpoilerState(matches.length > 0, matches);
+  if (matches.length === 0) return <EmbedItem embed={embed} />;
+  return (
+    <SpoilerOverlay hidden={hidden} onReveal={reveal} className="embed-spoiler">
+      <EmbedItem embed={embed} />
+    </SpoilerOverlay>
+  );
+});
 
 function EmbedItem({ embed }: { embed: Embed }) {
   // YouTube / iframe embeds. When the server supplies `html` (sanitized oEmbed

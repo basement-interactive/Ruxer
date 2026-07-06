@@ -121,6 +121,28 @@ img.emoji-ac-char {
 .attachment-remove:hover {
   color: var(--status-danger);
 }
+/* Spoiler mark on a pending attachment chip. */
+.attachment-spoiler-toggle {
+  display: flex;
+  align-items: center;
+  color: var(--text-primary-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.attachment-spoiler-toggle:hover {
+  color: var(--text-primary);
+}
+.attachment-spoiler-tag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 1.25rem;
+  background: hsla(0, 0%, 0%, 0.6);
+  color: hsl(216, 10%, 90%);
+}
 
 /* --- Reply preview bar (InputWrapper.module.css:30-32 stackSection) --- */
 .composer-reply {

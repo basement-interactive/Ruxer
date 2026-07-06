@@ -22,6 +22,7 @@ import {
   getTimestampLocale,
   type TimestampStyle,
 } from "../utils/timestamp";
+import { canonicalizeMediaUrl, useSpoilerState } from "../utils/spoilers";
 import { InviteEmbed } from "./InviteEmbed";
 import { Tooltip } from "./Tooltip";
 import "./ContentRenderer.css";
@@ -34,7 +35,8 @@ import "./ContentRenderer.css";
 // list item, table cell, blockquote, alert, etc.
 type InlineSegment =
   | { kind: "text"; text: string }
-  | { kind: "styled"; text: string; bold: boolean; italic: boolean; underline: boolean; strike: boolean; spoiler: boolean }
+  | { kind: "styled"; text: string; bold: boolean; italic: boolean; underline: boolean; strike: boolean }
+  | { kind: "spoiler"; children: InlineSegment[] }
   | { kind: "code"; text: string }
   | { kind: "userMention"; id: string; resolved?: string }
   | { kind: "roleMention"; id: string }
@@ -57,6 +59,7 @@ type ListItemNode = { children: BlockSegment[]; ordinal?: number };
 // Block-level segments: the top-level structure of a message.
 type BlockSegment =
   | { kind: "paragraph"; segments: InlineSegment[] }
+  | { kind: "blockSpoiler"; children: BlockSegment[] }
   | { kind: "heading"; level: 1 | 2 | 3; segments: InlineSegment[] }
   | { kind: "subtext"; segments: InlineSegment[] }
   | { kind: "list"; ordered: boolean; items: ListItemNode[] }
@@ -99,6 +102,8 @@ function renderBlock(block: BlockSegment, key: number): React.ReactNode {
   switch (block.kind) {
     case "paragraph":
       return <span key={key}>{renderInlines(block.segments)}</span>;
+    case "blockSpoiler":
+      return <TextSpoiler key={key} block={block.children} />;
     case "heading": {
       const Tag = `h${block.level}` as "h1" | "h2" | "h3";
       return (
@@ -152,15 +157,10 @@ function renderInline(seg: InlineSegment, key: number): React.ReactNode {
       if (seg.italic) el = <em key={key}>{el}</em>;
       if (seg.underline) el = <u key={key}>{el}</u>;
       if (seg.strike) el = <s key={key}>{el}</s>;
-      if (seg.spoiler) {
-        return (
-          <span key={key} className="spoiler">
-            {seg.text}
-          </span>
-        );
-      }
       return <span key={key}>{el}</span>;
     }
+    case "spoiler":
+      return <TextSpoiler key={key} inline={seg.children} />;
     case "code":
       return (
         <code key={key} className="inline-code">
@@ -561,6 +561,19 @@ function parseBlockLines(lines: string[]): BlockSegment[] {
       continue;
     }
 
+    // --- Block spoiler ---
+    // A line whose trimmed text starts with "||" and has NO closing "||" on
+    // the same line opens a multi-line spoiler; lines accumulate until one
+    // containing "||" (text before the marker joins the spoiler). Unclosed
+    // or whitespace-only spoilers fall through as plain text.
+    const spoiler = parseBlockSpoiler(lines, i);
+    if (spoiler) {
+      flushParagraph();
+      blocks.push(spoiler.block);
+      i = spoiler.next;
+      continue;
+    }
+
     // --- Otherwise: paragraph text ---
     paragraph.push(line);
     i++;
@@ -568,6 +581,46 @@ function parseBlockLines(lines: string[]): BlockSegment[] {
 
   flushParagraph();
   return blocks;
+}
+
+// --- Block spoilers ---
+
+/// Multi-line ||…|| spanning several lines. Opens when a line's trimmed text
+/// starts with "||" and the rest of that line has no closing marker; closes
+/// at the first later line containing "||" (text before the marker joins the
+/// spoiler body; text after it is re-queued as ordinary content). Returns
+/// null (→ plain text) when unclosed or the body has no visible content.
+function parseBlockSpoiler(
+  lines: string[],
+  start: number,
+): { block: BlockSegment; next: number } | null {
+  const trimmed = lines[start].trimStart();
+  if (!trimmed.startsWith("||")) return null;
+  const openRest = trimmed.slice(2);
+  if (openRest.includes("||")) return null; // single-line → inline rule
+
+  const inner: string[] = [];
+  if (openRest.length > 0) inner.push(openRest);
+  let i = start + 1;
+  while (i < lines.length) {
+    const idx = lines[i].indexOf("||");
+    if (idx >= 0) {
+      const before = lines[i].slice(0, idx);
+      if (before.length > 0) inner.push(before);
+      if (inner.join("\n").trim().length === 0) return null;
+      const after = lines[i].slice(idx + 2);
+      const children = parseBlockLines(inner);
+      if (after.length > 0) {
+        // Re-parse the trailing text on the closing line in place.
+        lines[i] = after;
+        return { block: { kind: "blockSpoiler", children }, next: i };
+      }
+      return { block: { kind: "blockSpoiler", children }, next: i + 1 };
+    }
+    inner.push(lines[i]);
+    i++;
+  }
+  return null; // never closed
 }
 
 // --- Fenced code blocks ---
@@ -842,6 +895,19 @@ function parseInline(content: string): InlineSegment[] {
       }
     }
 
+    // Spoiler ||…|| — a real wrapper segment (children fully inline-parsed,
+    // so links/mentions/emoji inside spoilers stay hidden too). Requires a
+    // closing marker and visible (non-whitespace) content, else literal.
+    if (remaining.startsWith("||")) {
+      const end = findClosing(remaining, "||", 2);
+      if (end >= 0 && remaining.slice(2, end).trim().length > 0) {
+        flushText();
+        segments.push({ kind: "spoiler", children: parseInline(remaining.slice(2, end)) });
+        pos += end + 2;
+        continue;
+      }
+    }
+
     // Formatting
     const fmt = parseFormatting(remaining);
     if (fmt) {
@@ -859,7 +925,6 @@ function parseInline(content: string): InlineSegment[] {
               italic: s.italic || fmt.flags.italic,
               underline: s.underline || fmt.flags.underline,
               strike: s.strike || fmt.flags.strike,
-              spoiler: s.spoiler || fmt.flags.spoiler,
             });
           } else {
             segments.push(s);
@@ -933,7 +998,6 @@ type StyleFlags = {
   italic: boolean;
   underline: boolean;
   strike: boolean;
-  spoiler: boolean;
 };
 
 // Masked link [label](url) — label is inline-parsed; url is validated to be a
@@ -1011,17 +1075,7 @@ function parseFormatting(
       return {
         consumed: end + 3,
         inner: text.slice(3, end),
-        flags: { bold: true, italic: true, underline: false, strike: false, spoiler: false },
-      };
-    }
-  }
-  if (text.startsWith("||")) {
-    const end = findClosing(text, "||", 2);
-    if (end >= 0) {
-      return {
-        consumed: end + 2,
-        inner: text.slice(2, end),
-        flags: { bold: false, italic: false, underline: false, strike: false, spoiler: true },
+        flags: { bold: true, italic: true, underline: false, strike: false },
       };
     }
   }
@@ -1031,7 +1085,7 @@ function parseFormatting(
       return {
         consumed: end + 2,
         inner: text.slice(2, end),
-        flags: { bold: false, italic: false, underline: false, strike: true, spoiler: false },
+        flags: { bold: false, italic: false, underline: false, strike: true },
       };
     }
   }
@@ -1041,7 +1095,7 @@ function parseFormatting(
       return {
         consumed: end + 2,
         inner: text.slice(2, end),
-        flags: { bold: true, italic: false, underline: false, strike: false, spoiler: false },
+        flags: { bold: true, italic: false, underline: false, strike: false },
       };
     }
   }
@@ -1051,7 +1105,7 @@ function parseFormatting(
       return {
         consumed: end + 2,
         inner: text.slice(2, end),
-        flags: { bold: false, italic: false, underline: true, strike: false, spoiler: false },
+        flags: { bold: false, italic: false, underline: true, strike: false },
       };
     }
   }
@@ -1061,7 +1115,7 @@ function parseFormatting(
       return {
         consumed: end + 1,
         inner: text.slice(1, end),
-        flags: { bold: false, italic: true, underline: false, strike: false, spoiler: false },
+        flags: { bold: false, italic: true, underline: false, strike: false },
       };
     }
   }
@@ -1071,7 +1125,7 @@ function parseFormatting(
       return {
         consumed: end + 1,
         inner: text.slice(1, end),
-        flags: { bold: false, italic: true, underline: false, strike: false, spoiler: false },
+        flags: { bold: false, italic: true, underline: false, strike: false },
       };
     }
   }
@@ -1263,6 +1317,103 @@ function parseInviteUrl(url: string): { code: string } | null {
     return null;
   }
 }
+
+// ---------------------------------------------------------------------------
+// Spoilers
+// ---------------------------------------------------------------------------
+
+/// Canonicalized URLs of link segments inside a spoiler — the sync keys that
+/// tie a revealed text spoiler to its embed (and vice versa).
+function collectInlineSpoilerUrls(segments: InlineSegment[], out: string[]) {
+  for (const seg of segments) {
+    if (seg.kind === "link") {
+      const key = canonicalizeMediaUrl(seg.text);
+      if (key) out.push(key);
+    } else if (seg.kind === "maskedLink") {
+      const key = canonicalizeMediaUrl(seg.url);
+      if (key) out.push(key);
+      collectInlineSpoilerUrls(seg.label, out);
+    } else if (seg.kind === "spoiler") {
+      collectInlineSpoilerUrls(seg.children, out);
+    }
+  }
+}
+
+function collectBlockSpoilerUrls(blocks: BlockSegment[], out: string[]) {
+  for (const b of blocks) {
+    switch (b.kind) {
+      case "paragraph":
+      case "heading":
+      case "subtext":
+        collectInlineSpoilerUrls(b.segments, out);
+        break;
+      case "blockSpoiler":
+      case "blockquote":
+      case "alert":
+        collectBlockSpoilerUrls(b.children, out);
+        break;
+      case "list":
+        for (const item of b.items) collectBlockSpoilerUrls(item.children, out);
+        break;
+      case "table":
+        for (const cell of b.header) collectInlineSpoilerUrls(cell, out);
+        for (const row of b.rows) for (const cell of row) collectInlineSpoilerUrls(cell, out);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+/// Click-to-reveal text spoiler (inline ||…|| or multi-line block form). The
+/// content stays in the DOM but is visually hidden and inert until revealed;
+/// reveal is one-way and per mounted instance. URL sync keys propagate the
+/// reveal to matching embeds in the same message.
+const TextSpoiler = observer(function TextSpoiler({
+  inline,
+  block,
+}: {
+  inline?: InlineSegment[];
+  block?: BlockSegment[];
+}) {
+  const syncKeys = useMemo(() => {
+    const out: string[] = [];
+    if (inline) collectInlineSpoilerUrls(inline, out);
+    if (block) collectBlockSpoilerUrls(block, out);
+    return [...new Set(out)];
+  }, [inline, block]);
+  const { hidden, reveal } = useSpoilerState(true, syncKeys);
+  const isBlock = !!block;
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " " || e.key === "Space" || e.key === "Spacebar") {
+      e.preventDefault();
+      reveal();
+    }
+  };
+
+  return (
+    <span className={isBlock ? "block-spoiler-wrapper" : "spoiler-wrapper"}>
+      <span
+        className={isBlock ? "block-spoiler" : "spoiler"}
+        data-revealed={hidden ? "false" : "true"}
+        {...(hidden
+          ? {
+              role: "button",
+              tabIndex: 0,
+              "aria-label": "Click to reveal spoiler",
+              onClick: reveal,
+              onKeyDown,
+            }
+          : {})}
+      >
+        <span className="spoiler-content" aria-hidden={hidden || undefined}>
+          {inline ? renderInlines(inline) : renderBlocks(block!)}
+        </span>
+      </span>
+    </span>
+  );
+});
 
 /// A rendered <t:epoch:style> chip. Absolute styles format once per render;
 /// the relative style (R) subscribes to the 1s tick store so it live-updates

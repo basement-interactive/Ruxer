@@ -12,7 +12,8 @@
 
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { session, settings, ui, voice } from "../stores";
+import { session, settings, toasts, ui, voice } from "../stores";
+import { api } from "../api";
 import type { PresenceStatus } from "../types";
 import { LOCALES } from "../i18n";
 import { Avatar } from "./Avatar";
@@ -309,7 +310,17 @@ const AccessibilityPane = observer(function AccessibilityPane() {
 const AppearancePane = observer(function AppearancePane() {
   const theme = settings.settings.theme ?? "dark";
   const compact = settings.settings.message_display_compact ?? false;
-  const spoilers = settings.settings.render_spoilers ?? "on_click";
+  // RenderSpoilers: 0 = ALWAYS, 1 = ON_CLICK (default), 2 = IF_MODERATOR.
+  const spoilers = settings.settings.render_spoilers ?? 1;
+
+  // Optimistic local update + server persistence; the USER_SETTINGS_UPDATE
+  // gateway echo reconciles.
+  const setSpoilers = (value: number) => {
+    settings.applyUpdate({ render_spoilers: value });
+    api.updateUserSettings({ render_spoilers: value }).catch((e) => {
+      toasts.error("Failed to save spoiler setting", String(e));
+    });
+  };
 
   const setTheme = (t: "dark" | "light") => {
     settings.applyUpdate({ theme: t });
@@ -357,24 +368,33 @@ const AppearancePane = observer(function AppearancePane() {
         <span>Compact mode (less spacing between messages)</span>
       </label>
 
-      <div className="settings-subtitle">Spoiler Reveals</div>
+      <div className="settings-subtitle">Spoilers</div>
       <label className="settings-toggle">
         <input
           type="radio"
           name="spoilers"
-          checked={spoilers === "on_click"}
-          onChange={() => settings.applyUpdate({ render_spoilers: "on_click" })}
+          checked={spoilers === 1}
+          onChange={() => setSpoilers(1)}
         />
-        <span>Reveal on click</span>
+        <span>On click — Show spoiler content when clicked</span>
       </label>
       <label className="settings-toggle">
         <input
           type="radio"
           name="spoilers"
-          checked={spoilers === "always"}
-          onChange={() => settings.applyUpdate({ render_spoilers: "always" })}
+          checked={spoilers === 2}
+          onChange={() => setSpoilers(2)}
         />
-        <span>Always show</span>
+        <span>In channels I moderate — Always show spoiler content where you can manage messages</span>
+      </label>
+      <label className="settings-toggle">
+        <input
+          type="radio"
+          name="spoilers"
+          checked={spoilers === 0}
+          onChange={() => setSpoilers(0)}
+        />
+        <span>Always — Always show spoiler content</span>
       </label>
     </section>
   );
@@ -717,12 +737,6 @@ const ChatPane = observer(function ChatPane() {
       <ToggleRow label="Compact mode" description="Reduces spacing between messages" />
       <ToggleRow label="Show timestamps" description="Show timestamps on every message" defaultOn />
       <ToggleRow label="Inline attachment media" description="Display images/videos inline when uploaded" defaultOn />
-      <div className="settings-subtitle" style={{ marginTop: "1rem" }}>Spoilers</div>
-      <p className="settings-pane-help muted small">How spoilers are displayed</p>
-      <select className="settings-select" defaultValue="on_click">
-        <option value="always">Always reveal</option>
-        <option value="on_click">On click</option>
-      </select>
     </section>
   );
 });

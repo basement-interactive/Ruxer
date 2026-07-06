@@ -14,6 +14,8 @@ import { EmbedList } from "./EmbedList";
 import { AudioPlayer } from "./AudioPlayer";
 import { formatTimestamp } from "../utils";
 import { useAssetUrl } from "../utils/mediaCache";
+import { SpoilerSyncProvider, isSpoilerAttachment, useSpoilerState } from "../utils/spoilers";
+import { SpoilerOverlay } from "./SpoilerOverlay";
 import { api } from "../api";
 import "./MessageRow.css";
 
@@ -77,6 +79,7 @@ export const MessageRow = observer(function MessageRow({
         </div>
       )}
 
+      <SpoilerSyncProvider>
       <div className="message-row-content">
         {groupable ? (
           <div className="message-grouped">
@@ -131,13 +134,14 @@ export const MessageRow = observer(function MessageRow({
 
       {/* Embeds (link previews / rich embeds / video) */}
       {message.embeds && message.embeds.length > 0 && (
-        <EmbedList embeds={message.embeds} />
+        <EmbedList embeds={message.embeds} messageContent={message.content} />
       )}
 
       {/* Forwarded message snapshots */}
       {message.message_snapshots && message.message_snapshots.length > 0 && (
         <ForwardedList message={message} snapshots={message.message_snapshots} />
       )}
+      </SpoilerSyncProvider>
 
       {/* Reply reference indicator */}
       {message.message_reference && !groupable && (
@@ -619,19 +623,33 @@ function AttachmentList({ attachments }: { attachments: Attachment[] }) {
   );
 }
 
-function AttachmentItem({ attachment }: { attachment: Attachment }) {
+const AttachmentItem = observer(function AttachmentItem({ attachment }: { attachment: Attachment }) {
   const ct = attachment.content_type ?? "";
   const lower = attachment.filename.toLowerCase();
+  // Spoiler attachments render behind a click-to-reveal overlay (every kind —
+  // the hidden content keeps its layout size but is invisible and inert).
+  const spoiler = isSpoilerAttachment(attachment);
+  const { hidden, reveal } = useSpoilerState(spoiler);
+  const wrap = (node: React.ReactNode, inline = false) =>
+    spoiler ? (
+      <SpoilerOverlay hidden={hidden} onReveal={reveal} inline={inline}>
+        {node}
+      </SpoilerOverlay>
+    ) : (
+      node
+    );
+
   // Images: open the in-app image viewer on click (not the external URL).
-  if (ct.startsWith("image/") && !attachment.spoiler) {
-    return (
+  // While spoiler-hidden the button is inert (pointer-events: none).
+  if (ct.startsWith("image/")) {
+    return wrap(
       <button
         className="attachment-image"
         title={attachment.filename}
         onClick={(e) => { e.preventDefault(); ui.openImageViewer(attachment.url); }}
       >
         <CachedAssetImage url={attachment.url} alt={attachment.description ?? attachment.filename} />
-      </button>
+      </button>,
     );
   }
   // Audio: custom player. Includes audio-only WebM/OGG (which carry a
@@ -646,15 +664,15 @@ function AttachmentItem({ attachment }: { attachment: Attachment }) {
     (ct === "video/opus" && !attachment.width) ||
     (!ct && /\.(webm|opus|ogg|mp3|wav|m4a|flac|aac)$/i.test(lower));
   if (isAudio) {
-    return <CachedAssetAudio url={attachment.url} />;
+    return wrap(<CachedAssetAudio url={attachment.url} />);
   }
   // Videos: native <video> element, sourced from the cached asset URL.
   if (ct.startsWith("video/")) {
-    return <CachedAssetVideo url={attachment.url} poster={undefined} />;
+    return wrap(<CachedAssetVideo url={attachment.url} poster={undefined} />);
   }
   // Everything else: a download chip pointing at the cached asset URL.
-  return <CachedAssetFile attachment={attachment} />;
-}
+  return wrap(<CachedAssetFile attachment={attachment} />, true);
+});
 
 /// Image rendered through the on-disk media cache (avoids CORS + caches bytes
 /// across renders/navigations).

@@ -211,6 +211,9 @@ export interface Attachment {
   width?: number | null;
   height?: number | null;
   description?: string | null;
+  /// MessageAttachmentFlags bitfield: IS_SPOILER = 8, CONTAINS_EXPLICIT_MEDIA
+  /// = 16, IS_ANIMATED = 32. Spoiler state travels in this field.
+  flags?: number;
   spoiler?: boolean;
 }
 
@@ -473,7 +476,8 @@ export interface UserSettings {
   locale?: string | null;
   guild_positions?: Snowflake[];
   inline_attachment_media?: boolean;
-  render_spoilers?: "always" | "on_click" | null;
+  /// RenderSpoilers: 0 = ALWAYS, 1 = ON_CLICK (default), 2 = IF_MODERATOR.
+  render_spoilers?: number | null;
   message_display_compact?: boolean;
   show_current_game?: boolean;
 }

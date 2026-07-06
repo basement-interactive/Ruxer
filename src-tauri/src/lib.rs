@@ -586,6 +586,7 @@ pub fn run() {
             delete_guild_sticker,
             premium_state,
             save_theme,
+            update_user_settings,
             report_message,
             report_user,
             report_guild,
@@ -1996,6 +1997,18 @@ async fn delete_guild_emoji(
 async fn premium_state(state: State<'_, AppState>) -> CmdResult<serde_json::Value> {
     let c = client(&state).await?;
     c.users().premium_state().await.map_err(Into::into)
+}
+
+#[tauri::command]
+/// Partial update of the current user's settings (PATCH /users/@me/settings),
+/// e.g. `{"render_spoilers": 1}`. Returns the server's settings echo.
+#[tauri::command]
+async fn update_user_settings(
+    state: State<'_, AppState>,
+    patch: serde_json::Value,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users().update_settings(&patch).await.map_err(Into::into)
 }
 
 #[tauri::command]
