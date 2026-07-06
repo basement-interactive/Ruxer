@@ -578,9 +578,9 @@ const InvitesPane = observer(function InvitesPane({ guildId }: { guildId: Snowfl
   const [maxUses, setMaxUses] = useState(0);
 
   const refresh = async () => {
-    if (!firstText) return;
     try {
-      const list = await api.listChannelInvites(firstText.id);
+      // List ALL invites across the guild (was limited to the first channel).
+      const list = await api.listGuildInvites(guildId);
       setInvites(list);
     } catch (e) {
       toasts.warn("Failed to load invites", String(e));
