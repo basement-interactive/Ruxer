@@ -159,7 +159,7 @@ function installMockTauri(): void {
   function handleCommand(cmd: string, args: Record<string, unknown>): unknown {
     switch (cmd) {
       case "has_stored_session":
-        return true;
+        return new URLSearchParams(location.search).get("devscene") !== "login";
       case "restore_session":
         return { token: "mock-token", kind: "session", instance: "", endpoints };
       case "login":
