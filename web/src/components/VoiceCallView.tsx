@@ -10,8 +10,10 @@
 
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
-import { voice, resolveUser, ui } from "../stores";
+import { voice, resolveUser, ui, toasts } from "../stores";
+import { api } from "../api";
 import type { VoiceParticipant } from "../voice/LiveKitRoom";
+import type { RtcRegion } from "../types";
 import { Avatar } from "./Avatar";
 import "./VoiceCallView.css";
 
@@ -211,6 +213,23 @@ function HangupIcon() {
 // RTCStatsReport view would layer on top when connected.
 const StatsPanel = observer(function StatsPanel() {
   const parts = voice.participants;
+  const channelId = voice.pendingChannelId;
+  const [regions, setRegions] = useState<RtcRegion[]>([]);
+  const [region, setRegion] = useState<string>("");
+  useEffect(() => {
+    if (!channelId) return;
+    api
+      .listRtcRegions(channelId)
+      .then(setRegions)
+      .catch(() => {});
+  }, [channelId]);
+  const changeRegion = (r: string) => {
+    setRegion(r);
+    if (!channelId) return;
+    api
+      .setCallRegion(channelId, r || null)
+      .catch((e) => toasts.error("Failed to change region", String(e)));
+  };
   return (
     <div className="voice-stats">
       <div className="voice-stats-title">Connection stats</div>
@@ -218,6 +237,24 @@ const StatsPanel = observer(function StatsPanel() {
         <span>State</span>
         <span>{voice.connectionState}</span>
       </div>
+      {regions.length > 0 && (
+        <div className="voice-stats-row">
+          <span>Region</span>
+          <select
+            className="voice-stats-region"
+            value={region}
+            onChange={(e) => changeRegion(e.target.value)}
+          >
+            <option value="">Automatic</option>
+            {regions.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.emoji ? `${r.emoji} ` : ""}
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="voice-stats-row">
         <span>Participants</span>
         <span>{parts.length}</span>

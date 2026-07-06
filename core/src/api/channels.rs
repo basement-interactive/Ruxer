@@ -90,6 +90,30 @@ impl Channels {
             .await
     }
 
+    /// `GET /channels/{channel_id}/rtc-regions` — available voice regions
+    /// (`[{ id, name, emoji }]`).
+    pub async fn rtc_regions(&self, channel_id: &Snowflake) -> Result<serde_json::Value> {
+        let path = format!("channels/{}/rtc-regions", channel_id);
+        self.0.get(&path).await
+    }
+
+    /// `PATCH /channels/{channel_id}/call` — set the call's preferred voice
+    /// region (None = automatic). Returns 204 No Content.
+    pub async fn set_call_region(
+        &self,
+        channel_id: &Snowflake,
+        region: Option<&str>,
+    ) -> Result<()> {
+        let path = format!("channels/{}/call", channel_id);
+        self.0
+            .send_json(
+                reqwest::Method::PATCH,
+                &path,
+                &serde_json::json!({ "region": region }),
+            )
+            .await
+    }
+
     /// `POST /channels/{channel_id}/typing` — broadcast a typing indicator (lasts ~10s).
     pub async fn trigger_typing(&self, channel_id: &Snowflake) -> Result<()> {
         let path = format!("channels/{}/typing", channel_id);

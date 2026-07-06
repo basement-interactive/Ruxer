@@ -35,10 +35,15 @@ export function applyDevScene(): void {
   if (scene === "voice") seedVoiceCall(false);
   else if (scene === "voice-stats") {
     seedVoiceCall(false);
-    setTimeout(() => {
-      const b = document.querySelector<HTMLElement>('[title="Stats for nerds"]');
-      b?.click();
-    }, 1000);
+    // Poll-click the stats toggle until the panel is actually open (headless
+    // timing is flaky, so retry until `.voice-stats` renders).
+    let tries = 0;
+    const openStats = () => {
+      if (document.querySelector(".voice-stats")) return;
+      document.querySelector<HTMLElement>('[title="Stats for nerds"]')?.click();
+      if (tries++ < 30) setTimeout(openStats, 200);
+    };
+    setTimeout(openStats, 900);
   }
   else if (scene === "voice-screen") seedVoiceCall(true);
   else if (scene === "voice-focus") {

@@ -19,6 +19,7 @@ import type {
   AuthSession,
   LoginResult,
   MobileDevice,
+  RtcRegion,
   UserPrivate,
   Member,
   Message,
@@ -234,6 +235,13 @@ export const api = {
   listChannelInvites: (channelId: Snowflake) =>
     call<Invite[]>("list_channel_invites", { channelId }),
   revokeInvite: (code: string) => call<Invite>("revoke_invite", { code }),
+
+  /// Available voice regions for a call (GET /channels/{id}/rtc-regions).
+  listRtcRegions: (channelId: Snowflake) =>
+    call<RtcRegion[]>("list_rtc_regions", { channelId }),
+  /// Set a call's preferred voice region (null = automatic).
+  setCallRegion: (channelId: Snowflake, region: string | null) =>
+    call<void>("set_call_region", { channelId, region }),
 
   subscribeGuild: (guildId: Snowflake) => call<void>("subscribe_guild", { guildId }),
   subscribeRanges: (guildId: Snowflake, ranges: Array<[number, number]>) =>

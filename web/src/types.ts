@@ -501,6 +501,12 @@ export interface GuildMembersChunk {
 
 /// User settings (a subset that the client cares about). The full settings
 /// object is large; we only track fields we render.
+export interface RtcRegion {
+  id: string;
+  name: string;
+  emoji?: string;
+}
+
 export interface MobileDevice {
   device_id: string;
   platform: string;

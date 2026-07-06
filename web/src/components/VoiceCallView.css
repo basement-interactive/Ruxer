@@ -185,3 +185,11 @@
 .voice-stats-q.q-good { color: #86d17a; }
 .voice-stats-q.q-poor { color: var(--yellow, #f0b232); }
 .voice-stats-q.q-lost, .voice-stats-q.q-unknown { color: var(--red, #f23f43); }
+.voice-stats-region {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 1px 4px;
+}

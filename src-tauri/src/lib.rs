@@ -615,6 +615,8 @@ pub fn run() {
             delete_message,
             bulk_delete_messages,
             trigger_typing,
+            list_rtc_regions,
+            set_call_region,
             ack_message,
             ack_channel,
             start_thread,
@@ -1783,6 +1785,30 @@ async fn trigger_typing(
 ) -> CmdResult<()> {
     let c = client(&state).await?;
     c.channels().trigger_typing(&channel_id)
+        .await
+        .map_err(Into::into)
+}
+
+/// Available voice regions for a call (GET /channels/{id}/rtc-regions).
+#[tauri::command]
+async fn list_rtc_regions(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.channels().rtc_regions(&channel_id).await.map_err(Into::into)
+}
+
+/// Set a call's preferred voice region (PATCH /channels/{id}/call).
+#[tauri::command]
+async fn set_call_region(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    region: Option<String>,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.channels()
+        .set_call_region(&channel_id, region.as_deref())
         .await
         .map_err(Into::into)
 }
