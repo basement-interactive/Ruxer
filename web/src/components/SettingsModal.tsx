@@ -152,6 +152,7 @@ export const SettingsModal = observer(function SettingsModal() {
 
 const AccountPane = observer(function AccountPane() {
   const me = session.me!;
+  const [editing, setEditing] = useState<"username" | "email" | "password" | null>(null);
   return (
     <section className="settings-pane-section">
       <h2 className="settings-pane-title">Account</h2>
@@ -162,15 +163,152 @@ const AccountPane = observer(function AccountPane() {
           <div className="settings-account-tag muted">{me.username}#{me.discriminator}</div>
         </div>
       </div>
-      <Field label="Email" value={me.email ?? "—"} sensitive />
+
+      <AccountEditRow
+        label="Username"
+        value={me.username}
+        open={editing === "username"}
+        onToggle={() => setEditing(editing === "username" ? null : "username")}
+      >
+        <AccountEditForm
+          fields={[{ key: "username", label: "New username", type: "text", initial: me.username }]}
+          onSave={async (v, password) => {
+            const updated = await api.updateCurrentUser({ username: v.username, password });
+            runInAction(() => {
+              if (session.me) session.me.username = updated.username ?? v.username;
+            });
+            setEditing(null);
+          }}
+        />
+      </AccountEditRow>
+
+      <AccountEditRow
+        label="Email"
+        value={me.email ?? "—"}
+        sensitive
+        open={editing === "email"}
+        onToggle={() => setEditing(editing === "email" ? null : "email")}
+      >
+        <AccountEditForm
+          fields={[{ key: "email", label: "New email", type: "email", initial: me.email ?? "" }]}
+          onSave={async (v, password) => {
+            const updated = await api.updateCurrentUser({ email: v.email, password });
+            runInAction(() => {
+              if (session.me) session.me.email = updated.email ?? v.email;
+            });
+            setEditing(null);
+          }}
+        />
+      </AccountEditRow>
+
+      <AccountEditRow
+        label="Password"
+        value="••••••••"
+        open={editing === "password"}
+        onToggle={() => setEditing(editing === "password" ? null : "password")}
+      >
+        <AccountEditForm
+          fields={[{ key: "new_password", label: "New password", type: "password", initial: "" }]}
+          onSave={async (v, password) => {
+            await api.updateCurrentUser({ new_password: v.new_password, password });
+            setEditing(null);
+          }}
+        />
+      </AccountEditRow>
+
       <Field label="Verified" value={me.verified ? "Yes" : "No"} />
       <Field label="Two-Factor Auth" value={me.mfa_enabled ? "Enabled" : "Disabled"} />
       <p className="settings-pane-help muted small">
-        Account changes (username, email, password) are managed on fluxer.app.
+        Changes require your current password. MFA (if enabled) is managed on fluxer.app.
       </p>
     </section>
   );
 });
+
+function AccountEditRow({
+  label,
+  value,
+  sensitive,
+  open,
+  onToggle,
+  children,
+}: {
+  label: string;
+  value: string;
+  sensitive?: boolean;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="settings-account-editrow">
+      <div className="settings-field">
+        <span className="settings-field-label muted small">{label}</span>
+        <span className={`settings-field-value ${sensitive ? "sensitive" : ""}`}>{value}</span>
+        <button className="settings-account-edit-btn" onClick={onToggle}>
+          {open ? "Cancel" : "Edit"}
+        </button>
+      </div>
+      {open && children}
+    </div>
+  );
+}
+
+// A small account-mutation form: one changed field + the current-password
+// confirmation the server requires. Never stores the password.
+function AccountEditForm({
+  fields,
+  onSave,
+}: {
+  fields: { key: string; label: string; type: string; initial: string }[];
+  onSave: (values: Record<string, string>, password: string) => Promise<void>;
+}) {
+  const [values, setValues] = useState<Record<string, string>>(
+    Object.fromEntries(fields.map((f) => [f.key, f.initial])),
+  );
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const save = async () => {
+    if (!password) {
+      toasts.warn("Enter your current password to confirm.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await onSave(values, password);
+      toasts.success("Account updated");
+    } catch (e) {
+      toasts.error("Failed to update account", String(e));
+    } finally {
+      setBusy(false);
+      setPassword("");
+    }
+  };
+  return (
+    <div className="settings-account-form">
+      {fields.map((f) => (
+        <input
+          key={f.key}
+          className="settings-input"
+          type={f.type}
+          value={values[f.key]}
+          placeholder={f.label}
+          onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
+        />
+      ))}
+      <input
+        className="settings-input"
+        type="password"
+        value={password}
+        placeholder="Current password"
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button className="settings-save" disabled={busy} onClick={save}>
+        {busy ? "Saving…" : "Save"}
+      </button>
+    </div>
+  );
+}
 
 function Field({ label, value, sensitive }: { label: string; value: string; sensitive?: boolean }) {
   return (

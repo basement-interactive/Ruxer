@@ -51,6 +51,7 @@ export function applyDevScene(): void {
     setTimeout(() => runInAction(() => ui.toggleCallExpanded(true)), 1200);
   }
   else if (scene === "settings") setTimeout(() => runInAction(() => ui.openSettings()), 700);
+  else if (scene === "settings-account") { setTimeout(() => runInAction(() => ui.openSettings("account")), 700); setTimeout(() => { const b=[...document.querySelectorAll("button")].find(x=>x.textContent==="Edit"); b && b.click(); }, 1300); }
   else if (scene === "settings-profile") setTimeout(() => runInAction(() => ui.openSettings("profile")), 700);
   else if (scene === "settings-chat") setTimeout(() => runInAction(() => ui.openSettings("chat")), 700);
   else if (scene === "settings-privacy") setTimeout(() => runInAction(() => ui.openSettings("privacy")), 700);

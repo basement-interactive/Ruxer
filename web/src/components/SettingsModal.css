@@ -612,3 +612,23 @@
   cursor: pointer;
 }
 .settings-session-remove:hover { background: var(--red, #f23f43); color: #fff; }
+
+.settings-account-editrow { margin-bottom: 4px; }
+.settings-account-edit-btn {
+  margin-left: auto;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #4e5058);
+  background: transparent;
+  color: var(--text-normal, #dbdee1);
+  font-size: 13px;
+  cursor: pointer;
+}
+.settings-account-edit-btn:hover { background: var(--bg-modifier-hover, #3a3c41); }
+.settings-account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 14px;
+  max-width: 30rem;
+}
