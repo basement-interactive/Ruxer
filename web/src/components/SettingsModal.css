@@ -549,3 +549,54 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 10px 16px;
 }
+
+/* --- Translators (Settings -> Chat) --- */
+.settings-custom-engine-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.settings-custom-engine-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+.settings-engine-edit {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: var(--bg-modifier-selected, rgba(255, 255, 255, 0.08));
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.settings-engine-edit:hover {
+  background: var(--bg-modifier-hover);
+  color: var(--text-bright);
+}
+.settings-engine-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.settings-engine-remove:hover {
+  color: var(--red, #da373c);
+}
+.settings-no-engines {
+  color: var(--text-faint);
+  font-size: 0.875rem;
+  margin: 0;
+}
+.settings-engine-error {
+  color: var(--red, #da373c);
+  font-size: 0.8125rem;
+  margin: 0.25rem 0 0;
+}

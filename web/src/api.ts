@@ -606,6 +606,11 @@ export const api = {
     call<unknown>("upload_attachment", { channelId, filePath }),
 
   resolveEndpoints: () => call<Endpoints | null>("resolve_endpoints"),
+
+  /// Open a URL in the OS browser via the Tauri opener plugin. Best-effort:
+  /// failures are swallowed (raw invoke — plugin errors aren't ApiErrors).
+  openExternal: (url: string) =>
+    invoke("plugin:opener|open_url", { url }).catch(() => {}),
 };
 
 // Gateway event listener. Returns an unlisten function.

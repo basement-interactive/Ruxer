@@ -47,6 +47,15 @@ import { resolveAssetUrl } from "./utils/mediaCache";
 export type ContextMenuItem =
   | { kind: "action"; label: string; onClick: () => void; danger?: boolean; disabled?: boolean }
   | { kind: "separator" }
+  // A hover-flyout submenu row. Clicking the PARENT row runs `onClick` (the
+  // default action); children are plain action rows with an optional
+  // right-aligned hint (e.g. "Default").
+  | {
+      kind: "submenu";
+      label: string;
+      onClick: () => void;
+      items: Array<{ label: string; hint?: string; onClick: () => void }>;
+    }
   // A toggle row (e.g. local mute). Clicking flips `checked` and does NOT
   // close the menu.
   | { kind: "checkbox"; label: string; checked: boolean; onToggle: (checked: boolean) => void; danger?: boolean; disabled?: boolean }
@@ -2028,6 +2037,174 @@ export class SettingsStore {
 }
 
 // ---------------------------------------------------------------------------
+// Translation providers — "translate" hands the text to an external site via
+// a URL template opened in the OS browser (exactly like the official client;
+// there is NO inline translation or Fluxer API involved). The engine list is
+// device-local; built-ins always take their name/URL from code on hydrate so
+// upstream fixes win, while saved enabled-flags and custom entries persist.
+// ---------------------------------------------------------------------------
+
+export interface TranslationProvider {
+  id: string;
+  name: string;
+  urlTemplate: string;
+  enabled: boolean;
+  isBuiltIn: boolean;
+}
+
+// URL templates for the built-in providers ({query} = encoded text).
+const BUILT_IN_TRANSLATION_PROVIDERS: Omit<TranslationProvider, "enabled">[] = [
+  { id: "google_translate", name: "Google Translate", urlTemplate: "https://translate.google.com/?sl=auto&tl=auto&text={query}&op=translate", isBuiltIn: true },
+  { id: "deepl", name: "DeepL", urlTemplate: "https://www.deepl.com/translator#auto/auto/{query}", isBuiltIn: true },
+  { id: "bing_translator", name: "Bing Translator", urlTemplate: "https://www.bing.com/translator/?text={query}", isBuiltIn: true },
+  { id: "yandex_translate", name: "Yandex Translate", urlTemplate: "https://translate.yandex.com/?text={query}", isBuiltIn: true },
+  { id: "reverso", name: "Reverso", urlTemplate: "https://www.reverso.net/text-translation#sl=auto&tl=eng&text={query}", isBuiltIn: true },
+  { id: "linguee", name: "Linguee", urlTemplate: "https://www.linguee.com/english-german/search?source=auto&query={query}", isBuiltIn: true },
+  { id: "papago", name: "Papago", urlTemplate: "https://papago.naver.com/?st={query}", isBuiltIn: true },
+];
+
+const DEFAULT_TRANSLATION_PROVIDER_ID = "google_translate";
+
+export class TranslationStore {
+  engines: TranslationProvider[] = [];
+  defaultEngineId: string | null = null;
+
+  constructor() {
+    makeAutoObservable(this);
+    this.hydrate();
+  }
+
+  get enabledEngines(): TranslationProvider[] {
+    return this.engines.filter((e) => e.enabled);
+  }
+
+  /// The persisted default — must still exist and be enabled.
+  get defaultEngine(): TranslationProvider | null {
+    if (!this.defaultEngineId) return null;
+    return this.engines.find((e) => e.id === this.defaultEngineId && e.enabled) ?? null;
+  }
+
+  /// Picker preselection: the default, else the lone enabled engine.
+  get effectiveDefaultEngine(): TranslationProvider | null {
+    if (this.defaultEngine) return this.defaultEngine;
+    const enabled = this.enabledEngines;
+    return enabled.length === 1 ? enabled[0] : null;
+  }
+
+  get nonDefaultEnabledEngines(): TranslationProvider[] {
+    const def = this.defaultEngine;
+    return this.enabledEngines.filter((e) => e.id !== def?.id);
+  }
+
+  @action setEnabled(id: string, on: boolean) {
+    const e = this.engines.find((x) => x.id === id);
+    if (!e) return;
+    e.enabled = on;
+    // Disabling the current default also clears it.
+    if (!on && this.defaultEngineId === id) this.defaultEngineId = null;
+    this.engines = [...this.engines];
+    this.persist();
+  }
+
+  /// Setting a default force-enables the engine.
+  @action setDefaultEngine(id: string) {
+    const e = this.engines.find((x) => x.id === id);
+    if (!e) return;
+    e.enabled = true;
+    this.defaultEngineId = id;
+    this.engines = [...this.engines];
+    this.persist();
+  }
+
+  @action clearDefaultEngine() {
+    this.defaultEngineId = null;
+    this.persist();
+  }
+
+  @action addCustomEngine(name: string, urlTemplate: string) {
+    this.engines = [
+      ...this.engines,
+      {
+        id: `custom_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        name,
+        urlTemplate,
+        enabled: true,
+        isBuiltIn: false,
+      },
+    ];
+    this.persist();
+  }
+
+  @action updateCustomEngine(id: string, name: string, urlTemplate: string) {
+    const e = this.engines.find((x) => x.id === id);
+    if (!e || e.isBuiltIn) return;
+    e.name = name;
+    e.urlTemplate = urlTemplate;
+    this.engines = [...this.engines];
+    this.persist();
+  }
+
+  @action removeCustomEngine(id: string) {
+    const e = this.engines.find((x) => x.id === id);
+    if (!e || e.isBuiltIn) return;
+    this.engines = this.engines.filter((x) => x.id !== id);
+    if (this.defaultEngineId === id) this.defaultEngineId = null;
+    this.persist();
+  }
+
+  /// The templated GET URL for a provider ("" for unknown ids).
+  buildSearchUrl(engineId: string, query: string): string {
+    const e = this.engines.find((x) => x.id === engineId);
+    if (!e) return "";
+    return e.urlTemplate.replace(/\{query\}/gu, encodeURIComponent(query));
+  }
+
+  private hydrate() {
+    // Built-ins from code; saved state merged by id so re-orders/additions of
+    // built-ins never corrupt the enabled flags.
+    let savedEngines: TranslationProvider[] = [];
+    try {
+      const raw = localStorage.getItem("translation.engines");
+      if (raw) {
+        const parsed = JSON.parse(raw) as { version?: number; engines?: TranslationProvider[] };
+        savedEngines = parsed.engines ?? [];
+      }
+    } catch {
+      // corrupted state: fall back to defaults
+    }
+    const savedById = new Map(savedEngines.map((e) => [e.id, e]));
+    this.engines = [
+      ...BUILT_IN_TRANSLATION_PROVIDERS.map((b) => ({
+        ...b,
+        enabled: savedById.get(b.id)?.enabled ?? b.id === DEFAULT_TRANSLATION_PROVIDER_ID,
+      })),
+      ...savedEngines.filter((e) => !e.isBuiltIn),
+    ];
+    try {
+      this.defaultEngineId = localStorage.getItem("translation.defaultEngineId");
+    } catch {
+      this.defaultEngineId = null;
+    }
+  }
+
+  private persist() {
+    try {
+      localStorage.setItem(
+        "translation.engines",
+        JSON.stringify({ version: 1, engines: this.engines }),
+      );
+      if (this.defaultEngineId) {
+        localStorage.setItem("translation.defaultEngineId", this.defaultEngineId);
+      } else {
+        localStorage.removeItem("translation.defaultEngineId");
+      }
+    } catch {
+      // storage unavailable — state stays session-local
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Tick store — a 1-second observable clock for live-updating relative
 // timestamps (<t:...:R>). The interval only runs while the window is focused
 // (paused on blur, immediate tick on refocus) so idle windows don't burn CPU.
@@ -2142,6 +2319,7 @@ class ToastStore {
 
 export const toasts = new ToastStore();
 export const tick = new TickStore();
+export const translation = new TranslationStore();
 
 // ---------------------------------------------------------------------------
 // Read-state store (D.18) — per-channel mention counts + last-read message
@@ -2612,6 +2790,18 @@ export class UiStore {
 
   @action closeReport() {
     this.reportTarget = null;
+  }
+
+  // First-use translation-provider picker: the text pending translation
+  // (null = closed). Picking a provider persists it and opens the URL.
+  translatePicker: { text: string } | null = null;
+
+  @action openTranslatePicker(text: string) {
+    this.translatePicker = { text };
+  }
+
+  @action closeTranslatePicker() {
+    this.translatePicker = null;
   }
 
   // Bookmarks popout (channel-header anchored) open state.

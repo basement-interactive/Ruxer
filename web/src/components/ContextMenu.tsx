@@ -3,13 +3,15 @@
 // it and closes on outside click / Escape / item click.
 
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ui } from "../stores";
 import "./ContextMenu.css";
 
 export const ContextMenu = observer(function ContextMenu() {
   const menu = ui.contextMenu;
   const ref = useRef<HTMLDivElement>(null);
+  // Index of the submenu row whose flyout is open (hover-driven).
+  const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
 
   // Close on Escape.
   useEffect(() => {
@@ -56,6 +58,52 @@ export const ContextMenu = observer(function ContextMenu() {
                 </span>
                 <span>{item.label}</span>
               </button>
+            );
+          }
+          if (item.kind === "submenu") {
+            // Flip the flyout to the left edge when it would clip the
+            // viewport (parent x + menu width + flyout width).
+            const flip = x + 416 > window.innerWidth;
+            return (
+              <div
+                key={i}
+                className="context-menu-submenu-wrap"
+                onMouseEnter={() => setOpenSubmenu(i)}
+                onMouseLeave={() => setOpenSubmenu((v) => (v === i ? null : v))}
+              >
+                <button
+                  className={`context-menu-item context-menu-submenu-parent ${openSubmenu === i ? "open" : ""}`}
+                  onClick={() => {
+                    // Clicking the parent row runs the default action.
+                    item.onClick();
+                    ui.closeContextMenu();
+                  }}
+                >
+                  <span>{item.label}</span>
+                  <span className="context-menu-caret" aria-hidden>
+                    ›
+                  </span>
+                </button>
+                {openSubmenu === i && (
+                  <div className={`context-menu-submenu ${flip ? "flip" : ""}`}>
+                    {item.items.map((child, ci) => (
+                      <button
+                        key={ci}
+                        className="context-menu-item"
+                        onClick={() => {
+                          child.onClick();
+                          ui.closeContextMenu();
+                        }}
+                      >
+                        <span>{child.label}</span>
+                        {child.hint && (
+                          <span className="context-menu-hint">{child.hint}</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             );
           }
           if (item.kind === "slider") {

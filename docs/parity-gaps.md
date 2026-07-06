@@ -23,7 +23,7 @@ native (voice/screen/media) via `invoke`.
 
 ---
 
-## Wave 1 — messaging (27%) — daily-driver core
+## Wave 1 — messaging — COMPLETE (all 12 items done)
 
 High priority:
 - [x] Optimistic send — SENDING → SENT/FAILED, failed footer + retry, nonce reconcile. DONE
@@ -41,7 +41,7 @@ Medium:
 
 Low:
 - [x] Scheduled messages — schedule from composer (right-click), pending pane, edit/reschedule + cancel, full backend (5 endpoints). DONE (reference gates on staff; here it degrades gracefully via error toasts. The reference's own trigger wiring is dormant — this UI wires the documented "right-click to schedule" affordance)
-- [ ] Translate message (provider store). ref: features/messaging/state/Translation.ts
+- [x] Translate message — external-provider URL handoff (7 built-ins + custom), default-provider submenu, first-use picker, settings management. DONE (parity note: the reference has NO inline translation — "translate" opens the provider site in the OS browser; implemented exactly that)
 
 ---
 

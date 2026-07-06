@@ -12,8 +12,9 @@
 
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { session, settings, toasts, ui, voice } from "../stores";
+import { session, settings, toasts, translation, ui, voice } from "../stores";
 import { api } from "../api";
+import { Modal } from "./Modal";
 import type { PresenceStatus } from "../types";
 import { LOCALES } from "../i18n";
 import { Avatar } from "./Avatar";
@@ -737,9 +738,182 @@ const ChatPane = observer(function ChatPane() {
       <ToggleRow label="Compact mode" description="Reduces spacing between messages" />
       <ToggleRow label="Show timestamps" description="Show timestamps on every message" defaultOn />
       <ToggleRow label="Inline attachment media" description="Display images/videos inline when uploaded" defaultOn />
+      <TranslatorsSection />
     </section>
   );
 });
+
+// --- Translators (external provider registry) -------------------------------
+
+const TranslatorsSection = observer(function TranslatorsSection() {
+  // Add/edit custom-translator modal state: null closed, "new" adding, or the
+  // engine id being edited.
+  const [editing, setEditing] = useState<string | null>(null);
+
+  const builtIns = translation.engines.filter((e) => e.isBuiltIn);
+  const customs = translation.engines.filter((e) => !e.isBuiltIn);
+  const enabled = translation.enabledEngines;
+
+  return (
+    <>
+      <div className="settings-subtitle" style={{ marginTop: "1rem" }}>Default translator</div>
+      <p className="settings-pane-help muted small">
+        Choose which translator is used by default when translating selected text.
+      </p>
+      {enabled.length === 0 ? (
+        <p className="settings-no-engines">Enable at least one translator below.</p>
+      ) : (
+        <select
+          className="settings-select"
+          value={translation.defaultEngine?.id ?? ""}
+          onChange={(e) => e.target.value && translation.setDefaultEngine(e.target.value)}
+        >
+          <option value="" disabled>
+            Pick a translator…
+          </option>
+          {enabled.map((e) => (
+            <option key={e.id} value={e.id}>
+              {e.name}
+            </option>
+          ))}
+        </select>
+      )}
+
+      <div className="settings-subtitle" style={{ marginTop: "1rem" }}>Built-in translators</div>
+      <p className="settings-pane-help muted small">
+        Enable or disable built-in translators. Enabled translators appear in the message context
+        menu when text is selected.
+      </p>
+      {builtIns.map((e) => (
+        <label key={e.id} className="settings-toggle">
+          <input
+            type="checkbox"
+            checked={e.enabled}
+            onChange={(ev) => translation.setEnabled(e.id, ev.target.checked)}
+          />
+          <span>{e.name}</span>
+        </label>
+      ))}
+
+      <div className="settings-subtitle" style={{ marginTop: "1rem" }}>Custom translators</div>
+      <p className="settings-pane-help muted small">
+        Add your own translators with a custom URL pattern. Use <code>{"{query}"}</code> as a
+        placeholder for the text to translate.
+      </p>
+      {customs.map((e) => (
+        <div key={e.id} className="settings-custom-engine-row">
+          <label className="settings-toggle" style={{ flex: 1, minWidth: 0 }}>
+            <input
+              type="checkbox"
+              checked={e.enabled}
+              onChange={(ev) => translation.setEnabled(e.id, ev.target.checked)}
+            />
+            <span className="nowrap">{e.name}</span>
+          </label>
+          <div className="settings-custom-engine-actions">
+            <button className="settings-engine-edit" onClick={() => setEditing(e.id)}>
+              Edit
+            </button>
+            <button
+              className="settings-engine-remove"
+              title="Remove translator"
+              onClick={() => {
+                if (window.confirm(`Are you sure you want to remove ${e.name}?`)) {
+                  translation.removeCustomEngine(e.id);
+                }
+              }}
+            >
+              🗑
+            </button>
+          </div>
+        </div>
+      ))}
+      <div style={{ marginTop: "0.75rem" }}>
+        <button className="settings-save" onClick={() => setEditing("new")}>
+          Add translator
+        </button>
+      </div>
+
+      {editing !== null && (
+        <CustomTranslatorModal
+          engineId={editing === "new" ? null : editing}
+          onClose={() => setEditing(null)}
+        />
+      )}
+    </>
+  );
+});
+
+/// Add / edit a custom translator: name + URL pattern with {query}.
+function CustomTranslatorModal({
+  engineId,
+  onClose,
+}: {
+  engineId: string | null;
+  onClose: () => void;
+}) {
+  const existing = engineId ? translation.engines.find((e) => e.id === engineId) : undefined;
+  const [name, setName] = useState(existing?.name ?? "");
+  const [url, setUrl] = useState(existing?.urlTemplate ?? "");
+  const [error, setError] = useState<string | null>(null);
+
+  const submit = () => {
+    if (!name.trim()) return setError("Name is required.");
+    if (!url.trim()) return setError("URL pattern is required.");
+    if (!url.includes("{query}")) return setError("URL pattern must contain {query} placeholder.");
+    try {
+      new URL(url.replace("{query}", "test"));
+    } catch {
+      return setError("URL pattern must be a valid URL.");
+    }
+    if (existing) translation.updateCustomEngine(existing.id, name.trim(), url.trim());
+    else translation.addCustomEngine(name.trim(), url.trim());
+    onClose();
+  };
+
+  return (
+    <Modal
+      open
+      onClose={onClose}
+      title={existing ? "Edit translation provider" : "Add translation provider"}
+      size="small"
+      footer={
+        <>
+          <button className="forward-btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="forward-btn-primary" onClick={submit}>
+            {existing ? "Save" : "Add"}
+          </button>
+        </>
+      }
+    >
+      <label className="schedule-field">
+        <span className="schedule-field-label">Name</span>
+        <input
+          className="schedule-input"
+          placeholder="My translator"
+          autoFocus
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </label>
+      <label className="schedule-field">
+        <span className="schedule-field-label">URL pattern</span>
+        <input
+          className="schedule-input"
+          placeholder="https://example.com/translate?text={query}"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+        <span className="schedule-field-help muted small">
+          Use {"{query}"} where the text to translate should be inserted.
+        </span>
+      </label>
+      {error && <p className="settings-engine-error">{error}</p>}
+    </Modal>
+  );
+}
 
 // --- Notifications ----------------------------------------------------------
 

@@ -4,7 +4,7 @@
 
 import { observer } from "mobx-react-lite";
 import { useState, useEffect } from "react";
-import { messages, session, ui, relationships, guilds, dms, dmLabel, saved } from "../stores";
+import { messages, session, ui, relationships, guilds, dms, dmLabel, saved, translation } from "../stores";
 import type { ContextMenuItem } from "../stores";
 import type { Message, MessageSnapshot } from "../types";
 import { Avatar } from "./Avatar";
@@ -395,8 +395,50 @@ function setReplyTarget(message: Message) {
   });
 }
 
+/// Open a provider's translate URL for the given text in the OS browser.
+function translateWith(engineId: string, text: string) {
+  const url = translation.buildSearchUrl(engineId, text);
+  if (url) void api.openExternal(url);
+}
+
+/// The "Translate" context-menu entry: a submenu when a default provider and
+/// alternates exist (parent click = default), a single action otherwise
+/// (routing through the first-use picker when no default is persisted).
+/// Absent for text-less messages or when no providers are enabled.
+function translateMenuItem(message: Message): ContextMenuItem | null {
+  // Selection wins over the whole message; capture before the menu opens.
+  const selection = window.getSelection()?.toString().trim() ?? "";
+  const effective =
+    message.content?.trim() || message.message_snapshots?.[0]?.content?.trim() || "";
+  const text = selection || effective;
+  if (!text || translation.enabledEngines.length === 0) return null;
+
+  const def = translation.defaultEngine;
+  const alternates = def ? translation.nonDefaultEnabledEngines : [];
+  if (def && alternates.length > 0) {
+    return {
+      kind: "submenu",
+      label: "Translate",
+      onClick: () => translateWith(def.id, text),
+      items: [
+        { label: def.name, hint: "Default", onClick: () => translateWith(def.id, text) },
+        ...alternates.map((e) => ({ label: e.name, onClick: () => translateWith(e.id, text) })),
+      ],
+    };
+  }
+  return {
+    kind: "action",
+    label: "Translate",
+    onClick: () => {
+      if (def) translateWith(def.id, text);
+      else ui.openTranslatePicker(text);
+    },
+  };
+}
+
 function openContextMenu(message: Message, x: number, y: number) {
   const isMe = session.meId === message.author.id;
+  const translate = translateMenuItem(message);
   const items: ContextMenuItem[] = [
     { kind: "action", label: "Add Reaction", onClick: () => ui.openReactionPicker(message.channel_id, message.id) },
     ...(message.reactions.length > 0
@@ -406,6 +448,7 @@ function openContextMenu(message: Message, x: number, y: number) {
     { kind: "action", label: "Forward", onClick: () => ui.openForward(message) },
     { kind: "action", label: "Copy Text", onClick: () => navigator.clipboard?.writeText(message.content).catch(() => {}) },
     { kind: "action", label: "Copy Message Link", onClick: () => navigator.clipboard?.writeText(`${message.channel_id}/${message.id}`).catch(() => {}) },
+    ...(translate ? [translate] : []),
     { kind: "separator" },
     { kind: "action", label: "Pin Message", onClick: () => messages.pin(message.channel_id, message.id, !message.pinned).catch(() => {}) },
     {
