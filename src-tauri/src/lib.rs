@@ -590,6 +590,8 @@ pub fn run() {
             update_current_user,
             list_auth_sessions,
             logout_auth_sessions,
+            list_mobile_devices,
+            delete_mobile_device,
             update_guild,
             reorder_roles,
             reorder_channels,
@@ -2189,6 +2191,26 @@ async fn logout_auth_sessions(
     let c = client(&state).await?;
     c.users()
         .logout_sessions(&session_id_hashes, &password)
+        .await
+        .map_err(Into::into)
+}
+
+/// Registered mobile push devices (GET /users/@me/mobile-devices).
+#[tauri::command]
+async fn list_mobile_devices(state: State<'_, AppState>) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users().mobile_devices().await.map_err(Into::into)
+}
+
+/// Remove a mobile push device (DELETE /users/@me/mobile-devices/{id}).
+#[tauri::command]
+async fn delete_mobile_device(
+    state: State<'_, AppState>,
+    device_id: String,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users()
+        .delete_mobile_device(&device_id)
         .await
         .map_err(Into::into)
 }

@@ -600,3 +600,15 @@
   font-size: 0.8125rem;
   margin: 0.25rem 0 0;
 }
+
+.settings-session-remove {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--red, #f23f43);
+  background: transparent;
+  color: var(--red, #f23f43);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.settings-session-remove:hover { background: var(--red, #f23f43); color: #fff; }

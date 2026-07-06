@@ -18,6 +18,7 @@ import type {
   LoginCredentialsResult,
   AuthSession,
   LoginResult,
+  MobileDevice,
   UserPrivate,
   Member,
   Message,
@@ -308,6 +309,11 @@ export const api = {
   /// Revoke login sessions by id-hash (needs the account password).
   logoutAuthSessions: (sessionIdHashes: string[], password: string) =>
     call<void>("logout_auth_sessions", { sessionIdHashes, password }),
+  /// Registered mobile push devices (GET /users/@me/mobile-devices).
+  listMobileDevices: () => call<{ devices: MobileDevice[] }>("list_mobile_devices"),
+  /// Remove a mobile push device.
+  deleteMobileDevice: (deviceId: string) =>
+    call<unknown>("delete_mobile_device", { deviceId }),
   saveTheme: (css: string) => call<unknown>("save_theme", { css }),
   // UI editor advanced mode: run a sandboxed LuaU layout script in the Rust
   // sandbox (src-tauri/src/ui_editor.rs). Returns the array of presentation ops

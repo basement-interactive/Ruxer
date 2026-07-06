@@ -177,6 +177,18 @@ impl Users {
             .await
     }
 
+    /// `GET /users/@me/mobile-devices` — registered mobile push devices
+    /// (`{ devices: [...] }`).
+    pub async fn mobile_devices(&self) -> Result<serde_json::Value> {
+        self.0.get("users/@me/mobile-devices").await
+    }
+
+    /// `DELETE /users/@me/mobile-devices/{device_id}` — remove a mobile device.
+    pub async fn delete_mobile_device(&self, device_id: &str) -> Result<serde_json::Value> {
+        let path = format!("users/@me/mobile-devices/{}", device_id);
+        self.0.send_empty(reqwest::Method::DELETE, &path).await
+    }
+
     /// `GET /users/@me/saved-messages` — the current user's bookmarks.
     pub async fn saved_messages(
         &self,

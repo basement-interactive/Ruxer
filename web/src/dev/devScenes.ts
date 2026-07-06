@@ -34,6 +34,7 @@ export function applyDevScene(): void {
   else if (scene === "settings-chat") setTimeout(() => runInAction(() => ui.openSettings("chat")), 700);
   else if (scene === "settings-privacy") setTimeout(() => runInAction(() => ui.openSettings("privacy")), 700);
   else if (scene === "settings-notifications") setTimeout(() => runInAction(() => ui.openSettings("notifications")), 700);
+  else if (scene === "settings-devices") setTimeout(() => runInAction(() => ui.openSettings("devices")), 700);
   else if (scene === "settings-sessions") setTimeout(() => runInAction(() => ui.openSettings("sessions")), 700);
   else if (scene === "settings-advanced") setTimeout(() => runInAction(() => ui.openSettings("advanced")), 700);
   else if (scene === "guild-transfer") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openGuildSettings("100", "overview")), 1400); setTimeout(() => { const b=[...document.querySelectorAll("button")].find(x=>x.textContent==="Transfer Ownership"); b && b.click(); }, 2200); }

@@ -225,6 +225,8 @@ function installMockTauri(): void {
         return "";
       case "guild_audit_log":
         return { audit_log_entries: [ { id: "600", user_id: "1", action_type: 22, reason: "spam" }, { id: "601", user_id: "1", action_type: 10 }, { id: "602", user_id: "1", action_type: 20 } ], users: [me] };
+      case "list_mobile_devices":
+        return { devices: [ { device_id: "a".repeat(32), platform: "Android (FCM)", app_id: "app.fluxer", provider_environment: "production", user_agent: "Fluxer Android 2.1" } ] };
       case "list_auth_sessions":
         return [ { id_hash: "h1", client_info: { os: "Linux", browser: "Ruxer Desktop" }, masked_ip: "192.168.•.•", approx_last_used_at: T0, current: true }, { id_hash: "h2", client_info: { os: "Android", device: "Pixel" }, masked_ip: "10.0.•.•", approx_last_used_at: T0, current: false } ];
       case "get_guild_vanity":

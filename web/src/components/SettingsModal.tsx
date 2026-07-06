@@ -7,8 +7,10 @@
 //   - Appearance: theme (dark/light) + message density + spoiler reveal.
 //   - Voice & video: mic/camera device pickers feeding the LiveKitRoom capture
 //     options + voice-activity toggle.
-// Panes that require REST endpoints we don't yet have (Privacy/Sessions/
-// Notifications/Keybinds/Language) link out to fluxer.app for now.
+// Most panes are now fully wired to real endpoints (Chat/Privacy/Advanced/
+// Notifications via the settings PATCH; Profile via PATCH /users/@me; Sessions
+// via /auth/sessions; Devices via /users/@me/mobile-devices). Only Account
+// credential mutations (username/email/password) still link out to fluxer.app.
 
 import { observer } from "mobx-react-lite";
 import { runInAction } from "mobx";
@@ -17,7 +19,7 @@ import { session, settings, toasts, translation, ui, voice } from "../stores";
 import { api } from "../api";
 import { GLOBAL_KEYBINDS, DOC_KEYBINDS } from "../keybinds";
 import { Modal } from "./Modal";
-import type { AuthSession, PresenceStatus, UserSettings } from "../types";
+import type { AuthSession, MobileDevice, PresenceStatus, UserSettings } from "../types";
 
 // Apply a settings change locally AND persist it via the server PATCH
 // (`update_user_settings`). Previously several panes only did the local
@@ -895,13 +897,51 @@ const SessionsPane = observer(function SessionsPane() {
 // --- Devices ---------------------------------------------------------------
 
 const DevicesPane = observer(function DevicesPane() {
+  const [devices, setDevices] = useState<MobileDevice[] | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const load = () => {
+    setErr(null);
+    api
+      .listMobileDevices()
+      .then((r) => setDevices(r.devices ?? []))
+      .catch((e) => setErr(String(e)));
+  };
+  useEffect(load, []);
+
+  const remove = async (d: MobileDevice) => {
+    if (!window.confirm("Remove this device? It will stop receiving push notifications.")) return;
+    try {
+      await api.deleteMobileDevice(d.device_id);
+      setDevices((prev) => (prev ?? []).filter((x) => x.device_id !== d.device_id));
+      toasts.success("Device removed");
+    } catch (e) {
+      toasts.error("Failed to remove device", String(e));
+    }
+  };
+
   return (
     <section className="settings-pane-section">
       <h2 className="settings-pane-title">Devices</h2>
       <p className="settings-pane-help muted small">
-        Manage devices connected to your account. View and remove devices on{" "}
-        <a href="https://fluxer.app/settings/devices" target="_blank" rel="noreferrer" className="settings-link">fluxer.app</a>.
+        Mobile devices registered for push notifications.
       </p>
+      {err && <p className="settings-pane-help muted small">Failed to load devices: {err}</p>}
+      {!devices && !err && <div className="muted small">Loading…</div>}
+      {devices?.length === 0 && <div className="muted small">No registered devices.</div>}
+      {(devices ?? []).map((d) => (
+        <div className="settings-session-card" key={d.device_id}>
+          <div className="settings-session-info">
+            <span className="settings-session-name">{d.platform || "Device"}</span>
+            <span className="settings-session-meta muted small">
+              {d.user_agent ?? d.app_id ?? d.device_id.slice(0, 12)}
+            </span>
+          </div>
+          <button className="settings-session-remove" onClick={() => remove(d)}>
+            Remove
+          </button>
+        </div>
+      ))}
     </section>
   );
 });

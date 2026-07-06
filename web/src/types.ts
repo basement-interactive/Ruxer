@@ -501,6 +501,14 @@ export interface GuildMembersChunk {
 
 /// User settings (a subset that the client cares about). The full settings
 /// object is large; we only track fields we render.
+export interface MobileDevice {
+  device_id: string;
+  platform: string;
+  app_id?: string | null;
+  provider_environment?: string | null;
+  user_agent?: string | null;
+}
+
 export interface AuthSession {
   id_hash: string;
   client_info?: { os?: string; browser?: string; device?: string } | string | null;
