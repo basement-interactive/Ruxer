@@ -147,6 +147,36 @@ impl Users {
             .await
     }
 
+    /// `PATCH /users/@me` — partial update of the current user's account /
+    /// profile (e.g. `{"bio": "...", "pronouns": "..."}`). Loosely typed;
+    /// returns the updated user object as JSON.
+    pub async fn update_current(&self, patch: &serde_json::Value) -> Result<serde_json::Value> {
+        self.0
+            .send_json(reqwest::Method::PATCH, "users/@me", patch)
+            .await
+    }
+
+    /// `GET /auth/sessions` — the account's active login sessions.
+    pub async fn auth_sessions(&self) -> Result<serde_json::Value> {
+        self.0.get("auth/sessions").await
+    }
+
+    /// `POST /auth/sessions/logout` — revoke the given sessions (by id-hash).
+    /// Requires the account password. Returns 204 No Content.
+    pub async fn logout_sessions(
+        &self,
+        session_id_hashes: &[String],
+        password: &str,
+    ) -> Result<()> {
+        self.0
+            .send_json(
+                reqwest::Method::POST,
+                "auth/sessions/logout",
+                &serde_json::json!({ "session_id_hashes": session_id_hashes, "password": password }),
+            )
+            .await
+    }
+
     /// `GET /users/@me/saved-messages` — the current user's bookmarks.
     pub async fn saved_messages(
         &self,

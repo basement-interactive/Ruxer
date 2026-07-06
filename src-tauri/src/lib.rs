@@ -587,6 +587,14 @@ pub fn run() {
             premium_state,
             save_theme,
             update_user_settings,
+            update_current_user,
+            list_auth_sessions,
+            logout_auth_sessions,
+            update_guild,
+            reorder_channels,
+            get_guild_vanity,
+            set_guild_vanity,
+            transfer_guild_ownership,
             report_message,
             report_user,
             report_guild,
@@ -1447,6 +1455,11 @@ async fn update_guild_member(
     set_channel: Option<bool>,
     channel_id: Option<Snowflake>,
     nick: Option<String>,
+    // Timeout: same set/omit pattern as channel. When `set_timeout` is true,
+    // `timeout_until` is applied (Some = time out until that ISO-8601 instant,
+    // None = clear the timeout). When false/absent, the field is left untouched.
+    set_timeout: Option<bool>,
+    timeout_until: Option<String>,
 ) -> CmdResult<fluxer::models::Member> {
     let c = client(&state).await?;
     let channel = if set_channel.unwrap_or(false) {
@@ -1454,8 +1467,13 @@ async fn update_guild_member(
     } else {
         None
     };
+    let timeout = if set_timeout.unwrap_or(false) {
+        Some(timeout_until.as_deref())
+    } else {
+        None
+    };
     c.guilds()
-        .update_member(&guild_id, &user_id, mute, deaf, channel, nick.as_deref())
+        .update_member(&guild_id, &user_id, mute, deaf, channel, nick.as_deref(), timeout)
         .await
         .map_err(Into::into)
 }
@@ -2064,9 +2082,15 @@ async fn remove_member_role(
 async fn guild_audit_log(
     state: State<'_, AppState>,
     guild_id: Snowflake,
+    limit: Option<u32>,
+    action_type: Option<i32>,
+    user_id: Option<Snowflake>,
 ) -> CmdResult<serde_json::Value> {
     let c = client(&state).await?;
-    c.guilds().audit_log(&guild_id).await.map_err(Into::into)
+    c.guilds()
+        .audit_log(&guild_id, limit, action_type, user_id.as_ref())
+        .await
+        .map_err(Into::into)
 }
 
 #[tauri::command]
@@ -2125,7 +2149,6 @@ async fn premium_state(state: State<'_, AppState>) -> CmdResult<serde_json::Valu
     c.users().premium_state().await.map_err(Into::into)
 }
 
-#[tauri::command]
 /// Partial update of the current user's settings (PATCH /users/@me/settings),
 /// e.g. `{"render_spoilers": 1}`. Returns the server's settings echo.
 #[tauri::command]
@@ -2135,6 +2158,104 @@ async fn update_user_settings(
 ) -> CmdResult<serde_json::Value> {
     let c = client(&state).await?;
     c.users().update_settings(&patch).await.map_err(Into::into)
+}
+
+/// Partial update of the current user's account/profile (PATCH /users/@me),
+/// e.g. `{"bio": "...", "pronouns": "..."}`. Returns the updated user.
+#[tauri::command]
+async fn update_current_user(
+    state: State<'_, AppState>,
+    patch: serde_json::Value,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users().update_current(&patch).await.map_err(Into::into)
+}
+
+/// The account's active login sessions (GET /auth/sessions).
+#[tauri::command]
+async fn list_auth_sessions(state: State<'_, AppState>) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users().auth_sessions().await.map_err(Into::into)
+}
+
+/// Revoke login sessions by id-hash (POST /auth/sessions/logout, needs password).
+#[tauri::command]
+async fn logout_auth_sessions(
+    state: State<'_, AppState>,
+    session_id_hashes: Vec<String>,
+    password: String,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.users()
+        .logout_sessions(&session_id_hashes, &password)
+        .await
+        .map_err(Into::into)
+}
+
+/// Partial update of a guild's settings (PATCH /guilds/{id}), e.g.
+/// `{"name": "...", "verification_level": 1}`. Returns the updated guild.
+#[tauri::command]
+async fn update_guild(
+    state: State<'_, AppState>,
+    guild_id: String,
+    patch: serde_json::Value,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.guilds().update(&guild_id, &patch).await.map_err(Into::into)
+}
+
+/// Bulk-reorder a guild's channels (PATCH /guilds/{id}/channels). `positions`
+/// is an array of `{id, position, parent_id?}`.
+#[tauri::command]
+async fn reorder_channels(
+    state: State<'_, AppState>,
+    guild_id: String,
+    positions: serde_json::Value,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.guilds()
+        .reorder_channels(&guild_id, &positions)
+        .await
+        .map_err(Into::into)
+}
+
+/// The guild's vanity invite `{code, uses}` (GET /guilds/{id}/vanity-url).
+#[tauri::command]
+async fn get_guild_vanity(
+    state: State<'_, AppState>,
+    guild_id: String,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.guilds().vanity_url(&guild_id).await.map_err(Into::into)
+}
+
+/// Set the guild's vanity invite code (PATCH /guilds/{id}/vanity-url).
+#[tauri::command]
+async fn set_guild_vanity(
+    state: State<'_, AppState>,
+    guild_id: String,
+    code: String,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.guilds()
+        .update_vanity_url(&guild_id, &code)
+        .await
+        .map_err(Into::into)
+}
+
+/// Transfer guild ownership to another member (requires the owner's password).
+#[tauri::command]
+async fn transfer_guild_ownership(
+    state: State<'_, AppState>,
+    guild_id: String,
+    new_owner_id: String,
+    password: String,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.guilds()
+        .transfer_ownership(&guild_id, &new_owner_id, &password)
+        .await
+        .map_err(Into::into)
 }
 
 #[tauri::command]

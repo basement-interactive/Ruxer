@@ -62,6 +62,9 @@ impl Guilds {
         deaf: Option<bool>,
         channel_id: Option<Option<Snowflake>>,
         nick: Option<&str>,
+        // Double Option like `channel_id`: Some(Some(ts)) sets a timeout until
+        // the ISO-8601 timestamp, Some(None) clears it, None omits the field.
+        communication_disabled_until: Option<Option<&str>>,
     ) -> Result<Member> {
         #[derive(serde::Serialize)]
         struct Body<'a> {
@@ -75,13 +78,89 @@ impl Guilds {
             channel_id: Option<Option<Snowflake>>,
             #[serde(skip_serializing_if = "Option::is_none")]
             nick: Option<&'a str>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            communication_disabled_until: Option<Option<&'a str>>,
         }
         let path = format!("guilds/{}/members/{}", guild_id, user_id);
         self.0
             .send_json(
                 reqwest::Method::PATCH,
                 &path,
-                &Body { mute, deaf, channel_id, nick },
+                &Body {
+                    mute,
+                    deaf,
+                    channel_id,
+                    nick,
+                    communication_disabled_until,
+                },
+            )
+            .await
+    }
+
+    /// `PATCH /guilds/{guild_id}` — partial update of guild settings (e.g.
+    /// `{"name": "...", "verification_level": 1}`). Loosely typed; returns the
+    /// updated guild object as JSON.
+    pub async fn update(
+        &self,
+        guild_id: &Snowflake,
+        patch: &serde_json::Value,
+    ) -> Result<serde_json::Value> {
+        let path = format!("guilds/{}", guild_id);
+        self.0
+            .send_json(reqwest::Method::PATCH, &path, patch)
+            .await
+    }
+
+    /// `PATCH /guilds/{guild_id}/channels` — bulk channel position/parent update
+    /// (reorder). `positions` is an array of `{id, position, parent_id?}`.
+    /// Returns 204 No Content.
+    pub async fn reorder_channels(
+        &self,
+        guild_id: &Snowflake,
+        positions: &serde_json::Value,
+    ) -> Result<()> {
+        let path = format!("guilds/{}/channels", guild_id);
+        self.0
+            .send_json(reqwest::Method::PATCH, &path, positions)
+            .await
+    }
+
+    /// `GET /guilds/{guild_id}/vanity-url` — the guild's vanity invite `{code, uses}`.
+    pub async fn vanity_url(&self, guild_id: &Snowflake) -> Result<serde_json::Value> {
+        let path = format!("guilds/{}/vanity-url", guild_id);
+        self.0.get(&path).await
+    }
+
+    /// `PATCH /guilds/{guild_id}/vanity-url` — set the guild's vanity invite code.
+    pub async fn update_vanity_url(
+        &self,
+        guild_id: &Snowflake,
+        code: &str,
+    ) -> Result<serde_json::Value> {
+        let path = format!("guilds/{}/vanity-url", guild_id);
+        self.0
+            .send_json(
+                reqwest::Method::PATCH,
+                &path,
+                &serde_json::json!({ "code": code }),
+            )
+            .await
+    }
+
+    /// `POST /guilds/{guild_id}/transfer-ownership` — transfer ownership to
+    /// another member. Requires the current owner's account password.
+    pub async fn transfer_ownership(
+        &self,
+        guild_id: &Snowflake,
+        new_owner_id: &Snowflake,
+        password: &str,
+    ) -> Result<serde_json::Value> {
+        let path = format!("guilds/{}/transfer-ownership", guild_id);
+        self.0
+            .send_json(
+                reqwest::Method::POST,
+                &path,
+                &serde_json::json!({ "new_owner_id": new_owner_id, "password": password }),
             )
             .await
     }
@@ -415,8 +494,28 @@ impl Guilds {
     }
 
     /// `GET /guilds/{guild_id}/audit-logs` — list the guild's audit log entries.
-    pub async fn audit_log(&self, guild_id: &Snowflake) -> Result<serde_json::Value> {
-        let path = format!("guilds/{}/audit-logs", guild_id);
+    pub async fn audit_log(
+        &self,
+        guild_id: &Snowflake,
+        limit: Option<u32>,
+        action_type: Option<i32>,
+        user_id: Option<&Snowflake>,
+    ) -> Result<serde_json::Value> {
+        let mut path = format!("guilds/{}/audit-logs", guild_id);
+        let mut q: Vec<String> = Vec::new();
+        if let Some(l) = limit {
+            q.push(format!("limit={l}"));
+        }
+        if let Some(a) = action_type {
+            q.push(format!("action_type={a}"));
+        }
+        if let Some(u) = user_id {
+            q.push(format!("user_id={u}"));
+        }
+        if !q.is_empty() {
+            path.push('?');
+            path.push_str(&q.join("&"));
+        }
         self.0.get(&path).await
     }
 }
