@@ -132,13 +132,39 @@
   text-decoration: underline; /* :125 */
 }
 
-/* --- Timestamp --- */
+/* --- Timestamp chip --- (Markup.module.css:577-596 .timestamp)
+   The chip inherits the message text's font/color; only the background marks
+   it. Wraps anywhere; box-decoration-break keeps the pill on wrapped lines. */
 .timestamp {
-  color: var(--text-primary-muted); /* Message.module.css:4 (--message-timestamp-color) */
-  font-size: 0.75rem; /* MessageLayoutSpec.ts:104 (cozy timestampFontSize) */
-  background: none;
-  border-radius: 0;
-  padding: 0;
+  background-color: var(--bg-modifier-hover);
+  border-radius: 0.1875rem;
+  padding: 0 0.125rem;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  cursor: default;
+  transition: background-color var(--transition-fast, 100ms ease);
+  overflow-wrap: anywhere;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.timestamp:hover {
+  background-color: var(--bg-modifier-selected);
+}
+/* Tooltip content (TimestampRenderer.module.css) */
+.timestamp-tooltip {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  max-width: 350px;
+}
+.timestamp-tooltip-full {
+  font-weight: 600;
+}
+.timestamp-tooltip-relative {
+  color: #d1d5db;
+  font-size: 0.875rem;
 }
 
 /* ==========================================================================

@@ -7,11 +7,23 @@
 // client's markdown renderers for 1:1 parity.
 
 import { useMemo } from "react";
-import { resolveUserName, resolveChannelName } from "../stores";
+import { observer } from "mobx-react-lite";
+import { resolveUserName, resolveChannelName, tick } from "../stores";
 import type { Snowflake } from "../types";
 import { emojiUrl } from "../utils";
 import { useAssetUrl } from "../utils/mediaCache";
+import {
+  TIMESTAMP_STYLE_BY_CHAR,
+  formatRelativeTime,
+  formatTimestampWithStyle,
+  getDateFromUnixTimestampSeconds,
+  getFormattedDateTimeWithSeconds,
+  getHour12,
+  getTimestampLocale,
+  type TimestampStyle,
+} from "../utils/timestamp";
 import { InviteEmbed } from "./InviteEmbed";
+import { Tooltip } from "./Tooltip";
 import "./ContentRenderer.css";
 
 // ---------------------------------------------------------------------------
@@ -33,7 +45,7 @@ type InlineSegment =
   | { kind: "link"; text: string }
   | { kind: "maskedLink"; label: InlineSegment[]; url: string }
   | { kind: "invite"; code: string; url: string }
-  | { kind: "timestamp"; ts: string }
+  | { kind: "timestamp"; ts: number; style: TimestampStyle }
   | { kind: "newline" };
 
 type AlertType = "note" | "tip" | "important" | "warning" | "caution";
@@ -200,11 +212,7 @@ function renderInline(seg: InlineSegment, key: number): React.ReactNode {
         </a>
       );
     case "timestamp":
-      return (
-        <span key={key} className="timestamp">
-          {formatTimestamp(seg.ts)}
-        </span>
-      );
+      return <TimestampChip key={key} ts={seg.ts} style={seg.style} />;
     case "newline":
       return <br key={key} />;
     case "invite":
@@ -1149,9 +1157,22 @@ function parseAngle(text: string): { consumed: number; seg: InlineSegment } | nu
     }
   }
   if (inner.startsWith("t:")) {
-    const ts = inner.slice(2).split(":")[0];
-    if (/^\d+$/.test(ts)) {
-      return { consumed: end + 1, seg: { kind: "timestamp", ts } };
+    // <t:epoch> or <t:epoch:style>. A third colon-part invalidates the token;
+    // the epoch must be all digits, non-zero and within the ECMAScript Date
+    // range (8.64e12 seconds); only the FIRST char of the style is matched
+    // and an unknown/empty style part leaves the token as plain text.
+    const parts = inner.slice(2).split(":");
+    if (parts.length <= 2 && /^\d+$/.test(parts[0])) {
+      const ts = Number(parts[0]);
+      if (ts !== 0 && ts <= 8_640_000_000_000) {
+        let style: TimestampStyle | undefined = "ShortDateTime";
+        if (parts.length === 2) {
+          style = parts[1].length > 0 ? TIMESTAMP_STYLE_BY_CHAR[parts[1][0]] : undefined;
+        }
+        if (style) {
+          return { consumed: end + 1, seg: { kind: "timestamp", ts, style } };
+        }
+      }
     }
   }
   if (inner.startsWith("@!")) {
@@ -1243,9 +1264,48 @@ function parseInviteUrl(url: string): { code: string } | null {
   }
 }
 
-function formatTimestamp(ts: string): string {
-  const secs = parseInt(ts, 10);
-  if (isNaN(secs)) return `<t:${ts}>`;
-  const date = new Date(secs * 1000);
-  return date.toLocaleString();
-}
+/// A rendered <t:epoch:style> chip. Absolute styles format once per render;
+/// the relative style (R) subscribes to the 1s tick store so it live-updates
+/// while the window is focused. Hover shows a two-line tooltip (full date-time
+/// with seconds + always-numeric relative phrase) after 200ms.
+const TimestampChip = observer(function TimestampChip({
+  ts,
+  style,
+}: {
+  ts: number;
+  style: TimestampStyle;
+}) {
+  const date = getDateFromUnixTimestampSeconds(ts);
+  if (!date) {
+    // Invalid but tokenized timestamp: bare number in chip styling, no tooltip.
+    return <span className="timestamp">{String(ts)}</span>;
+  }
+  const isRelative = style === "RelativeTime";
+  // Subscribe to the shared 1-second clock only for relative chips.
+  if (isRelative) void tick.nowSecond;
+  const locale = getTimestampLocale();
+  const hour12 = getHour12();
+  const display = isRelative
+    ? formatRelativeTime(date, locale, "auto")
+    : formatTimestampWithStyle(ts, style, locale, hour12);
+  return (
+    <Tooltip
+      position="top"
+      showDelay={200}
+      text={
+        <span className="timestamp-tooltip">
+          <span className="timestamp-tooltip-full">
+            {getFormattedDateTimeWithSeconds(date, locale, hour12)}
+          </span>
+          <span className="timestamp-tooltip-relative">
+            {formatRelativeTime(date, locale, "always")}
+          </span>
+        </span>
+      }
+    >
+      <time className="timestamp" dateTime={date.toISOString()}>
+        {display}
+      </time>
+    </Tooltip>
+  );
+});

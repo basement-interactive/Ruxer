@@ -1800,6 +1800,45 @@ export class SettingsStore {
 }
 
 // ---------------------------------------------------------------------------
+// Tick store — a 1-second observable clock for live-updating relative
+// timestamps (<t:...:R>). The interval only runs while the window is focused
+// (paused on blur, immediate tick on refocus) so idle windows don't burn CPU.
+// Components subscribe by reading `tick.nowSecond` inside an observer.
+// ---------------------------------------------------------------------------
+
+export class TickStore {
+  nowSecond = Math.floor(Date.now() / 1000);
+  private intervalId: number | null = null;
+
+  constructor() {
+    makeAutoObservable(this);
+    if (typeof window !== "undefined") {
+      window.addEventListener("focus", () => this.start());
+      window.addEventListener("blur", () => this.stop());
+      if (document.hasFocus()) this.start();
+    }
+  }
+
+  private start() {
+    if (this.intervalId != null) return;
+    this.tickNow(); // immediate catch-up on refocus
+    this.intervalId = window.setInterval(() => this.tickNow(), 1000);
+  }
+
+  private stop() {
+    if (this.intervalId != null) {
+      window.clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+  }
+
+  @action private tickNow() {
+    const s = Math.floor(Date.now() / 1000);
+    if (s !== this.nowSecond) this.nowSecond = s;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Toast store — transient notifications surfaced from store actions instead
 // of `console.error`. Each toast has a kind (info/success/warn/error), a
 // title, an optional body, and an auto-dismiss deadline. The ToastContainer
@@ -1874,6 +1913,7 @@ class ToastStore {
 }
 
 export const toasts = new ToastStore();
+export const tick = new TickStore();
 
 // ---------------------------------------------------------------------------
 // Read-state store (D.18) — per-channel mention counts + last-read message
