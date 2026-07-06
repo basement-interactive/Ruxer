@@ -68,6 +68,7 @@ export function applyDevScene(): void {
   else if (scene === "ban") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openBanModal("100", "2")), 1400); }
   else if (scene === "incoming-call") setTimeout(() => runInAction(() => voice.applyVoiceStateUpdate({ user_id: "2", channel_id: "300", session_id: "call1" })), 900);
   else if (scene === "onboarding") setTimeout(() => runInAction(() => ui.openOnboarding(true)), 700);
+  else if (scene === "profile") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openProfile("2", { x: 400, y: 200 })), 900); }
   else if (scene === "channel") seedTextChannel();
 }
 

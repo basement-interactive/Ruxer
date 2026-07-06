@@ -1,3 +1,0 @@
-- [Fluxer UI migration](fluxer-ui-migration.md) — reference UI ported 1:1 onto Tauri via loopback proxy; login renders, electron shim remaining
-- [Fluxer screen-share + perf](fluxer-screenshare-perf.md) — HW encode (NVENC/AMF), getDisplayMedia audio, memory/GPU flags; DEFAULT frontend = custom web/src (not reference), black-frame + picker + mic fixes
-- [Fluxer build speed](fluxer-build-speed.md) — lld-link + sccache + dev profile to cut Rust compile/link time

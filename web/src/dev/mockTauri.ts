@@ -239,6 +239,10 @@ function installMockTauri(): void {
         return [ { id_hash: "h1", client_info: { os: "Linux", browser: "Ruxer Desktop" }, masked_ip: "192.168.•.•", approx_last_used_at: T0, current: true }, { id_hash: "h2", client_info: { os: "Android", device: "Pixel" }, masked_ip: "10.0.•.•", approx_last_used_at: T0, current: false } ];
       case "list_rtc_regions":
         return [ { id: "us-east", name: "US East", emoji: "🇺🇸" }, { id: "eu-west", name: "EU West", emoji: "🇪🇺" }, { id: "asia", name: "Asia", emoji: "🌏" } ];
+      case "get_user_profile":
+        return { user: userAda, user_profile: { bio: "Rustacean. Building fast things.", banner: null }, mutual_friends: [1], mutual_guilds: [1,2], connected_accounts: [ { type: "github", name: "ada-dev" }, { type: "steam", name: "ada" } ] };
+      case "get_user_note":
+        return { note: "met at RustConf" };
       case "get_guild_vanity":
         return { code: "ruxer-dev", uses: 12 };
       case "premium_state":

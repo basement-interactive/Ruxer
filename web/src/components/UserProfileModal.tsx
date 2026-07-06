@@ -22,23 +22,71 @@ export const UserProfileModal = observer(function UserProfileModal() {
   const [user, setUser] = useState<User | undefined>(known);
   const [bio, setBio] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [mutualFriends, setMutualFriends] = useState<number>(0);
+  const [mutualGuilds, setMutualGuilds] = useState<number>(0);
+  const [connections, setConnections] = useState<{ type: string; name: string }[]>([]);
+  const [note, setNote] = useState<string>("");
+  const [noteSaving, setNoteSaving] = useState(false);
 
   useEffect(() => {
     if (!userId) {
       setUser(undefined);
       setBio(null);
       setBanner(null);
+      setMutualFriends(0);
+      setMutualGuilds(0);
+      setConnections([]);
+      setNote("");
       return;
     }
     const cached = ui.knownUsers.get(userId);
-    if (cached) {
-      setUser(cached);
-    } else {
-      api.getUser(userId).then((u) => {
-        setUser(u);
-      }).catch(() => {});
-    }
+    if (cached) setUser(cached);
+    else api.getUser(userId).then(setUser).catch(() => {});
+
+    // Rich profile (mutuals, connections, bio, banner).
+    api
+      .getUserProfile(userId)
+      .then((raw) => {
+        const p = raw as {
+          user?: User;
+          user_profile?: { bio?: string | null; banner?: string | null };
+          mutual_friends?: unknown[];
+          mutual_guilds?: unknown[];
+          connected_accounts?: { type?: string; name?: string }[];
+        };
+        if (p.user) setUser((u) => u ?? p.user);
+        setBio(p.user_profile?.bio ?? null);
+        const bannerHash = p.user_profile?.banner ?? null;
+        const media = session.endpoints?.media ?? "";
+        setBanner(bannerHash && media ? `${media}/banners/${userId}/${bannerHash}.webp?size=480` : null);
+        setMutualFriends(p.mutual_friends?.length ?? 0);
+        setMutualGuilds(p.mutual_guilds?.length ?? 0);
+        setConnections(
+          (p.connected_accounts ?? [])
+            .filter((c) => c.type && c.name)
+            .map((c) => ({ type: c.type as string, name: c.name as string })),
+        );
+      })
+      .catch(() => {});
+
+    // Private per-user note.
+    api
+      .getUserNote(userId)
+      .then((r) => setNote(r?.note ?? ""))
+      .catch(() => setNote(""));
   }, [userId]);
+
+  const saveNote = async () => {
+    if (!userId) return;
+    setNoteSaving(true);
+    try {
+      await api.setUserNote(userId, note);
+    } catch {
+      /* best-effort */
+    } finally {
+      setNoteSaving(false);
+    }
+  };
 
   if (!userId) return null;
 
@@ -110,6 +158,50 @@ export const UserProfileModal = observer(function UserProfileModal() {
             <div className="profile-card-member-since">
               <span className="profile-card-section-title">Member Since</span>
               <span className="profile-card-member-date">{new Date(member.joined_at).toLocaleDateString()}</span>
+            </div>
+          )}
+
+          {/* Mutuals */}
+          {!isMe && (mutualFriends > 0 || mutualGuilds > 0) && (
+            <div className="profile-card-mutuals">
+              {mutualGuilds > 0 && (
+                <span>{mutualGuilds} Mutual Server{mutualGuilds === 1 ? "" : "s"}</span>
+              )}
+              {mutualFriends > 0 && (
+                <span>{mutualFriends} Mutual Friend{mutualFriends === 1 ? "" : "s"}</span>
+              )}
+            </div>
+          )}
+
+          {/* Connections */}
+          {connections.length > 0 && (
+            <div className="profile-card-connections-section">
+              <div className="profile-card-section-title">Connections</div>
+              <div className="profile-card-connections">
+                {connections.map((c, i) => (
+                  <span key={i} className="profile-card-connection">
+                    <span className="profile-card-connection-type">{c.type}</span>
+                    {c.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Private note (only for other users) */}
+          {!isMe && (
+            <div className="profile-card-note-section">
+              <div className="profile-card-section-title">Note</div>
+              <textarea
+                className="profile-card-note"
+                value={note}
+                placeholder="Click to add a note"
+                rows={2}
+                maxLength={256}
+                onChange={(e) => setNote(e.target.value)}
+                onBlur={saveNote}
+                disabled={noteSaving}
+              />
             </div>
           )}
         </div>
