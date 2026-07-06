@@ -53,6 +53,8 @@ export interface VoiceParticipant {
   /// Per-participant volume set by the local user (0..1, default 1). Only
   /// meaningful for remote participants; local audio is never played back.
   volume: number;
+  /// LiveKit connection quality (drives the signal-strength indicator).
+  connectionQuality: "excellent" | "good" | "poor" | "lost" | "unknown";
 }
 
 /// The kind of a subscribed track, surfaced in `trackSubscribed` events.
@@ -394,6 +396,39 @@ export class LiveKitRoom {
     return this.room;
   }
 
+  /// Attach a participant's video track (camera or screen share) to a <video>
+  /// element. Returns a detach cleanup, or null when the track isn't available
+  /// yet (not published / not subscribed). Callers should re-invoke when the
+  /// participant's cameraEnabled/screenShareEnabled flips (a fresh mount).
+  attachVideo(
+    identity: string,
+    source: "camera" | "screen",
+    el: HTMLVideoElement,
+  ): (() => void) | null {
+    const src = source === "screen" ? Track.Source.ScreenShare : Track.Source.Camera;
+    const lp = this.room.localParticipant;
+    let participant: Participant | undefined =
+      lp.identity === identity ? lp : undefined;
+    if (!participant) {
+      for (const rp of this.room.remoteParticipants.values()) {
+        if (rp.identity === identity) {
+          participant = rp;
+          break;
+        }
+      }
+    }
+    const track = participant?.getTrackPublication(src)?.track;
+    if (!track) return null;
+    track.attach(el);
+    return () => {
+      try {
+        track.detach(el);
+      } catch {
+        /* element already gone */
+      }
+    };
+  }
+
   // -----------------------------------------------------------------------
   // Internals
   // -----------------------------------------------------------------------
@@ -537,6 +572,7 @@ function participantFromLocal(
     speaking: lp.isSpeaking,
     deafened,
     volume: 1,
+    connectionQuality: normalizeQuality(lp.connectionQuality),
   };
 }
 
@@ -560,7 +596,22 @@ function participantFromRemote(
     // voice state in the store (overwritten there for known users).
     deafened: false,
     volume: volumes.get(identity) ?? 1,
+    connectionQuality: normalizeQuality(rp.connectionQuality),
   };
+}
+
+/// Coerce LiveKit's ConnectionQuality enum into our string union (its members
+/// are already the lowercase strings; this narrows the type + guards unknowns).
+function normalizeQuality(q: unknown): VoiceParticipant["connectionQuality"] {
+  switch (q) {
+    case "excellent":
+    case "good":
+    case "poor":
+    case "lost":
+      return q;
+    default:
+      return "unknown";
+  }
 }
 
 // Re-export a few types the store/UI uses so they don't need to import

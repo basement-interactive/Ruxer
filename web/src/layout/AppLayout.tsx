@@ -13,6 +13,9 @@ import { MemberList } from "./MemberList";
 import { PinsPane } from "./PinsPane";
 import { ScheduledPane } from "./ScheduledPane";
 import { ContextMenu } from "../components/ContextMenu";
+import { NagbarStack } from "../components/Nagbar";
+import { DocumentTitleBadge } from "../window/documentTitle";
+import { handleGlobalKeydown } from "../keybinds";
 import { EmojiPicker } from "../components/EmojiPicker";
 import { SettingsModal } from "../components/SettingsModal";
 import { ToastContainer } from "../components/ToastContainer";
@@ -27,6 +30,7 @@ import { MessageReactionsModal } from "../components/MessageReactionsModal";
 import { TranslateProviderPickerModal } from "../components/TranslateProviderPickerModal";
 import { ThemeStudio, initCustomTheme } from "../components/ThemeStudio";
 import { UserProfileModal } from "../components/UserProfileModal";
+import { BanMemberModal } from "../components/BanMemberModal";
 import { ui, messages, guilds, settings, voice, toasts } from "../stores";
 import "./AppLayout.css";
 
@@ -35,17 +39,7 @@ export const AppLayout = observer(function AppLayout() {
   // search (D.16).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        ui.toggleQuickSwitcher();
-      } else if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "f") {
-        e.preventDefault();
-        ui.openSearch();
-      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "i") {
-        // Ctrl/Cmd+I: toggle the bookmarks popout (reference: inbox toggle).
-        e.preventDefault();
-        ui.toggleBookmarks();
-      }
+      handleGlobalKeydown(e);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -114,13 +108,8 @@ export const AppLayout = observer(function AppLayout() {
         e.preventDefault();
       }}
     >
-      {(ui.gatewayStatus === "reconnecting" || ui.gatewayStatus === "connecting") && (
-        <div className="gateway-banner">
-          {ui.gatewayStatus === "reconnecting"
-            ? "Connection lost — reconnecting…"
-            : "Connecting…"}
-        </div>
-      )}
+      <NagbarStack />
+      <DocumentTitleBadge />
       {/* data-flx anchors: stable breadcrumb ids the in-app UI editor targets
           to reorder / resize / hide / recolor layout regions without touching
           component source. Keep these paths stable — saved user layouts key on
@@ -138,6 +127,7 @@ export const AppLayout = observer(function AppLayout() {
       {/* Single profile surface — the full card. (ProfilePopup previously
           double-mounted and overlapped this; keep only the modal.) */}
       <UserProfileModal />
+      <BanMemberModal />
       <ContextMenu />
       <SettingsModal />
       <ToastContainer />

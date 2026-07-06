@@ -309,6 +309,16 @@ textarea {
 @keyframes loading-spin {
   to { transform: rotate(360deg); }
 }
+.loading-screen-status {
+  color: var(--text-secondary, #b5bac1);
+  font-size: 14px;
+  font-weight: 500;
+}
+.loading-screen-hint {
+  color: var(--text-muted, #949ba4);
+  font-size: 12px;
+  margin-top: calc(-1 * var(--sp-2, 8px));
+}
 
 /* Generic pill/badge */
 .badge {

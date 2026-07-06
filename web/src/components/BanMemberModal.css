@@ -1,0 +1,60 @@
+.ban-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4, 16px);
+}
+.ban-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ban-field-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary, #b5bac1);
+  letter-spacing: 0.02em;
+}
+.ban-input,
+.ban-select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #232428);
+  background: var(--bg-input, #1e1f22);
+  color: var(--text-normal, #dbdee1);
+  font-size: 14px;
+}
+.ban-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2, 8px);
+}
+.ban-cancel,
+.ban-confirm {
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ban-cancel {
+  background: transparent;
+  color: var(--text-normal, #dbdee1);
+}
+.ban-cancel:hover {
+  text-decoration: underline;
+}
+.ban-confirm {
+  background: var(--red, #f23f43);
+  color: #fff;
+}
+.ban-confirm:hover {
+  background: #d83c3e;
+}
+.ban-confirm:disabled,
+.ban-cancel:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

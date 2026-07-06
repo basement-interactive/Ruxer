@@ -116,8 +116,41 @@ const ChannelRow = observer(function ChannelRow({
         onClick={() => ui.openChannel(channel.id)}
         onContextMenu={(e) => {
           e.preventDefault();
+          // Siblings in the same category, ordered by position — for Move Up/Down.
+          const siblings = (guilds.channelsByGuild.get(guildId) ?? [])
+            .filter(
+              (c) =>
+                (c.parent_id ?? null) === (channel.parent_id ?? null) &&
+                c.type !== channelType.GUILD_CATEGORY,
+            )
+            .sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+          const sIdx = siblings.findIndex((c) => c.id === channel.id);
+          const moveChannel = async (dir: -1 | 1) => {
+            const other = siblings[sIdx + dir];
+            if (!other) return;
+            const posA = channel.position ?? 0;
+            const posB = other.position ?? 0;
+            try {
+              await api.reorderChannels(guildId, [
+                { id: channel.id, position: posB },
+                { id: other.id, position: posA },
+              ]);
+              runInAction(() => {
+                const chs = [...(guilds.channelsByGuild.get(guildId) ?? [])];
+                const ca = chs.find((c) => c.id === channel.id);
+                const cb = chs.find((c) => c.id === other.id);
+                if (ca) ca.position = posB;
+                if (cb) cb.position = posA;
+                guilds.channelsByGuild.set(guildId, chs);
+              });
+            } catch (err) {
+              toasts.error("Failed to reorder channel", String(err));
+            }
+          };
           const items: ContextMenuItem[] = [
             { kind: "action", label: "Mark as Read", onClick: () => messages.markRead(channel.id) },
+            { kind: "action", label: "Move Up", disabled: sIdx <= 0, onClick: () => moveChannel(-1) },
+            { kind: "action", label: "Move Down", disabled: sIdx >= siblings.length - 1, onClick: () => moveChannel(1) },
             {
               kind: "action",
               label: ui.isFavorite(channel.id) ? "Remove Favorite" : "Favorite Channel",

@@ -11,6 +11,7 @@ import { runInAction } from "mobx";
 import React, { useEffect, useRef, useState } from "react";
 import { guilds, ui, toasts, session } from "../stores";
 import { api } from "../api";
+import { Modal } from "./Modal";
 import type { AuditLog, GuildBan, Invite, Role, Snowflake, Sticker, User, Webhook } from "../types";
 import { channelType } from "../types";
 import { GuildIcon } from "./GuildIcon";
@@ -52,7 +53,8 @@ export const GuildSettingsModal = observer(function GuildSettingsModal() {
   const [pane, setPane] = useState<Pane>("overview");
 
   useEffect(() => {
-    if (open) setPane("overview");
+    // Open to the requested tab (openGuildSettings(id, tab)) or default overview.
+    if (open) setPane((ui.guildSettingsInitialTab as Pane) ?? "overview");
   }, [open]);
 
   useEffect(() => {
@@ -110,6 +112,78 @@ const OverviewPane = observer(function OverviewPane({ guildId }: { guildId: Snow
   const g = guilds.guilds.find((x) => x.id === guildId)!;
   const [confirming, setConfirming] = useState(false);
   const isOwner = g.owner_id === session.meId;
+  const [name, setName] = useState(g.name);
+  const [savingName, setSavingName] = useState(false);
+  useEffect(() => setName(g.name), [g.name]);
+
+  const [vanity, setVanity] = useState("");
+  const [savingVanity, setSavingVanity] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .getGuildVanity(guildId)
+      .then((v) => !cancelled && setVanity(v.code ?? ""))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [guildId]);
+
+  const saveVanity = async () => {
+    setSavingVanity(true);
+    try {
+      const res = await api.setGuildVanity(guildId, vanity.trim());
+      setVanity(res.code ?? vanity.trim());
+      toasts.success("Vanity URL updated");
+    } catch (e) {
+      toasts.error("Failed to set vanity URL", String(e));
+    } finally {
+      setSavingVanity(false);
+    }
+  };
+
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [newOwner, setNewOwner] = useState("");
+  const [transferPw, setTransferPw] = useState("");
+  const [transferring, setTransferring] = useState(false);
+  const otherMembers = (guilds.membersByGuild.get(guildId) ?? []).filter(
+    (m) => m.user.id !== session.meId,
+  );
+
+  const transfer = async () => {
+    if (!newOwner || !transferPw) return;
+    setTransferring(true);
+    try {
+      await api.transferGuildOwnership(guildId, newOwner, transferPw);
+      runInAction(() => {
+        g.owner_id = newOwner;
+      });
+      toasts.success("Ownership transferred");
+      setTransferOpen(false);
+      setTransferPw("");
+    } catch (e) {
+      toasts.error("Failed to transfer ownership", String(e));
+    } finally {
+      setTransferring(false);
+    }
+  };
+
+  const saveName = async () => {
+    const next = name.trim();
+    if (!next || next === g.name) return;
+    setSavingName(true);
+    try {
+      await api.updateGuild(guildId, { name: next });
+      runInAction(() => {
+        g.name = next;
+      });
+      toasts.success("Server name updated");
+    } catch (e) {
+      toasts.error("Failed to update server", String(e));
+    } finally {
+      setSavingName(false);
+    }
+  };
 
   const del = async () => {
     try {
@@ -137,16 +211,134 @@ const OverviewPane = observer(function OverviewPane({ guildId }: { guildId: Snow
           </div>
         </div>
       </div>
+      <div className="gs-field" style={{ maxWidth: "26rem", marginTop: "var(--sp-3, 12px)" }}>
+        <span className="gs-field-label">Server Name</span>
+        <div style={{ display: "flex", gap: "var(--sp-2, 8px)" }}>
+          <input
+            className="gs-input"
+            value={name}
+            maxLength={100}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") saveName();
+            }}
+          />
+          <button
+            className="gs-submit"
+            onClick={saveName}
+            disabled={savingName || !name.trim() || name.trim() === g.name}
+          >
+            {savingName ? "Saving…" : "Save"}
+          </button>
+        </div>
+      </div>
       <p className="gs-pane-help muted small">
-        Editing the server name + icon requires the upcoming roles/permissions
-        REST endpoints. For now, manage these on fluxer.app.
+        Icon upload lands with the media-picker UI.
       </p>
+
+      <div className="gs-field" style={{ maxWidth: "26rem", marginTop: "var(--sp-3, 12px)" }}>
+        <span className="gs-field-label">Verification Level</span>
+        <select
+          className="gs-input"
+          value={g.verification_level ?? 0}
+          onChange={(e) => {
+            const level = Number(e.target.value);
+            runInAction(() => {
+              g.verification_level = level;
+            });
+            api
+              .updateGuild(guildId, { verification_level: level })
+              .catch((err) => toasts.error("Failed to set verification level", String(err)));
+          }}
+        >
+          <option value={0}>None — unrestricted</option>
+          <option value={1}>Low — verified email</option>
+          <option value={2}>Medium — registered 5+ minutes</option>
+          <option value={3}>High — member 10+ minutes</option>
+          <option value={4}>Highest — verified phone</option>
+        </select>
+      </div>
+
+      <div className="gs-field" style={{ maxWidth: "26rem", marginTop: "var(--sp-3, 12px)" }}>
+        <span className="gs-field-label">Vanity Invite URL</span>
+        <div style={{ display: "flex", gap: "var(--sp-2, 8px)", alignItems: "center" }}>
+          <span className="muted small">fluxer.app/</span>
+          <input
+            className="gs-input"
+            value={vanity}
+            maxLength={32}
+            placeholder="custom-code"
+            onChange={(e) => setVanity(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") saveVanity();
+            }}
+          />
+          <button className="gs-submit" onClick={saveVanity} disabled={savingVanity}>
+            {savingVanity ? "Saving…" : "Save"}
+          </button>
+        </div>
+      </div>
       {isOwner && (
         <div className="gs-danger-zone">
           <div className="gs-danger-title">Danger Zone</div>
+          {otherMembers.length > 0 && (
+            <button
+              className="gs-danger-btn"
+              style={{ marginRight: "var(--sp-2, 8px)" }}
+              onClick={() => {
+                setNewOwner(otherMembers[0].user.id);
+                setTransferOpen(true);
+              }}
+            >
+              Transfer Ownership
+            </button>
+          )}
           <button className="gs-danger-btn" onClick={() => setConfirming(true)}>
             Delete Server
           </button>
+          <Modal
+            open={transferOpen}
+            onClose={() => setTransferOpen(false)}
+            title="Transfer Ownership"
+            size="small"
+            footer={
+              <div className="ban-modal-footer">
+                <button className="ban-cancel" onClick={() => setTransferOpen(false)} disabled={transferring}>
+                  Cancel
+                </button>
+                <button
+                  className="ban-confirm"
+                  onClick={transfer}
+                  disabled={transferring || !newOwner || !transferPw}
+                >
+                  {transferring ? "Transferring…" : "Transfer"}
+                </button>
+              </div>
+            }
+          >
+            <div className="ban-modal-body">
+              <label className="ban-field">
+                <span className="ban-field-label">New owner</span>
+                <select className="gs-input" value={newOwner} onChange={(e) => setNewOwner(e.target.value)}>
+                  {otherMembers.map((m) => (
+                    <option key={m.user.id} value={m.user.id}>
+                      {m.user.global_name ?? m.user.username}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="ban-field">
+                <span className="ban-field-label">Your password</span>
+                <input
+                  className="ban-input"
+                  type="password"
+                  value={transferPw}
+                  onChange={(e) => setTransferPw(e.target.value)}
+                  placeholder="Confirm with your account password"
+                />
+              </label>
+            </div>
+          </Modal>
           {confirming && (
             <div className="gs-confirm">
               <span>Type the server name to confirm deletion:</span>
@@ -327,11 +519,34 @@ const BansPane = observer(function BansPane({ guildId }: { guildId: Snowflake })
   );
 });
 
+const INVITE_EXPIRY = [
+  { label: "Never", value: 0 },
+  { label: "30 minutes", value: 1800 },
+  { label: "1 hour", value: 3600 },
+  { label: "6 hours", value: 21600 },
+  { label: "12 hours", value: 43200 },
+  { label: "1 day", value: 86400 },
+  { label: "7 days", value: 604800 },
+];
+const INVITE_USES = [
+  { label: "No limit", value: 0 },
+  { label: "1 use", value: 1 },
+  { label: "5 uses", value: 5 },
+  { label: "10 uses", value: 10 },
+  { label: "25 uses", value: 25 },
+  { label: "50 uses", value: 50 },
+  { label: "100 uses", value: 100 },
+];
+
 const InvitesPane = observer(function InvitesPane({ guildId }: { guildId: Snowflake }) {
   const [invites, setInvites] = useState<Invite[]>([]);
   const [busy, setBusy] = useState(false);
   const chs = guilds.channelsByGuild.get(guildId) ?? [];
-  const firstText = chs.find((c) => c.type === channelType.GUILD_TEXT);
+  const textChannels = chs.filter((c) => c.type === channelType.GUILD_TEXT);
+  const firstText = textChannels[0];
+  const [targetChannel, setTargetChannel] = useState<Snowflake>("");
+  const [maxAge, setMaxAge] = useState(0);
+  const [maxUses, setMaxUses] = useState(0);
 
   const refresh = async () => {
     if (!firstText) return;
@@ -347,13 +562,14 @@ const InvitesPane = observer(function InvitesPane({ guildId }: { guildId: Snowfl
   }, [guildId]);
 
   const create = async () => {
-    if (!firstText) {
+    const ch = targetChannel || firstText?.id;
+    if (!ch) {
       toasts.warn("No text channel to create an invite for.");
       return;
     }
     setBusy(true);
     try {
-      await api.createChannelInvite(firstText.id, 0, 0);
+      await api.createChannelInvite(ch, maxAge, maxUses);
       await refresh();
       toasts.success("Invite created");
     } catch (e) {
@@ -366,10 +582,38 @@ const InvitesPane = observer(function InvitesPane({ guildId }: { guildId: Snowfl
   return (
     <section className="gs-pane-section">
       <h2 className="gs-pane-title">Invites</h2>
-      <p className="gs-pane-help muted small">
-        Invites are listed for the first text channel. Per-channel invites land
-        with the full channel-settings UI.
-      </p>
+      <div className="gs-invite-controls">
+        <label className="gs-field">
+          <span className="gs-field-label">Channel</span>
+          <select
+            className="gs-input"
+            value={targetChannel || firstText?.id || ""}
+            onChange={(e) => setTargetChannel(e.target.value)}
+          >
+            {textChannels.map((c) => (
+              <option key={c.id} value={c.id}>
+                #{c.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="gs-field">
+          <span className="gs-field-label">Expire after</span>
+          <select className="gs-input" value={maxAge} onChange={(e) => setMaxAge(Number(e.target.value))}>
+            {INVITE_EXPIRY.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </label>
+        <label className="gs-field">
+          <span className="gs-field-label">Max uses</span>
+          <select className="gs-input" value={maxUses} onChange={(e) => setMaxUses(Number(e.target.value))}>
+            {INVITE_USES.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </label>
+      </div>
       <button className="gs-submit" onClick={create} disabled={busy || !firstText}>
         {busy ? "Creating…" : "Create Invite"}
       </button>
@@ -881,16 +1125,23 @@ const AUDIT_ACTIONS: Record<number, string> = {
 const AuditPane = observer(function AuditPane({ guildId }: { guildId: Snowflake }) {
   const [log, setLog] = useState<AuditLog | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [action, setAction] = useState<number | "">("");
+  const [limit, setLimit] = useState(50);
   useEffect(() => {
     let alive = true;
+    setLog(null);
+    setErr(null);
     api
-      .guildAuditLog(guildId)
+      .guildAuditLog(guildId, {
+        limit,
+        actionType: action === "" ? undefined : action,
+      })
       .then((l) => alive && setLog(l))
       .catch((e) => alive && setErr(String(e)));
     return () => {
       alive = false;
     };
-  }, [guildId]);
+  }, [guildId, action, limit]);
 
   const userMap = new Map<string, User>((log?.users ?? []).map((u) => [u.id, u]));
   const entries = log?.audit_log_entries ?? [];
@@ -898,6 +1149,31 @@ const AuditPane = observer(function AuditPane({ guildId }: { guildId: Snowflake 
   return (
     <section className="gs-pane-section">
       <h2 className="gs-pane-title">Audit Log{log ? ` — ${entries.length}` : ""}</h2>
+      <div className="gs-invite-controls">
+        <label className="gs-field">
+          <span className="gs-field-label">Filter by action</span>
+          <select
+            className="gs-input"
+            value={action}
+            onChange={(e) => setAction(e.target.value === "" ? "" : Number(e.target.value))}
+          >
+            <option value="">All actions</option>
+            {Object.entries(AUDIT_ACTIONS).map(([id, label]) => (
+              <option key={id} value={id}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="gs-field">
+          <span className="gs-field-label">Show</span>
+          <select className="gs-input" value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+            <option value={25}>25 entries</option>
+            <option value={50}>50 entries</option>
+            <option value={100}>100 entries</option>
+          </select>
+        </label>
+      </div>
       {err && <p className="gs-pane-help muted small">Failed to load audit log: {err}</p>}
       {!log && !err && <div className="gs-empty muted">Loading…</div>}
       <div className="gs-list">
@@ -941,6 +1217,8 @@ const WebhooksPane = observer(function WebhooksPane({ guildId }: { guildId: Snow
   const [targetChannel, setTargetChannel] = useState<Snowflake>("");
   const [newName, setNewName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [editingId, setEditingId] = useState<Snowflake | null>(null);
+  const [editName, setEditName] = useState("");
 
   const reload = () => {
     setErr(null);
@@ -976,6 +1254,19 @@ const WebhooksPane = observer(function WebhooksPane({ guildId }: { guildId: Snow
       toasts.error("Failed to create webhook", String(e));
     } finally {
       setBusy(false);
+    }
+  };
+
+  const saveRename = async (id: Snowflake) => {
+    const name = editName.trim();
+    if (!name) return;
+    try {
+      await api.updateWebhook(id, { name });
+      setEditingId(null);
+      await reload();
+      toasts.success("Webhook renamed");
+    } catch (e) {
+      toasts.error("Failed to rename webhook", String(e));
     }
   };
 
@@ -1020,19 +1311,50 @@ const WebhooksPane = observer(function WebhooksPane({ guildId }: { guildId: Snow
 
       {!hooks && !err && <div className="gs-empty muted">Loading…</div>}
       <div className="gs-list">
-        {hooks?.map((h) => (
-          <div key={h.id} className="gs-list-row">
-            <span className="gs-list-name nowrap">{h.name ?? "Webhook"}</span>
-            <span className="gs-list-reason muted small nowrap">#{channelName(h.channel_id)}</span>
-            <button
-              className="gs-list-action"
-              title="Delete webhook"
-              onClick={() => remove(h.id, h.name)}
-            >
-              Delete
-            </button>
-          </div>
-        ))}
+        {hooks?.map((h) =>
+          editingId === h.id ? (
+            <div key={h.id} className="gs-list-row">
+              <input
+                className="gs-input"
+                value={editName}
+                autoFocus
+                onChange={(e) => setEditName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveRename(h.id);
+                  if (e.key === "Escape") setEditingId(null);
+                }}
+              />
+              <button className="gs-list-action" onClick={() => saveRename(h.id)}>
+                Save
+              </button>
+              <button className="gs-list-action" onClick={() => setEditingId(null)}>
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div key={h.id} className="gs-list-row">
+              <span className="gs-list-name nowrap">{h.name ?? "Webhook"}</span>
+              <span className="gs-list-reason muted small nowrap">#{channelName(h.channel_id)}</span>
+              <button
+                className="gs-list-action"
+                title="Rename webhook"
+                onClick={() => {
+                  setEditingId(h.id);
+                  setEditName(h.name ?? "");
+                }}
+              >
+                Rename
+              </button>
+              <button
+                className="gs-list-action"
+                title="Delete webhook"
+                onClick={() => remove(h.id, h.name)}
+              >
+                Delete
+              </button>
+            </div>
+          ),
+        )}
         {hooks?.length === 0 && <div className="gs-empty muted">No webhooks.</div>}
       </div>
     </section>

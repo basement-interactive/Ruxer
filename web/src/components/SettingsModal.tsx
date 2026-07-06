@@ -11,11 +11,22 @@
 // Notifications/Keybinds/Language) link out to fluxer.app for now.
 
 import { observer } from "mobx-react-lite";
+import { runInAction } from "mobx";
 import { useEffect, useState } from "react";
 import { session, settings, toasts, translation, ui, voice } from "../stores";
 import { api } from "../api";
+import { GLOBAL_KEYBINDS, DOC_KEYBINDS } from "../keybinds";
 import { Modal } from "./Modal";
-import type { PresenceStatus } from "../types";
+import type { AuthSession, PresenceStatus, UserSettings } from "../types";
+
+// Apply a settings change locally AND persist it via the server PATCH
+// (`update_user_settings`). Previously several panes only did the local
+// `applyUpdate`, so theme/compact/locale silently reverted on reload — this is
+// the single correct path for any server-backed setting.
+function saveSetting(patch: Partial<UserSettings>, errLabel: string): void {
+  settings.applyUpdate(patch);
+  api.updateUserSettings(patch).catch((e) => toasts.error(errLabel, String(e)));
+}
 import { LOCALES } from "../i18n";
 import { Avatar } from "./Avatar";
 import "./SettingsModal.css";
@@ -65,6 +76,11 @@ export const SettingsModal = observer(function SettingsModal() {
   const open = ui.settingsOpen;
   const me = session.me;
   const [pane, setPane] = useState<Pane>("account");
+
+  // Jump to the requested pane when the modal is opened via openSettings(pane).
+  useEffect(() => {
+    if (open && ui.settingsInitialPane) setPane(ui.settingsInitialPane as Pane);
+  }, [open]);
 
   // Close on Escape.
   useEffect(() => {
@@ -171,13 +187,35 @@ const ProfilePane = observer(function ProfilePane() {
   const [customEmoji, setCustomEmoji] = useState("");
   const [status, setStatus] = useState<PresenceStatus>(settings.settings.status ?? "online");
   const [bio, setBio] = useState(me.bio ?? "");
+  const [pronouns, setPronouns] = useState(me.pronouns ?? "");
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     setCustomText(settings.settings.custom_status?.text ?? "");
     setCustomEmoji(settings.settings.custom_status?.emoji_name ?? "");
     setStatus(settings.settings.status ?? "online");
     setBio(me.bio ?? "");
+    setPronouns(me.pronouns ?? "");
   }, [me]);
+
+  // Persist bio + pronouns via PATCH /users/@me and reflect the result locally.
+  const saveProfile = async () => {
+    setSavingProfile(true);
+    try {
+      const updated = await api.updateCurrentUser({ bio, pronouns });
+      runInAction(() => {
+        if (session.me) {
+          session.me.bio = updated.bio ?? bio;
+          session.me.pronouns = updated.pronouns ?? pronouns;
+        }
+      });
+      toasts.success("Profile updated");
+    } catch (e) {
+      toasts.error("Failed to save profile", String(e));
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const applyStatus = async (next: PresenceStatus) => {
     setStatus(next);
@@ -244,18 +282,32 @@ const ProfilePane = observer(function ProfilePane() {
         </button>
       </div>
 
+      <div className="settings-subtitle">Pronouns</div>
+      <input
+        className="settings-input"
+        value={pronouns}
+        onChange={(e) => setPronouns(e.target.value)}
+        placeholder="e.g. they/them"
+        maxLength={40}
+      />
+
       <div className="settings-subtitle">About Me</div>
       <textarea
         className="settings-textarea"
         value={bio}
         onChange={(e) => setBio(e.target.value)}
         placeholder="Tell people about yourself"
-        maxLength={190}
+        maxLength={320}
         rows={4}
       />
-      <p className="settings-pane-help muted small">
-        Bio + pronouns sync coming soon; for now edit them on fluxer.app.
-      </p>
+      <button
+        className="settings-save"
+        style={{ alignSelf: "flex-start", marginTop: "var(--sp-2)" }}
+        disabled={savingProfile}
+        onClick={saveProfile}
+      >
+        {savingProfile ? "Saving…" : "Save Profile"}
+      </button>
     </section>
   );
 });
@@ -317,14 +369,11 @@ const AppearancePane = observer(function AppearancePane() {
   // Optimistic local update + server persistence; the USER_SETTINGS_UPDATE
   // gateway echo reconciles.
   const setSpoilers = (value: number) => {
-    settings.applyUpdate({ render_spoilers: value });
-    api.updateUserSettings({ render_spoilers: value }).catch((e) => {
-      toasts.error("Failed to save spoiler setting", String(e));
-    });
+    saveSetting({ render_spoilers: value }, "Failed to save spoiler setting");
   };
 
   const setTheme = (t: "dark" | "light") => {
-    settings.applyUpdate({ theme: t });
+    saveSetting({ theme: t }, "Failed to save theme");
     document.documentElement.setAttribute("data-theme", t);
   };
 
@@ -364,7 +413,12 @@ const AppearancePane = observer(function AppearancePane() {
         <input
           type="checkbox"
           checked={compact}
-          onChange={(e) => settings.applyUpdate({ message_display_compact: e.target.checked })}
+          onChange={(e) =>
+            saveSetting(
+              { message_display_compact: e.target.checked },
+              "Failed to save compact mode",
+            )
+          }
         />
         <span>Compact mode (less spacing between messages)</span>
       </label>
@@ -557,12 +611,11 @@ function useMediaDevices(): MediaDeviceInfo[] {
 
 // --- Keybinds --------------------------------------------------------------
 
-const KEYBINDS: { action: string; keys: string }[] = [
-  { action: "Quick Switcher", keys: "Ctrl+K / Cmd+K" },
-  { action: "Send Message", keys: "Enter" },
-  { action: "Newline in Message", keys: "Shift+Enter" },
-  { action: "Cancel Reply / Edit", keys: "Escape" },
-  { action: "Emoji Autocomplete", keys: "Tab" },
+// Cheat sheet rows come straight from the central keybind registry, so this
+// pane always reflects the shortcuts the app actually dispatches.
+const KEYBIND_ROWS: { action: string; keys: string }[] = [
+  ...GLOBAL_KEYBINDS.map((k) => ({ action: k.label, keys: k.keys })),
+  ...DOC_KEYBINDS.map((k) => ({ action: k.label, keys: k.keys })),
 ];
 
 const KeybindsPane = observer(function KeybindsPane() {
@@ -570,7 +623,7 @@ const KeybindsPane = observer(function KeybindsPane() {
     <section className="settings-pane-section">
       <h2 className="settings-pane-title">Keybinds</h2>
       <div className="settings-keybinds">
-        {KEYBINDS.map((k) => (
+        {KEYBIND_ROWS.map((k) => (
           <div key={k.action} className="settings-keybind-row">
             <span className="settings-keybind-action">{k.action}</span>
             <kbd className="settings-keybind-keys">{k.keys}</kbd>
@@ -578,7 +631,7 @@ const KeybindsPane = observer(function KeybindsPane() {
         ))}
       </div>
       <p className="settings-pane-help muted small">
-        Push-to-talk + custom keybinds land with the global shortcut plugin.
+        Push-to-talk + user-rebindable keybinds land with the global shortcut plugin.
       </p>
     </section>
   );
@@ -659,25 +712,66 @@ const PremiumPane = observer(function PremiumPane() {
   );
 });
 
+// Friend-source bitflags (UserConstants.ts:273). NO_RELATION == "everyone".
+const FRIEND_MUTUAL_FRIENDS = 1;
+const FRIEND_MUTUAL_GUILDS = 2;
+const FRIEND_NO_RELATION = 4;
+
 const PrivacyPane = observer(function PrivacyPane() {
-  const [allowDms, setAllowDms] = useState("everyone");
-  const [friendRequests, setFriendRequests] = useState("everyone");
+  const s = settings.settings;
+  const flags = s.friend_source_flags ?? FRIEND_NO_RELATION | FRIEND_MUTUAL_FRIENDS | FRIEND_MUTUAL_GUILDS;
+  const everyone = (flags & FRIEND_NO_RELATION) !== 0;
+  const hasFlag = (bit: number) => everyone || (flags & bit) !== 0;
+  const setFlag = (bit: number, on: boolean) => {
+    const next = on ? flags | bit : flags & ~bit;
+    saveSetting({ friend_source_flags: next }, "Failed to save friend requests");
+  };
+  const profilePrivacy = s.profile_privacy ?? 0;
+
   return (
     <section className="settings-pane-section">
       <h2 className="settings-pane-title">Privacy & Safety</h2>
+
       <div className="settings-subtitle">Direct Messages</div>
-      <p className="settings-pane-help muted small">Allow messages from</p>
-      <select className="settings-select" value={allowDms} onChange={(e) => setAllowDms(e.target.value)}>
-        <option value="everyone">Everyone</option>
-        <option value="friends">Friends</option>
-        <option value="none">Nobody</option>
-      </select>
+      <ToggleRow
+        label="Allow DMs from server members"
+        description="Let people you share a server with message you by default"
+        checked={s.default_guilds_restricted !== true}
+        onChange={(v) =>
+          saveSetting({ default_guilds_restricted: !v }, "Failed to save DM privacy")
+        }
+      />
+
       <div className="settings-subtitle" style={{ marginTop: "1rem" }}>Friend Requests</div>
       <p className="settings-pane-help muted small">Who can send you a friend request</p>
-      <select className="settings-select" value={friendRequests} onChange={(e) => setFriendRequests(e.target.value)}>
-        <option value="everyone">Everyone</option>
-        <option value="mutual">Mutual Friends</option>
-        <option value="none">Nobody</option>
+      <ToggleRow
+        label="Everyone"
+        checked={everyone}
+        onChange={(v) => setFlag(FRIEND_NO_RELATION, v)}
+      />
+      <ToggleRow
+        label="Friends of friends"
+        description="Users who share a mutual friend"
+        checked={hasFlag(FRIEND_MUTUAL_FRIENDS)}
+        onChange={(v) => setFlag(FRIEND_MUTUAL_FRIENDS, v)}
+      />
+      <ToggleRow
+        label="Server members"
+        description="Users in a mutual server"
+        checked={hasFlag(FRIEND_MUTUAL_GUILDS)}
+        onChange={(v) => setFlag(FRIEND_MUTUAL_GUILDS, v)}
+      />
+
+      <div className="settings-subtitle" style={{ marginTop: "1rem" }}>Profile Visibility</div>
+      <select
+        className="settings-select"
+        value={profilePrivacy}
+        onChange={(e) =>
+          saveSetting({ profile_privacy: Number(e.target.value) }, "Failed to save profile privacy")
+        }
+      >
+        <option value={0}>Friends and members of any shared server</option>
+        <option value={1}>Friends and members of small shared servers only</option>
       </select>
 
       <div className="settings-subtitle" style={{ marginTop: "1rem" }}>Streamer Mode</div>
@@ -695,21 +789,105 @@ const PrivacyPane = observer(function PrivacyPane() {
 
 // --- Sessions ---------------------------------------------------------------
 
+function sessionClient(info: AuthSession["client_info"]): string {
+  if (!info) return "Unknown device";
+  if (typeof info === "string") return info;
+  return [info.os, info.browser, info.device].filter(Boolean).join(" · ") || "Unknown device";
+}
+
 const SessionsPane = observer(function SessionsPane() {
+  const [sessions, setSessions] = useState<AuthSession[] | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [pwOpen, setPwOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const load = () => {
+    setErr(null);
+    api
+      .listAuthSessions()
+      .then(setSessions)
+      .catch((e) => setErr(String(e)));
+  };
+  useEffect(load, []);
+
+  const others = (sessions ?? []).filter((s) => !s.current);
+
+  const revokeOthers = async () => {
+    if (!password) return;
+    setBusy(true);
+    try {
+      await api.logoutAuthSessions(others.map((s) => s.id_hash), password);
+      toasts.success("Other sessions logged out");
+      setPwOpen(false);
+      setPassword("");
+      load();
+    } catch (e) {
+      toasts.error("Failed to log out sessions", String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <section className="settings-pane-section">
       <h2 className="settings-pane-title">Sessions</h2>
       <p className="settings-pane-help muted small">
-        Active sessions on your account. Manage and revoke sessions on{" "}
-        <a href="https://fluxer.app/settings/sessions" target="_blank" rel="noreferrer" className="settings-link">fluxer.app</a>.
+        Devices currently logged in to your account.
       </p>
-      <div className="settings-session-card">
-        <div className="settings-session-info">
-          <span className="settings-session-name">This Device</span>
-          <span className="settings-session-meta muted small">Fluxer Desktop · Current session</span>
+      {err && <p className="settings-pane-help muted small">Failed to load sessions: {err}</p>}
+      {!sessions && !err && <div className="muted small">Loading…</div>}
+      {(sessions ?? []).map((s) => (
+        <div className="settings-session-card" key={s.id_hash}>
+          <div className="settings-session-info">
+            <span className="settings-session-name">{sessionClient(s.client_info)}</span>
+            <span className="settings-session-meta muted small">
+              {s.masked_ip ?? "—"}
+              {s.approx_last_used_at ? ` · ${new Date(s.approx_last_used_at).toLocaleString()}` : ""}
+            </span>
+          </div>
+          {s.current && <span className="settings-session-badge">This device</span>}
         </div>
-        <span className="settings-session-badge">Active</span>
-      </div>
+      ))}
+      {others.length > 0 && (
+        <button
+          className="settings-save"
+          style={{ alignSelf: "flex-start", marginTop: "var(--sp-3)" }}
+          onClick={() => setPwOpen(true)}
+        >
+          Log Out All Other Sessions ({others.length})
+        </button>
+      )}
+      <Modal
+        open={pwOpen}
+        onClose={() => setPwOpen(false)}
+        title="Log out other sessions"
+        size="small"
+        footer={
+          <div className="ban-modal-footer">
+            <button className="ban-cancel" onClick={() => setPwOpen(false)} disabled={busy}>
+              Cancel
+            </button>
+            <button className="ban-confirm" onClick={revokeOthers} disabled={busy || !password}>
+              {busy ? "Logging out…" : "Log Out"}
+            </button>
+          </div>
+        }
+      >
+        <div className="ban-modal-body">
+          <label className="ban-field">
+            <span className="ban-field-label">Your password</span>
+            <input
+              className="ban-input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Confirm with your account password"
+              autoFocus
+            />
+          </label>
+        </div>
+      </Modal>
     </section>
   );
 });
@@ -731,13 +909,47 @@ const DevicesPane = observer(function DevicesPane() {
 // --- Chat -------------------------------------------------------------------
 
 const ChatPane = observer(function ChatPane() {
+  const s = settings.settings;
+  // All default to ON (server default) when the field is absent.
+  const on = (v: boolean | undefined) => v !== false;
   return (
     <section className="settings-pane-section">
       <h2 className="settings-pane-title">Chat</h2>
       <div className="settings-subtitle">Message Display</div>
-      <ToggleRow label="Compact mode" description="Reduces spacing between messages" />
-      <ToggleRow label="Show timestamps" description="Show timestamps on every message" defaultOn />
-      <ToggleRow label="Inline attachment media" description="Display images/videos inline when uploaded" defaultOn />
+      <ToggleRow
+        label="Compact mode"
+        description="Reduces spacing between messages"
+        checked={s.message_display_compact === true}
+        onChange={(v) =>
+          saveSetting({ message_display_compact: v }, "Failed to save compact mode")
+        }
+      />
+      <ToggleRow
+        label="Inline attachment media"
+        description="Display uploaded images and videos inline"
+        checked={on(s.inline_attachment_media)}
+        onChange={(v) =>
+          saveSetting({ inline_attachment_media: v }, "Failed to save setting")
+        }
+      />
+      <ToggleRow
+        label="Inline embed media"
+        description="Display images and videos from links inline"
+        checked={on(s.inline_embed_media)}
+        onChange={(v) => saveSetting({ inline_embed_media: v }, "Failed to save setting")}
+      />
+      <ToggleRow
+        label="Render embeds"
+        description="Show rich previews for links"
+        checked={on(s.render_embeds)}
+        onChange={(v) => saveSetting({ render_embeds: v }, "Failed to save setting")}
+      />
+      <ToggleRow
+        label="Render reactions"
+        description="Show emoji reactions on messages"
+        checked={on(s.render_reactions)}
+        onChange={(v) => saveSetting({ render_reactions: v }, "Failed to save setting")}
+      />
       <TranslatorsSection />
     </section>
   );
@@ -918,26 +1130,31 @@ function CustomTranslatorModal({
 // --- Notifications ----------------------------------------------------------
 
 const NotificationsPane = observer(function NotificationsPane() {
+  const perm = ui.notifPermission;
+  const granted = perm === "granted";
   return (
     <section className="settings-pane-section">
       <h2 className="settings-pane-title">Notifications</h2>
       <ToggleRow
         label="Enable Desktop Notifications"
-        description="Show desktop notifications for mentions and DMs"
-        defaultOn
+        description={
+          perm === "unsupported"
+            ? "Desktop notifications aren't available here"
+            : perm === "denied"
+              ? "Blocked — enable notifications for the app in your OS settings"
+              : "Show desktop notifications for mentions and DMs"
+        }
+        checked={granted}
+        onChange={(v) => {
+          if (v && !granted) ui.requestNotifPermission();
+        }}
       />
       <ToggleRow
-        label="Notification Sound"
-        description="Play a sound when you receive a notification"
-        defaultOn
+        label="Unread message badge"
+        description="Show a dot on the taskbar icon and title for unread channels"
+        checked={ui.unreadBadgeEnabled}
+        onChange={(v) => ui.setUnreadBadgeEnabled(v)}
       />
-      <div className="settings-subtitle" style={{ marginTop: "1rem" }}>Notification Focus</div>
-      <p className="settings-pane-help muted small">When you're focused on Fluxer, deliver notifications for</p>
-      <select className="settings-select" defaultValue="mentions">
-        <option value="all">All messages</option>
-        <option value="mentions">Mentions only</option>
-        <option value="none">Nothing</option>
-      </select>
     </section>
   );
 });
@@ -953,7 +1170,7 @@ const LanguagePane = observer(function LanguagePane() {
       <select
         className="settings-select"
         value={lang}
-        onChange={(e) => settings.applyUpdate({ locale: e.target.value })}
+        onChange={(e) => saveSetting({ locale: e.target.value }, "Failed to save language")}
       >
         {LOCALES.map((l) => (
           <option key={l.value} value={l.value}>
@@ -976,11 +1193,19 @@ const AdvancedPane = observer(function AdvancedPane() {
     <section className="settings-pane-section">
       <h2 className="settings-pane-title">Advanced</h2>
       <div className="settings-subtitle">Developer</div>
-      <ToggleRow label="Developer Mode" description="Shows context menu developer tools" />
-      <ToggleRow label="Debug Information" description="Show internal debug info in the UI" />
+      <ToggleRow
+        label="Developer Mode"
+        description="Adds developer options (copy IDs, etc.) to context menus"
+        checked={settings.settings.developer_mode === true}
+        onChange={(v) => saveSetting({ developer_mode: v }, "Failed to save developer mode")}
+      />
       <div className="settings-subtitle" style={{ marginTop: "1rem" }}>Experimental</div>
-      <ToggleRow label="Reduced Motion" description="Minimize animations and transitions" />
-      <ToggleRow label="Hardware Acceleration" description="Use GPU rendering" defaultOn />
+      <ToggleRow
+        label="Reduced Motion"
+        description="Minimize animations and transitions"
+        checked={ui.reducedMotion}
+        onChange={(v) => ui.setReducedMotion(v)}
+      />
     </section>
   );
 });
@@ -991,17 +1216,22 @@ function ToggleRow({
   label,
   description,
   defaultOn = false,
+  checked,
   onChange,
 }: {
   label: string;
   description?: string;
   defaultOn?: boolean;
+  /// When provided, the row is CONTROLLED (reflects this value); otherwise it
+  /// falls back to uncontrolled internal state seeded from `defaultOn`.
+  checked?: boolean;
   onChange?: (value: boolean) => void;
 }) {
-  const [on, setOn] = useState(defaultOn);
+  const [internal, setInternal] = useState(defaultOn);
+  const on = checked ?? internal;
   const toggle = () => {
     const next = !on;
-    setOn(next);
+    if (checked === undefined) setInternal(next);
     onChange?.(next);
   };
   return (

@@ -9,7 +9,7 @@
 
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
-import { session, toasts, preloadIdentityMedia } from "./stores";
+import { session, ui, toasts, preloadIdentityMedia } from "./stores";
 import { api } from "./api";
 import { LoginView } from "./views/LoginView";
 import { AppLayout } from "./layout/AppLayout";
@@ -23,6 +23,22 @@ export const App = observer(function App() {
   const [restoring, setRestoring] = useState(true);
   // Guards the background preload so it runs exactly once per login session.
   const preloadStarted = useRef(false);
+  // Init-gate: after login we hold a splash until the gateway connects for the
+  // FIRST time, so the shell never paints while still offline. Latches true and
+  // stays true — later reconnects are handled by the connection nagbar, not the
+  // splash. `bootTimedOut` is an escape hatch so a gateway that never connects
+  // can't trap the user on the splash forever (the nagbar takes over instead).
+  const [gatewayReady, setGatewayReady] = useState(false);
+  const [bootTimedOut, setBootTimedOut] = useState(false);
+
+  useEffect(() => {
+    if (ui.gatewayStatus === "connected" && !gatewayReady) setGatewayReady(true);
+  }, [ui.gatewayStatus, gatewayReady]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setBootTimedOut(true), 12000);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -62,9 +78,11 @@ export const App = observer(function App() {
 
   const content =
     restoring && !session.isLoggedIn ? (
-      <LoadingScreen />
+      <LoadingScreen message="Restoring session…" />
     ) : !session.isLoggedIn ? (
       <LoginView />
+    ) : !gatewayReady && !bootTimedOut ? (
+      <LoadingScreen message="Connecting…" />
     ) : (
       <AppLayout />
     );
@@ -79,11 +97,22 @@ export const App = observer(function App() {
   );
 });
 
-function LoadingScreen() {
+function LoadingScreen({ message }: { message?: string }) {
+  // Surface a gentle "taking longer than usual" hint if the gate lingers, so a
+  // slow/failing connection doesn't look like a frozen app.
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setSlow(true), 8000);
+    return () => clearTimeout(t);
+  }, []);
   return (
     <div className="loading-screen">
       <div className="loading-screen-logo">fluxer</div>
       <div className="loading-screen-spinner" />
+      {message && <div className="loading-screen-status">{message}</div>}
+      {slow && (
+        <div className="loading-screen-hint">Taking longer than usual…</div>
+      )}
     </div>
   );
 }

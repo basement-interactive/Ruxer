@@ -16,7 +16,9 @@ import type {
   GuildBan,
   Invite,
   LoginCredentialsResult,
+  AuthSession,
   LoginResult,
+  UserPrivate,
   Member,
   Message,
   PremiumState,
@@ -172,7 +174,14 @@ export const api = {
   updateGuildMember: (
     guildId: Snowflake,
     userId: Snowflake,
-    patch: { mute?: boolean; deaf?: boolean; channel_id?: Snowflake | null; nick?: string },
+    patch: {
+      mute?: boolean;
+      deaf?: boolean;
+      channel_id?: Snowflake | null;
+      nick?: string;
+      /// ISO-8601 instant to time the member out until, or null to clear.
+      communication_disabled_until?: string | null;
+    },
   ) =>
     call<Member>("update_guild_member", {
       guildId,
@@ -182,8 +191,25 @@ export const api = {
       nick: patch.nick,
       setChannel: "channel_id" in patch,
       channelId: patch.channel_id ?? null,
+      setTimeout: "communication_disabled_until" in patch,
+      timeoutUntil: patch.communication_disabled_until ?? null,
     }),
   deleteGuild: (guildId: Snowflake) => call<void>("delete_guild", { guildId }),
+  /// Partial update of a guild's settings (PATCH /guilds/{id}), e.g. `{ name }`.
+  updateGuild: (guildId: Snowflake, patch: Record<string, unknown>) =>
+    call<unknown>("update_guild", { guildId, patch }),
+  /// Bulk-reorder a guild's channels (PATCH /guilds/{id}/channels).
+  reorderChannels: (guildId: Snowflake, positions: { id: Snowflake; position: number }[]) =>
+    call<void>("reorder_channels", { guildId, positions }),
+  /// The guild's vanity invite `{ code, uses }` (GET /guilds/{id}/vanity-url).
+  getGuildVanity: (guildId: Snowflake) =>
+    call<{ code?: string | null; uses?: number }>("get_guild_vanity", { guildId }),
+  /// Set the guild's vanity invite code (PATCH /guilds/{id}/vanity-url).
+  setGuildVanity: (guildId: Snowflake, code: string) =>
+    call<{ code?: string | null; uses?: number }>("set_guild_vanity", { guildId, code }),
+  /// Transfer guild ownership to another member (requires the owner's password).
+  transferGuildOwnership: (guildId: Snowflake, newOwnerId: Snowflake, password: string) =>
+    call<unknown>("transfer_guild_ownership", { guildId, newOwnerId, password }),
 
   // --- Channel admin (D.20) ---
   createChannel: (
@@ -270,6 +296,15 @@ export const api = {
   /// Partial update of the current user's settings (PATCH /users/@me/settings).
   updateUserSettings: (patch: Record<string, unknown>) =>
     call<unknown>("update_user_settings", { patch }),
+  /// Partial update of the current user's account/profile (PATCH /users/@me),
+  /// e.g. `{ bio, pronouns }`. Returns the updated private user.
+  updateCurrentUser: (patch: Record<string, unknown>) =>
+    call<UserPrivate>("update_current_user", { patch }),
+  /// The account's active login sessions (GET /auth/sessions).
+  listAuthSessions: () => call<AuthSession[]>("list_auth_sessions"),
+  /// Revoke login sessions by id-hash (needs the account password).
+  logoutAuthSessions: (sessionIdHashes: string[], password: string) =>
+    call<void>("logout_auth_sessions", { sessionIdHashes, password }),
   saveTheme: (css: string) => call<unknown>("save_theme", { css }),
   // UI editor advanced mode: run a sandboxed LuaU layout script in the Rust
   // sandbox (src-tauri/src/ui_editor.rs). Returns the array of presentation ops
@@ -306,8 +341,16 @@ export const api = {
     call<void>("add_member_role", { guildId, userId, roleId }),
   removeMemberRole: (guildId: Snowflake, userId: Snowflake, roleId: Snowflake) =>
     call<void>("remove_member_role", { guildId, userId, roleId }),
-  guildAuditLog: (guildId: Snowflake) =>
-    call<AuditLog>("guild_audit_log", { guildId }),
+  guildAuditLog: (
+    guildId: Snowflake,
+    opts?: { limit?: number; actionType?: number; userId?: Snowflake },
+  ) =>
+    call<AuditLog>("guild_audit_log", {
+      guildId,
+      limit: opts?.limit,
+      actionType: opts?.actionType,
+      userId: opts?.userId,
+    }),
   listChannelWebhooks: (channelId: Snowflake) =>
     call<Webhook[]>("list_channel_webhooks", { channelId }),
   createGuildEmoji: (guildId: Snowflake, name: string, image: string) =>

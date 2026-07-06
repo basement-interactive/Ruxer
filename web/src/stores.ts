@@ -2491,6 +2491,13 @@ export class UiStore {
   contextMenu: { items: ContextMenuItem[]; pos: { x: number; y: number } } | null = null;
   // Settings modal open?
   settingsOpen = false;
+  // When set, the settings modal opens directly to this pane id (e.g. "chat").
+  settingsInitialPane: string | null = null;
+  // Voice call view focus/expand mode — when true, the call surface fills the
+  // main column (header + composer hidden) for a distraction-free call.
+  callExpanded = false;
+  // Ban-member modal target (guild + user), or null when closed.
+  banTarget: { guildId: Snowflake; userId: Snowflake } | null = null;
   // Gateway connection status, driven by `gateway_status` Tauri events.
   // One of: "connecting" | "connected" | "reconnecting" | "disconnected".
   // Defaults to "disconnected" (no banner) until the first real
@@ -2505,15 +2512,27 @@ export class UiStore {
   // <html>. Client-local, persisted to localStorage.
   streamerMode = false;
 
+  // Nagbar (announcement bar) dismissals — client-local, persisted by nagbar id.
+  dismissedNagbars = observable.set<string>();
+  // Desktop-notification permission, mirrored here so nagbars re-render after a
+  // prompt resolves. "unsupported" when the Notification API is absent.
+  notifPermission: NotificationPermission | "unsupported" =
+    typeof Notification !== "undefined" ? Notification.permission : "unsupported";
+  // Show the unread "•" prefix on the document title + the taskbar badge for
+  // channels with unread messages (mentions always show). Client-local.
+  unreadBadgeEnabled = true;
+
   constructor() {
     makeAutoObservable(this);
     try {
       this.streamerMode = localStorage.getItem("ui.streamerMode") === "1";
+      this.unreadBadgeEnabled = localStorage.getItem("ui.unreadBadge") !== "0";
     } catch {
       // localStorage unavailable; default off.
     }
     this.loadFavorites();
     this.loadAccessibility();
+    this.loadDismissedNagbars();
   }
 
   // Favorite channel ids (client-local, persisted). Favorited channels surface
@@ -2556,6 +2575,42 @@ export class UiStore {
       if (on) document.documentElement.setAttribute("data-streamer", "");
       else document.documentElement.removeAttribute("data-streamer");
     }
+  }
+
+  @action loadDismissedNagbars() {
+    try {
+      const raw = localStorage.getItem("ui.dismissedNagbars");
+      if (raw) this.dismissedNagbars.replace(JSON.parse(raw) as string[]);
+    } catch {
+      // ignore parse/storage errors
+    }
+  }
+
+  isNagbarDismissed(id: string): boolean {
+    return this.dismissedNagbars.has(id);
+  }
+
+  @action dismissNagbar(id: string) {
+    this.dismissedNagbars.add(id);
+    try {
+      localStorage.setItem(
+        "ui.dismissedNagbars",
+        JSON.stringify([...this.dismissedNagbars]),
+      );
+    } catch {}
+  }
+
+  @action setNotifPermission(p: NotificationPermission) {
+    this.notifPermission = p;
+  }
+
+  // Prompt for desktop-notification permission (used by the notifications
+  // nagbar). Result is mirrored into `notifPermission` so the bar disappears.
+  requestNotifPermission() {
+    if (typeof Notification === "undefined") return;
+    Notification.requestPermission()
+      .then((p) => this.setNotifPermission(p))
+      .catch(() => {});
   }
 
   @action selectDm() {
@@ -2712,8 +2767,28 @@ export class UiStore {
     this.contextMenu = null;
   }
 
-  @action openSettings() {
+  @action openSettings(pane?: string) {
+    this.settingsInitialPane = pane ?? null;
     this.settingsOpen = true;
+  }
+
+  @action toggleCallExpanded(force?: boolean) {
+    this.callExpanded = force ?? !this.callExpanded;
+  }
+
+  @action setUnreadBadgeEnabled(on: boolean) {
+    this.unreadBadgeEnabled = on;
+    try {
+      localStorage.setItem("ui.unreadBadge", on ? "1" : "0");
+    } catch {}
+  }
+
+  @action openBanModal(guildId: Snowflake, userId: Snowflake) {
+    this.banTarget = { guildId, userId };
+  }
+
+  @action closeBanModal() {
+    this.banTarget = null;
   }
 
   @action closeSettings() {
@@ -2770,9 +2845,11 @@ export class UiStore {
   // Guild settings modal (D.20): the guild id being configured.
   guildSettingsOpen = false;
   guildSettingsGuildId: Snowflake | null = null;
+  guildSettingsInitialTab: string | null = null;
 
-  @action openGuildSettings(guildId: Snowflake) {
+  @action openGuildSettings(guildId: Snowflake, tab?: string) {
     this.guildSettingsGuildId = guildId;
+    this.guildSettingsInitialTab = tab ?? null;
     this.guildSettingsOpen = true;
   }
 
@@ -4080,9 +4157,28 @@ export function buildVoiceParticipantContextMenu(
   }
   if (canManage && guilds.canModerateGuild(guildId, KICK)) {
     modItems.push({ kind: "action", label: "Kick", danger: true, onClick: () => api.kickMember(guildId, userId).catch((e) => toasts.error("Failed to kick", String(e))) });
+    // Time out: set communication_disabled_until to now + duration.
+    const timeout = (ms: number) => {
+      const until = new Date(Date.now() + ms).toISOString();
+      api.updateGuildMember(guildId, userId, { communication_disabled_until: until }).catch((e) => toasts.error("Failed to time out", String(e)));
+    };
+    modItems.push({
+      kind: "submenu",
+      label: "Time Out",
+      onClick: () => timeout(5 * 60_000),
+      items: [
+        { label: "60 seconds", onClick: () => timeout(60_000) },
+        { label: "5 minutes", onClick: () => timeout(5 * 60_000) },
+        { label: "10 minutes", onClick: () => timeout(10 * 60_000) },
+        { label: "1 hour", onClick: () => timeout(60 * 60_000) },
+        { label: "1 day", onClick: () => timeout(24 * 60 * 60_000) },
+        { label: "1 week", onClick: () => timeout(7 * 24 * 60 * 60_000) },
+        { label: "Remove timeout", onClick: () => api.updateGuildMember(guildId, userId, { communication_disabled_until: null }).catch((e) => toasts.error("Failed to remove timeout", String(e))) },
+      ],
+    });
   }
   if (canManage && guilds.canModerateGuild(guildId, BAN)) {
-    modItems.push({ kind: "action", label: "Ban", danger: true, onClick: () => api.banUser(guildId, userId, undefined, 0).catch((e) => toasts.error("Failed to ban", String(e))) });
+    modItems.push({ kind: "action", label: "Ban", danger: true, onClick: () => ui.openBanModal(guildId, userId) });
   }
   if (modItems.length > 0) {
     items.push({ kind: "separator" }, ...modItems);

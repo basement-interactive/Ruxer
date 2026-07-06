@@ -1,0 +1,162 @@
+.voice-call-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: var(--sp-3, 12px);
+  padding: var(--sp-3, 12px);
+  background: var(--bg-main, #313338);
+  overflow: hidden;
+}
+
+/* Screen-share stage — large, on top when someone is sharing. */
+.voice-screen-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.voice-screen-stage .voice-tile-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.voice-stage-label {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Participant tile grid. */
+.voice-tile-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  gap: var(--sp-3, 12px);
+  align-content: center;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+/* When the screen stage is present the grid becomes a compact filmstrip. */
+.voice-screen-stage + .voice-tile-grid {
+  flex: 0 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 160px));
+}
+
+.voice-tile {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-secondary, #2b2d31);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  transition: border-color 0.12s ease;
+}
+.voice-tile.speaking {
+  border-color: var(--green, #23a55a);
+}
+.voice-tile-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+.voice-tile-video.mirror {
+  transform: scaleX(-1);
+}
+.voice-tile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.voice-tile-footer {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 16px);
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+.voice-tile-name {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.voice-tile-badge {
+  display: inline-flex;
+  color: var(--red, #f23f43);
+}
+.voice-call-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--sp-6, 24px);
+}
+
+/* Signal-strength bars in the tile footer. */
+.voice-signal {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  height: 11px;
+  margin-left: 2px;
+}
+.voice-signal i {
+  width: 3px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+.voice-signal i:nth-child(1) { height: 40%; }
+.voice-signal i:nth-child(2) { height: 70%; }
+.voice-signal i:nth-child(3) { height: 100%; }
+.voice-signal.signal-good i.on { background: var(--green, #23a55a); }
+.voice-signal.signal-poor i.on { background: var(--yellow, #f0b232); }
+.voice-signal.signal-bad i.on { background: var(--red, #f23f43); }
+
+/* In-call control bar. */
+.voice-control-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2, 8px);
+  padding: var(--sp-2, 8px);
+}
+.vc-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-normal, #dbdee1);
+  background: var(--bg-secondary, #2b2d31);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.vc-btn:hover { background: var(--bg-modifier-hover, #3a3c41); }
+.vc-btn.on { background: #fff; color: #1e1f22; }
+.vc-btn.danger-active { background: var(--red, #f23f43); color: #fff; }
+.vc-btn.hangup { background: var(--red, #f23f43); color: #fff; }
+.vc-btn.hangup:hover { background: #d83c3e; }

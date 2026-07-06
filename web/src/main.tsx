@@ -1,5 +1,8 @@
 // React entry point. Mounts the app and starts the gateway listener.
 
+// MUST be first: in browser dev (no Tauri) this installs a fake backend so the
+// UI runs standalone. Inert under `cargo tauri dev` and stripped from prod.
+import "./dev/mockTauri";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { observer } from "mobx-react-lite";
@@ -26,6 +29,12 @@ const Root = observer(function Root() {
       startGatewayListener();
     }
   }, [session.isLoggedIn]);
+
+  // DEV-only: drive the app into a screenshot scene via ?devscene=… (no-op in
+  // production and under a real backend).
+  React.useEffect(() => {
+    void import("./dev/devScenes").then((m) => m.applyDevScene());
+  }, []);
 
   return (
     <ErrorBoundary>

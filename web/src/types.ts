@@ -501,6 +501,14 @@ export interface GuildMembersChunk {
 
 /// User settings (a subset that the client cares about). The full settings
 /// object is large; we only track fields we render.
+export interface AuthSession {
+  id_hash: string;
+  client_info?: { os?: string; browser?: string; device?: string } | string | null;
+  masked_ip?: string | null;
+  approx_last_used_at?: string | null;
+  current?: boolean;
+}
+
 export interface UserSettings {
   status?: PresenceStatus | null;
   custom_status?: { text?: string; emoji_id?: string | null; emoji_name?: string | null } | null;
@@ -508,9 +516,21 @@ export interface UserSettings {
   locale?: string | null;
   guild_positions?: Snowflake[];
   inline_attachment_media?: boolean;
+  inline_embed_media?: boolean;
+  render_embeds?: boolean;
+  render_reactions?: boolean;
   /// RenderSpoilers: 0 = ALWAYS, 1 = ON_CLICK (default), 2 = IF_MODERATOR.
   render_spoilers?: number | null;
   message_display_compact?: boolean;
+  developer_mode?: boolean;
+  /// Friend-request sources bitmask: MUTUAL_FRIENDS=1, MUTUAL_GUILDS=2,
+  /// NO_RELATION=4 (NO_RELATION = "everyone"). Ref: UserConstants.ts:273.
+  friend_source_flags?: number;
+  /// When true, DMs from server members are restricted by default.
+  default_guilds_restricted?: boolean;
+  /// Profile visibility: 0 = all shared guilds, 1 = small guilds only.
+  /// Ref: UserConstants.ts:313.
+  profile_privacy?: number;
   show_current_game?: boolean;
 }
 
