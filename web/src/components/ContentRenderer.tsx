@@ -8,7 +8,7 @@
 
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { resolveUserName, resolveChannelName, tick } from "../stores";
+import { resolveUserName, resolveChannelName, session, settings, tick } from "../stores";
 import type { Snowflake } from "../types";
 import { emojiUrl } from "../utils";
 import { useAssetUrl } from "../utils/mediaCache";
@@ -44,6 +44,7 @@ type InlineSegment =
   | { kind: "everyone" }
   | { kind: "here" }
   | { kind: "customEmoji"; name: string; id: string; animated: boolean }
+  | { kind: "unicodeEmoji"; surrogate: string }
   | { kind: "link"; text: string }
   | { kind: "maskedLink"; label: InlineSegment[]; url: string }
   | { kind: "invite"; code: string; url: string }
@@ -72,15 +73,25 @@ type BlockSegment =
 // Public components
 // ---------------------------------------------------------------------------
 
-export function ContentRenderer({ content }: { content: string; messageId: Snowflake }) {
+export const ContentRenderer = observer(function ContentRenderer({
+  content,
+}: {
+  content: string;
+  messageId: Snowflake;
+}) {
   const blocks = useMemo(() => parseBlocks(content), [content]);
-  return <div className="content-rendered">{renderBlocks(blocks)}</div>;
-}
+  // Jumbo emoji: emoji-only messages (≤ 30) render enlarged — disabled
+  // entirely in compact message display. The compact flag is read outside
+  // the memo so live setting changes re-evaluate.
+  const compact = settings.settings.message_display_compact ?? false;
+  const jumbo = !compact && useMemo(() => shouldRenderAsJumbo(blocks), [blocks]);
+  return <div className="content-rendered">{renderBlocks(blocks, jumbo)}</div>;
+});
 
 /// A lightweight formatted-text renderer for embed fields (title, description,
 /// field name/value). Runs the same block+inline parser as ContentRenderer so
 /// embed text supports the full markdown feature set — matching how the official
-/// client renders embed descriptions.
+/// client renders embed descriptions. Never jumbos (embed-description parity).
 export function FormattedText({ text }: { text: string }) {
   const blocks = useMemo(() => parseBlocks(text), [text]);
   return <>{renderBlocks(blocks)}</>;
@@ -90,18 +101,18 @@ export function FormattedText({ text }: { text: string }) {
 // Rendering
 // ---------------------------------------------------------------------------
 
-function renderBlocks(blocks: BlockSegment[]): React.ReactNode {
-  return blocks.map((b, i) => renderBlock(b, i));
+function renderBlocks(blocks: BlockSegment[], jumbo = false): React.ReactNode {
+  return blocks.map((b, i) => renderBlock(b, i, jumbo));
 }
 
-function renderInlines(segments: InlineSegment[]): React.ReactNode {
-  return segments.map((seg, i) => renderInline(seg, i));
+function renderInlines(segments: InlineSegment[], jumbo = false): React.ReactNode {
+  return segments.map((seg, i) => renderInline(seg, i, jumbo));
 }
 
-function renderBlock(block: BlockSegment, key: number): React.ReactNode {
+function renderBlock(block: BlockSegment, key: number, jumbo = false): React.ReactNode {
   switch (block.kind) {
     case "paragraph":
-      return <span key={key}>{renderInlines(block.segments)}</span>;
+      return <span key={key}>{renderInlines(block.segments, jumbo)}</span>;
     case "blockSpoiler":
       return <TextSpoiler key={key} block={block.children} />;
     case "heading": {
@@ -147,7 +158,7 @@ function renderBlock(block: BlockSegment, key: number): React.ReactNode {
   }
 }
 
-function renderInline(seg: InlineSegment, key: number): React.ReactNode {
+function renderInline(seg: InlineSegment, key: number, jumbo = false): React.ReactNode {
   switch (seg.kind) {
     case "text":
       return <span key={key}>{seg.text}</span>;
@@ -198,7 +209,9 @@ function renderInline(seg: InlineSegment, key: number): React.ReactNode {
         </span>
       );
     case "customEmoji":
-      return <CustomEmoji key={key} name={seg.name} id={seg.id} animated={seg.animated} />;
+      return <CustomEmoji key={key} name={seg.name} id={seg.id} animated={seg.animated} jumbo={jumbo} />;
+    case "unicodeEmoji":
+      return <UnicodeEmoji key={key} surrogate={seg.surrogate} jumbo={jumbo} />;
     case "link":
       return (
         <a key={key} href={seg.text} target="_blank" rel="noreferrer noopener" className="link">
@@ -220,27 +233,85 @@ function renderInline(seg: InlineSegment, key: number): React.ReactNode {
   }
 }
 
-// Custom emoji: loads via the cached media layer.
-function CustomEmoji({ name, id, animated }: { name: string; id: string; animated: boolean }) {
-  const url = emojiUrl(id, animated);
-  return <EmojiImage url={url} name={name} size={22} />;
-}
-
-function EmojiImage({ url, name, size }: { url: string; name: string; size: number }) {
+// Custom emoji: loads via the cached media layer. Fetch size 96 normal /
+// 240 jumbo; CSS (.emoji / .emoji.jumboable) owns the display size.
+function CustomEmoji({
+  name,
+  id,
+  animated,
+  jumbo,
+}: {
+  name: string;
+  id: string;
+  animated: boolean;
+  jumbo?: boolean;
+}) {
+  const cls = "emoji" + (jumbo ? " jumboable" : "");
+  const url = emojiUrl(id, animated) + (jumbo ? "?size=240&quality=lossless" : "?size=96&quality=lossless");
   const src = useAssetUrl(url);
-  if (src) {
+  if (!src) {
     return (
-      <img
-        src={src}
-        alt={name}
-        width={size}
-        height={size}
-        draggable={false}
-        style={{ verticalAlign: "middle", display: "inline-block" }}
-      />
+      <span className={cls} role="img" aria-label={`:${name}:`}>
+        :{name}:
+      </span>
     );
   }
-  return <span className="muted">:{name}:</span>;
+  return (
+    <img
+      className={cls}
+      src={src}
+      alt={`:${name}:`}
+      draggable={false}
+      loading="lazy"
+      onError={(e) => {
+        e.currentTarget.style.opacity = "0.5";
+      }}
+    />
+  );
+}
+
+/// Unicode emoji: rendered as a twemoji SVG from the instance's static CDN
+/// when available, else as the native glyph (sized via the .emoji:not(img)
+/// rules so normal/jumbo still apply).
+const UnicodeEmoji = observer(function UnicodeEmoji({
+  surrogate,
+  jumbo,
+}: {
+  surrogate: string;
+  jumbo?: boolean;
+}) {
+  const cls = "emoji" + (jumbo ? " jumboable" : "");
+  const cdn = session.endpoints?.static_cdn ?? "";
+  const src = useAssetUrl(cdn ? `${cdn}/emoji/${emojiCodepoints(surrogate)}.svg?v=2` : null);
+  if (!src) {
+    return (
+      <span className={cls} role="img" aria-label={surrogate}>
+        {surrogate}
+      </span>
+    );
+  }
+  return (
+    <img
+      className={cls}
+      src={src}
+      alt={surrogate}
+      draggable={false}
+      loading="lazy"
+      onError={(e) => {
+        e.currentTarget.style.opacity = "0.5";
+      }}
+    />
+  );
+});
+
+/// Twemoji filename codepoints: if the sequence has a ZWJ keep variation
+/// selectors, else strip U+FE0F; join lowercase hex codepoints with "-".
+function emojiCodepoints(surrogate: string): string {
+  const hasZwj = surrogate.includes("‍");
+  const cleaned = hasZwj ? surrogate : surrogate.replace(/️/g, "");
+  return Array.from(cleaned)
+    .map((c) => c.codePointAt(0)!.toString(16))
+    .join("-");
 }
 
 // ---------------------------------------------------------------------------
@@ -976,6 +1047,16 @@ function parseInline(content: string): InlineSegment[] {
       }
     }
 
+    // Unicode emoji (incl. flag pairs, skin tones, ZWJ sequences) → their own
+    // segment so they can be twemoji-rendered and jumbo-sized.
+    const em = UNICODE_EMOJI_RE.exec(remaining);
+    if (em) {
+      flushText();
+      segments.push({ kind: "unicodeEmoji", surrogate: em[0] });
+      pos += em[0].length;
+      continue;
+    }
+
     // Normal char (handle multi-byte via Array.from for safety)
     const ch = Array.from(remaining)[0];
     textBuf += ch;
@@ -1316,6 +1397,47 @@ function parseInviteUrl(url: string): { code: string } | null {
   } catch {
     return null;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Jumbo emoji detection
+// ---------------------------------------------------------------------------
+
+// Emoji sequences: regional-indicator flag pairs, keycaps, or a pictographic
+// base (emoji-presentation or explicit FE0F) with optional skin tone and any
+// number of ZWJ-joined continuations. Practical stand-in for the reference's
+// generated full-dataset alternation; the presentation constraint keeps
+// text-presentation symbols (©™→ etc.) as text.
+const UNICODE_EMOJI_RE =
+  /^(?:[\u{1F1E6}-\u{1F1FF}]{2}|[#*0-9]️⃣|(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}️)[\u{1F3FB}-\u{1F3FF}]?(?:‍(?:\p{Emoji_Presentation}|\p{Extended_Pictographic})️?[\u{1F3FB}-\u{1F3FF}]?)*)/u;
+
+const MAX_JUMBO_EMOJI_COUNT = 30;
+// Unresolved :name:-looking text counts as one emoji (start-anchored on
+// purpose — reference quirk kept as-is).
+const EMOJI_NAME_RE = /^:([^\s:]+?(?:::skin-tone-\d)?):/;
+
+/// True when the message is emoji-only (custom and/or unicode, ≤ 30) — any
+/// other visible content, formatting, or block construct disables jumbo.
+function shouldRenderAsJumbo(blocks: BlockSegment[]): boolean {
+  if (blocks.length !== 1 || blocks[0].kind !== "paragraph") return false;
+  let count = 0;
+  for (const seg of blocks[0].segments) {
+    if (seg.kind === "customEmoji" || seg.kind === "unicodeEmoji") {
+      if (++count > MAX_JUMBO_EMOJI_COUNT) return false;
+      continue;
+    }
+    if (seg.kind === "newline") continue;
+    if (seg.kind === "text") {
+      if (EMOJI_NAME_RE.test(seg.text)) {
+        if (++count > MAX_JUMBO_EMOJI_COUNT) return false;
+        continue;
+      }
+      if (seg.text.trim() !== "") return false;
+      continue;
+    }
+    return false;
+  }
+  return count > 0;
 }
 
 // ---------------------------------------------------------------------------

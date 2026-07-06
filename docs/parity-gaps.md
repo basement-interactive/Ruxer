@@ -36,7 +36,7 @@ High priority:
 Medium:
 - [x] Timestamp styles — 9 `<t:epoch:style>` formats + live relative + tooltip. DONE
 - [x] Spoiler click-to-reveal — text (inline+block), spoiler media overlay, embed URL sync, composer marking, RenderSpoilers setting + PATCH persistence. DONE (IF_MODERATOR behaves as ON_CLICK until a channel-permission resolver exists)
-- [ ] Jumbo emoji — enlarge when message is emoji-only. ref: utils/markdown/JumboDetector.ts
+- [x] Jumbo emoji — emoji-only messages (≤30, unicode + custom) render 3rem; twemoji SVGs for unicode; compact display disables. DONE
 - [ ] Saved messages / bookmarks — toggle + saved list + gateway events. ref: features/messaging/state/SavedMessages.ts
 
 Low:
