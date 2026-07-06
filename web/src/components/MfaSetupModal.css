@@ -1,0 +1,119 @@
+/* MfaSetupModal — TOTP enable/disable + backup codes. */
+
+.mfa-help {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary, #b5bac1);
+  margin: 0 0 16px;
+}
+
+.mfa-secret-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--background-tertiary, #1e1f22);
+  margin-bottom: 12px;
+}
+
+.mfa-field-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-muted, #949ba4);
+}
+
+.mfa-secret {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--text-primary, #dbdee1);
+  word-break: break-all;
+}
+
+.mfa-copy-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  background: var(--accent-primary, #5865f2);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+.mfa-copy-btn:hover {
+  filter: brightness(1.1);
+}
+
+.mfa-uri-details {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-muted, #949ba4);
+}
+.mfa-uri-details summary {
+  cursor: pointer;
+  user-select: none;
+}
+.mfa-uri {
+  display: block;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--background-tertiary, #1e1f22);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  color: var(--text-secondary, #b5bac1);
+  word-break: break-all;
+}
+
+.mfa-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.mfa-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: var(--background-tertiary, #1e1f22);
+  color: var(--text-primary, #dbdee1);
+  font-size: 15px;
+  outline: none;
+}
+.mfa-input:focus {
+  border-color: var(--accent-primary, #5865f2);
+}
+
+.mfa-error {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(242, 63, 67, 0.1);
+  color: var(--red, #f23f43);
+  font-size: 13px;
+}
+
+.mfa-backup-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.mfa-backup-code {
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--background-tertiary, #1e1f22);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-align: center;
+  color: var(--text-primary, #dbdee1);
+}

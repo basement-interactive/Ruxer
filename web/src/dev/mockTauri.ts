@@ -202,6 +202,13 @@ function installMockTauri(): void {
       case "list_guild_roles":
         return String(args.guildId) === GUILD_ID ? [ { id: GUILD_ID, name: "@everyone", position: 0, color: 0, permissions: "0" }, { id: "400", name: "Admin", position: 2, color: 15158332, permissions: "8" }, { id: "401", name: "Member", position: 1, color: 3447003, permissions: "0" } ] : [];
       case "__list_guild_roles_orig__":
+      case "get_mfa_methods":
+        return { totp: false, webauthn: false, has_mfa: false };
+      case "enable_totp":
+      case "regenerate_backup_codes":
+        return { backup_codes: ["a1b2-c3d4", "e5f6-g7h8", "i9j0-k1l2", "m3n4-o5p6", "q7r8-s9t0", "u1v2-w3x4"] };
+      case "disable_totp":
+        return {};
       case "search_guild_members": {
         // Server-side search returns matches including members NOT in the local
         // list (id "9" is not seeded) — proves the store gets augmented.

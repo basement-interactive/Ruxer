@@ -120,6 +120,62 @@ impl Users {
             .await
     }
 
+    /// `GET /users/@me/sudo/mfa-methods` — current MFA status
+    /// (`{ totp, webauthn, has_mfa }`).
+    pub async fn mfa_methods(&self) -> Result<serde_json::Value> {
+        self.0.get("users/@me/sudo/mfa-methods").await
+    }
+
+    /// `POST /users/@me/mfa/totp/enable` — enable TOTP. The client generates the
+    /// `secret` (base32), shows it to the user, and sends it back with a current
+    /// `code` from the authenticator. Returns `{ backup_codes }`. `password` is
+    /// omitted from the body when `None` (never sent as null).
+    pub async fn enable_totp(
+        &self,
+        secret: &str,
+        code: &str,
+        password: Option<&str>,
+    ) -> Result<serde_json::Value> {
+        let mut body = serde_json::json!({ "secret": secret, "code": code });
+        if let Some(p) = password {
+            body["password"] = serde_json::Value::String(p.to_string());
+        }
+        self.0
+            .send_json(reqwest::Method::POST, "users/@me/mfa/totp/enable", &body)
+            .await
+    }
+
+    /// `POST /users/@me/mfa/totp/disable` — disable TOTP with a current `code`.
+    pub async fn disable_totp(
+        &self,
+        code: &str,
+        password: Option<&str>,
+    ) -> Result<serde_json::Value> {
+        let mut body = serde_json::json!({ "code": code });
+        if let Some(p) = password {
+            body["password"] = serde_json::Value::String(p.to_string());
+        }
+        self.0
+            .send_json(reqwest::Method::POST, "users/@me/mfa/totp/disable", &body)
+            .await
+    }
+
+    /// `POST /users/@me/mfa/backup-codes` — (re)generate backup codes. Returns
+    /// `{ backup_codes }`.
+    pub async fn regenerate_backup_codes(
+        &self,
+        regenerate: bool,
+        password: Option<&str>,
+    ) -> Result<serde_json::Value> {
+        let mut body = serde_json::json!({ "regenerate": regenerate });
+        if let Some(p) = password {
+            body["password"] = serde_json::Value::String(p.to_string());
+        }
+        self.0
+            .send_json(reqwest::Method::POST, "users/@me/mfa/backup-codes", &body)
+            .await
+    }
+
     /// `POST /read-states/ack-bulk` — mark multiple channels read at once
     /// (`read_states` = `[{channel_id, message_id}]`). 204.
     pub async fn ack_bulk(&self, read_states: &serde_json::Value) -> Result<()> {

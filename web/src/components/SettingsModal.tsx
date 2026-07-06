@@ -31,6 +31,7 @@ function saveSetting(patch: Partial<UserSettings>, errLabel: string): void {
 }
 import { LOCALES } from "../i18n";
 import { Avatar } from "./Avatar";
+import { MfaSetupModal, type MfaMode } from "./MfaSetupModal";
 import "./SettingsModal.css";
 
 type Pane =
@@ -153,6 +154,35 @@ export const SettingsModal = observer(function SettingsModal() {
 const AccountPane = observer(function AccountPane() {
   const me = session.me!;
   const [editing, setEditing] = useState<"username" | "email" | "password" | null>(null);
+  const [mfaOpen, setMfaOpen] = useState(false);
+  const [mfaMode, setMfaMode] = useState<MfaMode>("enable");
+  // Trust the live server status; fall back to the cached user flag.
+  const [mfaOn, setMfaOn] = useState<boolean>(!!me.mfa_enabled);
+
+  useEffect(() => {
+    api
+      .getMfaMethods()
+      .then((m) => setMfaOn(!!(m?.has_mfa ?? m?.totp)))
+      .catch(() => setMfaOn(!!me.mfa_enabled));
+  }, [me.mfa_enabled]);
+
+  const openMfa = (mode: MfaMode) => {
+    setMfaMode(mode);
+    setMfaOpen(true);
+  };
+  const refreshMfa = () => {
+    api
+      .getMfaMethods()
+      .then((m) => {
+        const on = !!(m?.has_mfa ?? m?.totp);
+        setMfaOn(on);
+        runInAction(() => {
+          if (session.me) session.me.mfa_enabled = on;
+        });
+      })
+      .catch(() => {});
+  };
+
   return (
     <section className="settings-pane-section">
       <h2 className="settings-pane-title">Account</h2>
@@ -217,10 +247,41 @@ const AccountPane = observer(function AccountPane() {
       </AccountEditRow>
 
       <Field label="Verified" value={me.verified ? "Yes" : "No"} />
-      <Field label="Two-Factor Auth" value={me.mfa_enabled ? "Enabled" : "Disabled"} />
+
+      <div className="settings-mfa-row">
+        <div className="settings-mfa-info">
+          <span className="settings-mfa-label">Two-Factor Auth</span>
+          <span className={`settings-mfa-status ${mfaOn ? "on" : "off"}`}>
+            {mfaOn ? "Enabled" : "Disabled"}
+          </span>
+        </div>
+        <div className="settings-mfa-actions">
+          {mfaOn ? (
+            <>
+              <button className="settings-mfa-btn" onClick={() => openMfa("backup")}>
+                Backup Codes
+              </button>
+              <button className="settings-mfa-btn danger" onClick={() => openMfa("disable")}>
+                Disable 2FA
+              </button>
+            </>
+          ) : (
+            <button className="settings-mfa-btn primary" onClick={() => openMfa("enable")}>
+              Enable 2FA
+            </button>
+          )}
+        </div>
+      </div>
       <p className="settings-pane-help muted small">
-        Changes require your current password. MFA (if enabled) is managed on fluxer.app.
+        Account changes require your current password. Two-factor uses a TOTP authenticator app.
       </p>
+
+      <MfaSetupModal
+        open={mfaOpen}
+        mode={mfaMode}
+        onClose={() => setMfaOpen(false)}
+        onChanged={refreshMfa}
+      />
     </section>
   );
 });

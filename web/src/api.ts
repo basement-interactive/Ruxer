@@ -655,6 +655,18 @@ export const api = {
   /// Mark multiple channels read at once (read_states = [{channel_id, message_id}]).
   ackBulkRead: (readStates: { channel_id: Snowflake; message_id: Snowflake }[]) =>
     call<void>("ack_bulk_read", { readStates }),
+  /// MFA management. Current status: { totp, webauthn, has_mfa }.
+  getMfaMethods: () => call<{ totp?: boolean; webauthn?: boolean; has_mfa?: boolean }>("get_mfa_methods", {}),
+  /// Enable TOTP: client-generated base32 secret + a current 6-digit code.
+  /// Returns { backup_codes: string[] }.
+  enableTotp: (secret: string, code: string, password?: string) =>
+    call<{ backup_codes?: string[] }>("enable_totp", { secret, code, password }),
+  /// Disable TOTP with a current 6-digit code (or backup code).
+  disableTotp: (code: string, password?: string) =>
+    call<unknown>("disable_totp", { code, password }),
+  /// (Re)generate backup codes. Returns { backup_codes: string[] }.
+  regenerateBackupCodes: (regenerate: boolean, password?: string) =>
+    call<{ backup_codes?: string[] }>("regenerate_backup_codes", { regenerate, password }),
   /// Fetch a single message (for reply/reference previews).
   getMessage: (channelId: Snowflake, messageId: Snowflake) =>
     call<Message>("get_message", { channelId, messageId }),

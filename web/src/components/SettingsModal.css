@@ -632,3 +632,32 @@
   padding: 10px 0 14px;
   max-width: 30rem;
 }
+
+/* Two-factor auth management row (Account pane) */
+.settings-mfa-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--background-modifier-accent, #3f4147);
+}
+.settings-mfa-info { display: flex; flex-direction: column; gap: 2px; }
+.settings-mfa-label { font-size: 14px; color: var(--text-primary, #dbdee1); font-weight: 600; }
+.settings-mfa-status { font-size: 12px; font-weight: 700; }
+.settings-mfa-status.on { color: var(--green, #23a55a); }
+.settings-mfa-status.off { color: var(--text-muted, #949ba4); }
+.settings-mfa-actions { display: flex; gap: 8px; }
+.settings-mfa-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  background: var(--background-tertiary, #1e1f22);
+  color: var(--text-primary, #dbdee1);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.settings-mfa-btn:hover { filter: brightness(1.15); }
+.settings-mfa-btn.primary { background: var(--accent-primary, #5865f2); color: #fff; }
+.settings-mfa-btn.danger { background: var(--red, #f23f43); color: #fff; }

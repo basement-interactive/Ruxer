@@ -52,6 +52,20 @@ export function applyDevScene(): void {
   }
   else if (scene === "settings") setTimeout(() => runInAction(() => ui.openSettings()), 700);
   else if (scene === "settings-account") { setTimeout(() => runInAction(() => ui.openSettings("account")), 700); setTimeout(() => { const b=[...document.querySelectorAll("button")].find(x=>x.textContent==="Edit"); b && b.click(); }, 1300); }
+  else if (scene === "settings-mfa") { setTimeout(() => runInAction(() => ui.openSettings("account")), 700); setTimeout(() => { const b=[...document.querySelectorAll("button")].find(x=>x.textContent==="Enable 2FA"); b && b.click(); }, 1400); }
+  else if (scene === "settings-mfa-codes") {
+    setTimeout(() => runInAction(() => ui.openSettings("account")), 700);
+    setTimeout(() => { const b=[...document.querySelectorAll("button")].find(x=>x.textContent==="Enable 2FA"); b && b.click(); }, 1400);
+    setTimeout(() => {
+      const input = document.querySelector<HTMLInputElement>(".mfa-input");
+      if (input) {
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+        setter?.call(input, "123456");
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    }, 2000);
+    setTimeout(() => { const b=[...document.querySelectorAll(".flx-modal-root button")].find(x=>x.textContent==="Enable"); b && (b as HTMLButtonElement).click(); }, 2400);
+  }
   else if (scene === "settings-profile") setTimeout(() => runInAction(() => ui.openSettings("profile")), 700);
   else if (scene === "settings-chat") setTimeout(() => runInAction(() => ui.openSettings("chat")), 700);
   else if (scene === "settings-privacy") setTimeout(() => runInAction(() => ui.openSettings("privacy")), 700);

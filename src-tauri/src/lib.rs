@@ -594,6 +594,10 @@ pub fn run() {
             get_user_note,
             set_user_note,
             ack_bulk_read,
+            get_mfa_methods,
+            enable_totp,
+            disable_totp,
+            regenerate_backup_codes,
             get_message,
             get_call,
             ring_call,
@@ -2261,6 +2265,57 @@ async fn set_user_note(state: State<'_, AppState>, user_id: Snowflake, note: Str
 async fn ack_bulk_read(state: State<'_, AppState>, read_states: serde_json::Value) -> CmdResult<()> {
     let c = client(&state).await?;
     c.users().ack_bulk(&read_states).await.map_err(Into::into)
+}
+
+/// Current MFA status (GET /users/@me/sudo/mfa-methods → { totp, webauthn, has_mfa }).
+#[tauri::command]
+async fn get_mfa_methods(state: State<'_, AppState>) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users().mfa_methods().await.map_err(Into::into)
+}
+
+/// Enable TOTP MFA (POST /users/@me/mfa/totp/enable). The frontend generates the
+/// base32 secret + collects a current code; returns { backup_codes }.
+#[tauri::command]
+async fn enable_totp(
+    state: State<'_, AppState>,
+    secret: String,
+    code: String,
+    password: Option<String>,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users()
+        .enable_totp(&secret, &code, password.as_deref())
+        .await
+        .map_err(Into::into)
+}
+
+/// Disable TOTP MFA (POST /users/@me/mfa/totp/disable) with a current code.
+#[tauri::command]
+async fn disable_totp(
+    state: State<'_, AppState>,
+    code: String,
+    password: Option<String>,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users()
+        .disable_totp(&code, password.as_deref())
+        .await
+        .map_err(Into::into)
+}
+
+/// (Re)generate MFA backup codes (POST /users/@me/mfa/backup-codes → { backup_codes }).
+#[tauri::command]
+async fn regenerate_backup_codes(
+    state: State<'_, AppState>,
+    regenerate: bool,
+    password: Option<String>,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users()
+        .regenerate_backup_codes(regenerate, password.as_deref())
+        .await
+        .map_err(Into::into)
 }
 
 /// Fetch a single message (GET /channels/{cid}/messages/{mid}).
