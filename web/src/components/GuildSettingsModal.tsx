@@ -116,6 +116,21 @@ const OverviewPane = observer(function OverviewPane({ guildId }: { guildId: Snow
   const [savingName, setSavingName] = useState(false);
   useEffect(() => setName(g.name), [g.name]);
 
+  const iconInput = useRef<HTMLInputElement>(null);
+  const changeIcon = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const dataUri = await fileToDataUri(file);
+      const updated = (await api.updateGuild(guildId, { icon: dataUri })) as { icon?: string | null };
+      runInAction(() => {
+        if (updated && "icon" in updated) g.icon = updated.icon ?? g.icon;
+      });
+      toasts.success("Server icon updated");
+    } catch (e) {
+      toasts.error("Failed to update icon", String(e));
+    }
+  };
+
   const [vanity, setVanity] = useState("");
   const [savingVanity, setSavingVanity] = useState(false);
   useEffect(() => {
@@ -203,7 +218,21 @@ const OverviewPane = observer(function OverviewPane({ guildId }: { guildId: Snow
     <section className="gs-pane-section">
       <h2 className="gs-pane-title">Server Overview</h2>
       <div className="gs-overview-card">
-        <GuildIcon guild={g} size={80} />
+        <button
+          className="gs-icon-edit"
+          title="Change server icon"
+          onClick={() => iconInput.current?.click()}
+        >
+          <GuildIcon guild={g} size={80} />
+          <span className="gs-icon-edit-overlay">Change</span>
+        </button>
+        <input
+          ref={iconInput}
+          type="file"
+          accept="image/png,image/jpeg,image/gif,image/webp"
+          style={{ display: "none" }}
+          onChange={(e) => changeIcon(e.target.files?.[0])}
+        />
         <div className="gs-overview-info">
           <div className="gs-overview-name">{g.name}</div>
           <div className="gs-overview-meta muted small">
@@ -233,7 +262,7 @@ const OverviewPane = observer(function OverviewPane({ guildId }: { guildId: Snow
         </div>
       </div>
       <p className="gs-pane-help muted small">
-        Icon upload lands with the media-picker UI.
+        Click the server icon to upload a new one.
       </p>
 
       <div className="gs-field" style={{ maxWidth: "26rem", marginTop: "var(--sp-3, 12px)" }}>
