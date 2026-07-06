@@ -161,24 +161,7 @@ const ChannelRow = observer(function ChannelRow({
             {
               kind: "action",
               label: "Edit Channel",
-              onClick: async () => {
-                const name = window.prompt("Channel name", channel.name ?? "");
-                if (!name) return;
-                try {
-                  const updated = await api.editChannel(channel.id, name);
-                  runInAction(() => {
-                    const chs = guilds.channelsByGuild.get(guildId) ?? [];
-                    const idx = chs.findIndex((c) => c.id === channel.id);
-                    if (idx >= 0) {
-                      const next = [...chs];
-                      next[idx] = updated;
-                      guilds.channelsByGuild.set(guildId, next);
-                    }
-                  });
-                } catch (err) {
-                  toasts.error("Failed to edit channel", String(err));
-                }
-              },
+              onClick: () => ui.openChannelSettings(channel.id),
             },
             {
               kind: "action",

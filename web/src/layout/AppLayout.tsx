@@ -23,6 +23,7 @@ import { QuickSwitcher } from "../components/QuickSwitcher";
 import { CreateJoinGuildModal } from "../components/CreateJoinGuildModal";
 import { SearchView } from "../components/SearchView";
 import { GuildSettingsModal } from "../components/GuildSettingsModal";
+import { ChannelSettingsModal } from "../components/ChannelSettingsModal";
 import { ImageViewer } from "../components/ImageViewer";
 import { ReportModal } from "../components/ReportModal";
 import { ForwardModal } from "../components/ForwardModal";
@@ -139,6 +140,7 @@ export const AppLayout = observer(function AppLayout() {
       <CreateJoinGuildModal />
       <SearchView />
       <GuildSettingsModal />
+      <ChannelSettingsModal />
       <ImageViewer />
       <ReportModal />
       <ForwardModal />

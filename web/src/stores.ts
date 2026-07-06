@@ -2937,6 +2937,20 @@ export class UiStore {
     this.guildSettingsGuildId = null;
   }
 
+  // Channel settings modal: the channel id being configured (null = closed).
+  channelSettingsOpen = false;
+  channelSettingsChannelId: Snowflake | null = null;
+
+  @action openChannelSettings(channelId: Snowflake) {
+    this.channelSettingsChannelId = channelId;
+    this.channelSettingsOpen = true;
+  }
+
+  @action closeChannelSettings() {
+    this.channelSettingsOpen = false;
+    this.channelSettingsChannelId = null;
+  }
+
   // Abuse-report modal target (null = closed).
   reportTarget: ReportTarget | null = null;
 
