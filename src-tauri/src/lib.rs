@@ -596,6 +596,10 @@ pub fn run() {
             list_messages,
             send_message,
             forward_message,
+            schedule_message,
+            list_scheduled_messages,
+            update_scheduled_message,
+            cancel_scheduled_message,
             edit_message,
             delete_message,
             bulk_delete_messages,
@@ -1566,6 +1570,123 @@ async fn send_message(
             .await
             .map_err(Into::into)
     }
+}
+
+/// Schedule a message for later server-side delivery
+/// (`POST /channels/{cid}/messages/schedule`). Mirrors send_message's body
+/// building (reply, nonce, stickers, attachment reading) plus the wall-clock
+/// delivery time + IANA timezone.
+#[tauri::command]
+async fn schedule_message(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    content: String,
+    scheduled_local_at: String,
+    timezone: String,
+    reply_to: Option<Snowflake>,
+    attachments: Option<Vec<AttachmentInput>>,
+    sticker_ids: Option<Vec<Snowflake>>,
+    nonce: Option<String>,
+) -> CmdResult<fluxer::models::ScheduledMessage> {
+    let c = client(&state).await?;
+    let mut create = fluxer::api::messages::CreateMessage::content(content);
+    if let Some(reply_id) = reply_to {
+        create = create.reply_to(&channel_id, &reply_id);
+    }
+    if let Some(ref ids) = sticker_ids {
+        create.sticker_ids = ids.clone();
+    }
+    create.nonce = nonce;
+
+    // Same attachment-reading loop as send_message: unreadable files are
+    // skipped with a warning rather than failing the whole schedule.
+    let mut pending: Vec<fluxer::api::messages::PendingAttachment> = Vec::new();
+    if let Some(items) = attachments.as_ref() {
+        for item in items {
+            let bytes = match tokio::fs::read(&item.path).await {
+                Ok(b) => b,
+                Err(e) => {
+                    tracing::warn!(path = %item.path, error = %e, "failed to read attachment; skipping");
+                    continue;
+                }
+            };
+            let filename = item
+                .filename
+                .clone()
+                .or_else(|| {
+                    std::path::Path::new(&item.path)
+                        .file_name()
+                        .and_then(|n| n.to_str())
+                        .map(|s| s.to_string())
+                })
+                .unwrap_or_else(|| "file".to_string());
+            let content_type = infer_mime(&filename, &bytes);
+            let file = fluxer::api::messages::PendingAttachment {
+                filename: filename.clone(),
+                content_type,
+                data: bytes,
+                description: None,
+                spoiler: item.spoiler,
+            };
+            create = create.with_attachment(&file);
+            pending.push(file);
+        }
+    }
+
+    let req = fluxer::api::messages::ScheduleMessage {
+        message: create,
+        scheduled_local_at,
+        timezone,
+    };
+    if pending.is_empty() {
+        c.messages().schedule(&channel_id, &req).await.map_err(Into::into)
+    } else {
+        c.messages()
+            .schedule_with_attachments(&channel_id, &req, pending)
+            .await
+            .map_err(Into::into)
+    }
+}
+
+#[tauri::command]
+async fn list_scheduled_messages(
+    state: State<'_, AppState>,
+) -> CmdResult<Vec<fluxer::models::ScheduledMessage>> {
+    let c = client(&state).await?;
+    c.users().scheduled_messages().await.map_err(Into::into)
+}
+
+/// Update a scheduled message's content and/or delivery time.
+#[tauri::command]
+async fn update_scheduled_message(
+    state: State<'_, AppState>,
+    scheduled_message_id: Snowflake,
+    content: String,
+    scheduled_local_at: String,
+    timezone: String,
+) -> CmdResult<fluxer::models::ScheduledMessage> {
+    let c = client(&state).await?;
+    let req = fluxer::api::messages::ScheduleMessage {
+        message: fluxer::api::messages::CreateMessage::content(content),
+        scheduled_local_at,
+        timezone,
+    };
+    c.users()
+        .update_scheduled_message(&scheduled_message_id, &req)
+        .await
+        .map_err(Into::into)
+}
+
+#[tauri::command]
+async fn cancel_scheduled_message(
+    state: State<'_, AppState>,
+    scheduled_message_id: Snowflake,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.users()
+        .cancel_scheduled_message(&scheduled_message_id)
+        .await
+        .map_err(Into::into)
 }
 
 /// Forward a message to another channel (`message_reference.type = 1`). The

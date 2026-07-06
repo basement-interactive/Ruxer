@@ -11,6 +11,7 @@ import { ChannelSidebar } from "./ChannelSidebar";
 import { MainContent } from "./MainContent";
 import { MemberList } from "./MemberList";
 import { PinsPane } from "./PinsPane";
+import { ScheduledPane } from "./ScheduledPane";
 import { ContextMenu } from "../components/ContextMenu";
 import { EmojiPicker } from "../components/EmojiPicker";
 import { SettingsModal } from "../components/SettingsModal";
@@ -131,6 +132,7 @@ export const AppLayout = observer(function AppLayout() {
         </div>
         {ui.rightPane === "members" && ui.currentGuild && <MemberList />}
         {ui.rightPane === "pins" && <PinsPane />}
+        {ui.rightPane === "scheduled" && <ScheduledPane />}
       </div>
       {/* Single profile surface — the full card. (ProfilePopup previously
           double-mounted and overlapped this; keep only the modal.) */}

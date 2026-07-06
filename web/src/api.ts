@@ -25,6 +25,7 @@ import type {
   Relationship,
   Role,
   SavedMessageEntry,
+  ScheduledMessage,
   Snowflake,
   Webhook,
   Sticker,
@@ -361,6 +362,46 @@ export const api = {
       guildId: source.guildId,
       nonce,
     }),
+  // --- Scheduled messages ---
+  /// Schedule a message for later delivery. `scheduledLocalAt` is the
+  /// wall-clock "YYYY-MM-DDTHH:mm" in the given IANA timezone.
+  scheduleMessage: (
+    channelId: Snowflake,
+    content: string,
+    scheduledLocalAt: string,
+    timezone: string,
+    replyTo?: Snowflake,
+    attachments?: AttachmentInput[],
+    stickerIds?: Snowflake[],
+    nonce?: string,
+  ) =>
+    call<ScheduledMessage>("schedule_message", {
+      channelId,
+      content,
+      scheduledLocalAt,
+      timezone,
+      replyTo,
+      attachments,
+      stickerIds,
+      nonce,
+    }),
+  listScheduledMessages: () =>
+    call<ScheduledMessage[]>("list_scheduled_messages"),
+  updateScheduledMessage: (
+    scheduledMessageId: Snowflake,
+    content: string,
+    scheduledLocalAt: string,
+    timezone: string,
+  ) =>
+    call<ScheduledMessage>("update_scheduled_message", {
+      scheduledMessageId,
+      content,
+      scheduledLocalAt,
+      timezone,
+    }),
+  cancelScheduledMessage: (scheduledMessageId: Snowflake) =>
+    call<void>("cancel_scheduled_message", { scheduledMessageId }),
+
   editMessage: (channelId: Snowflake, messageId: Snowflake, content: string) =>
     call<Message>("edit_message", { channelId, messageId, content }),
   deleteMessage: (channelId: Snowflake, messageId: Snowflake) =>

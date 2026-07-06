@@ -193,6 +193,29 @@ export interface Reaction {
   me?: boolean;
 }
 
+/// A scheduled message (GET /users/@me/scheduled-messages). `payload` is the
+/// original message request; the UI reads a few fields defensively.
+export interface ScheduledMessage {
+  id: Snowflake;
+  channel_id: Snowflake;
+  /// ISO-8601 UTC delivery instant.
+  scheduled_at: string;
+  /// Wall-clock "YYYY-MM-DDTHH:mm" as entered, anchored to `timezone`.
+  scheduled_local_at: string;
+  timezone: string;
+  status: "pending" | "invalid" | string;
+  status_reason: string | null;
+  payload: {
+    content?: string | null;
+    attachments?: { id?: Snowflake; filename?: string }[];
+    sticker_ids?: Snowflake[];
+    flags?: number;
+    tts?: boolean;
+  };
+  created_at: string;
+  invalidated_at?: string | null;
+}
+
 /// A saved-message (bookmark) entry (GET /users/@me/saved-messages).
 export interface SavedMessageEntry {
   id: Snowflake;

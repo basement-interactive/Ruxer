@@ -132,6 +132,13 @@ export const ChannelHeader = observer(function ChannelHeader({
         >
           <PinIcon />
         </button>
+        <button
+          className={`header-toggle ${ui.rightPane === "scheduled" ? "active" : ""}`}
+          onClick={() => ui.toggleRightPane("scheduled")}
+          title="Scheduled Messages"
+        >
+          <ClockIcon />
+        </button>
         <div className="notif-dropdown-wrapper" ref={bookmarksRef}>
           <button
             className={`header-toggle ${ui.bookmarksOpen ? "active" : ""}`}
@@ -146,6 +153,15 @@ export const ChannelHeader = observer(function ChannelHeader({
     </header>
   );
 });
+
+function ClockIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <polyline points="12 7 12 12 15.5 14" />
+    </svg>
+  );
+}
 
 function BookmarkIcon({ filled }: { filled: boolean }) {
   return (

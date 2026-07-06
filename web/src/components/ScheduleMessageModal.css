@@ -1,0 +1,60 @@
+/* ScheduleMessageModal — date/time + timezone fields. */
+
+.schedule-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-3);
+}
+.schedule-field-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+.schedule-input {
+  height: 2.5rem;
+  padding: 0 var(--sp-3);
+  border: none;
+  border-radius: var(--r-sm);
+  background: var(--bg-input);
+  color: var(--text-normal);
+  font-size: var(--font-size-md);
+  font-family: inherit;
+  outline: none;
+  color-scheme: dark;
+}
+.schedule-field-help {
+  margin-top: 2px;
+}
+
+/* Footer buttons (house primary/secondary pair). */
+.schedule-btn-secondary,
+.schedule-btn-primary {
+  min-width: 96px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  cursor: pointer;
+}
+.schedule-btn-secondary {
+  background: transparent;
+  color: var(--text-normal);
+}
+.schedule-btn-secondary:hover {
+  text-decoration: underline;
+}
+.schedule-btn-primary {
+  background: var(--brand);
+  color: #fff;
+}
+.schedule-btn-primary:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+.schedule-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

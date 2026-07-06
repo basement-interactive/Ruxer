@@ -138,6 +138,19 @@ impl CreateMessage {
     }
 }
 
+/// Request body for scheduling a message: a normal [`CreateMessage`] plus the
+/// wall-clock delivery time and its IANA timezone (flattened to one JSON
+/// object, matching `ScheduledMessageRequestSchema`).
+#[derive(Debug, Clone, Serialize)]
+pub struct ScheduleMessage {
+    #[serde(flatten)]
+    pub message: CreateMessage,
+    /// "YYYY-MM-DDTHH:mm" wall-clock time in `timezone`.
+    pub scheduled_local_at: String,
+    /// IANA timezone id (e.g. "Europe/Berlin").
+    pub timezone: String,
+}
+
 /// Optional fields when editing a message.
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct EditMessage {
@@ -208,6 +221,52 @@ impl Messages {
         let path = format!("channels/{}/messages", channel_id);
         let payload_json = serde_json::to_value(message)
             .map_err(|e| crate::error::Error::Decode(e))?;
+        let mut form = reqwest::multipart::Form::new()
+            .text("payload_json", payload_json.to_string());
+        for (i, file) in files.into_iter().enumerate() {
+            let part = reqwest::multipart::Part::bytes(file.data)
+                .file_name(file.filename)
+                .mime_str(&file.content_type)
+                .map_err(|e| crate::error::Error::Api {
+                    code: "MULTIPART".into(),
+                    message: e.to_string(),
+                    status: reqwest::StatusCode::BAD_REQUEST,
+                    body: String::new(),
+                })?;
+            form = form.part(format!("files[{}]", i), part);
+        }
+        let builder = self
+            .0
+            .request(reqwest::Method::POST, &path)
+            .multipart(form);
+        self.0
+            .execute(reqwest::Method::POST, &path, builder)
+            .await
+    }
+
+    /// `POST /channels/{channel_id}/messages/schedule` — schedule a message
+    /// for later server-side delivery (JSON body, no file uploads).
+    pub async fn schedule(
+        &self,
+        channel_id: &Snowflake,
+        req: &ScheduleMessage,
+    ) -> Result<crate::models::ScheduledMessage> {
+        let path = format!("channels/{}/messages/schedule", channel_id);
+        self.0.send_json(reqwest::Method::POST, &path, req).await
+    }
+
+    /// `POST /channels/{channel_id}/messages/schedule` with multipart file
+    /// uploads — same body shape as [`Self::send_with_attachments`]
+    /// (`payload_json` + `files[N]` parts), different endpoint + response.
+    pub async fn schedule_with_attachments(
+        &self,
+        channel_id: &Snowflake,
+        req: &ScheduleMessage,
+        files: Vec<PendingAttachment>,
+    ) -> Result<crate::models::ScheduledMessage> {
+        let path = format!("channels/{}/messages/schedule", channel_id);
+        let payload_json = serde_json::to_value(req)
+            .map_err(crate::error::Error::Decode)?;
         let mut form = reqwest::multipart::Form::new()
             .text("payload_json", payload_json.to_string());
         for (i, file) in files.into_iter().enumerate() {

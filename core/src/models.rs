@@ -565,6 +565,32 @@ pub mod attachment_flags {
     pub const IS_ANIMATED: i32 = 32;
 }
 
+/// A scheduled message from `GET /users/@me/scheduled-messages` (or the 201
+/// response of `POST /channels/{cid}/messages/schedule`). `status` is one of
+/// pending|invalid|scheduled|sent|failed|cancelled (kept as a String for
+/// forward compatibility); `payload` is the original message request, kept
+/// as raw JSON — the UI reads only a few fields defensively.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ScheduledMessage {
+    pub id: Snowflake,
+    pub channel_id: Snowflake,
+    /// ISO-8601 UTC instant when the message will be delivered.
+    pub scheduled_at: String,
+    /// Wall-clock time as entered ("YYYY-MM-DDTHH:mm"), anchored to `timezone`.
+    pub scheduled_local_at: String,
+    pub timezone: String,
+    #[serde(default)]
+    pub status: String,
+    #[serde(default)]
+    pub status_reason: Option<String>,
+    #[serde(default)]
+    pub payload: serde_json::Value,
+    #[serde(default)]
+    pub created_at: String,
+    #[serde(default)]
+    pub invalidated_at: Option<String>,
+}
+
 /// A saved-message (bookmark) entry from `GET /users/@me/saved-messages`.
 /// `status` is `"available"` (message populated) or `"missing_permissions"`
 /// (kept as a String for forward compatibility).

@@ -40,7 +40,7 @@ Medium:
 - [x] Saved messages / bookmarks — toggle + popout list + jump-to-message + SAVED_MESSAGE_* gateway sync. DONE (standalone header popout instead of the reference's inbox tab — the Inbox concept was removed from this UI)
 
 Low:
-- [ ] Scheduled messages. ref: features/messaging/state/ScheduledMessages.ts
+- [x] Scheduled messages — schedule from composer (right-click), pending pane, edit/reschedule + cancel, full backend (5 endpoints). DONE (reference gates on staff; here it degrades gracefully via error toasts. The reference's own trigger wiring is dormant — this UI wires the documented "right-click to schedule" affordance)
 - [ ] Translate message (provider store). ref: features/messaging/state/Translation.ts
 
 ---

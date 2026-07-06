@@ -19,6 +19,7 @@ import type {
   Message,
   ReadState,
   Relationship,
+  ScheduledMessage,
   Snowflake,
   Sticker,
   ThreadChannel,
@@ -1276,6 +1277,64 @@ export class SavedMessagesStore {
 }
 
 // ---------------------------------------------------------------------------
+// Scheduled messages store — pending server-side deliveries. No gateway
+// events exist for these (delivery arrives as a plain MESSAGE_CREATE), so the
+// list refetches lazily after reset (logout / reconnect).
+// ---------------------------------------------------------------------------
+
+export class ScheduledMessagesStore {
+  /// Ascending by delivery time (soonest first).
+  list: ScheduledMessage[] = [];
+  fetched = false;
+  fetching = false;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  async fetch() {
+    if (this.fetched || this.fetching) return;
+    runInAction(() => (this.fetching = true));
+    try {
+      const list = await api.listScheduledMessages();
+      runInAction(() => {
+        this.list = [...list].sort(
+          (a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime(),
+        );
+        this.fetched = true;
+        this.fetching = false;
+      });
+    } catch (e) {
+      runInAction(() => {
+        this.list = [];
+        this.fetched = false;
+        this.fetching = false;
+      });
+      toasts.error("Failed to load scheduled messages", String(e));
+    }
+  }
+
+  @action upsert(m: ScheduledMessage) {
+    const i = this.list.findIndex((x) => x.id === m.id);
+    const next = [...this.list];
+    if (i >= 0) next[i] = m;
+    else next.push(m);
+    next.sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime());
+    this.list = next;
+  }
+
+  @action remove(id: Snowflake) {
+    this.list = this.list.filter((m) => m.id !== id);
+  }
+
+  @action reset() {
+    this.list = [];
+    this.fetched = false;
+    this.fetching = false;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // DMs store
 // ---------------------------------------------------------------------------
 
@@ -2229,8 +2288,8 @@ export class UiStore {
   selectedGuildIndex: number | null = null;
   // The selected channel id (DM or guild channel).
   selectedChannelId: Snowflake | null = null;
-  // Right pane: "none" | "members" | "pins".
-  rightPane: "none" | "members" | "pins" = "none";
+  // Right pane: "none" | "members" | "pins" | "scheduled".
+  rightPane: "none" | "members" | "pins" | "scheduled" = "none";
   // Profile popup: user id being viewed (null when closed).
   profileUserId: Snowflake | null = null;
   profilePos: { x: number; y: number } | null = null;
@@ -2388,8 +2447,47 @@ export class UiStore {
     if (newest) messages.ack(channelId, newest.id);
   }
 
-  @action toggleRightPane(pane: "members" | "pins") {
+  @action toggleRightPane(pane: "members" | "pins" | "scheduled") {
     this.rightPane = this.rightPane === pane ? "none" : pane;
+  }
+
+  // Schedule-message modal open state (the composer owns the submit).
+  scheduleModalOpen = false;
+
+  @action openScheduleModal() {
+    this.scheduleModalOpen = true;
+  }
+
+  @action closeScheduleModal() {
+    this.scheduleModalOpen = false;
+  }
+
+  // Rescheduling state: the scheduled message being edited via the composer
+  // (null = not editing). While set, the composer blocks plain sends and the
+  // schedule modal pre-fills from it.
+  scheduledEditing: {
+    id: Snowflake;
+    channelId: Snowflake;
+    content: string;
+    scheduledLocalAt: string;
+    timezone: string;
+  } | null = null;
+
+  @action startScheduledEdit(record: ScheduledMessage) {
+    this.scheduledEditing = {
+      id: record.id,
+      channelId: record.channel_id,
+      content: record.payload?.content ?? "",
+      scheduledLocalAt: record.scheduled_local_at,
+      timezone: record.timezone,
+    };
+    if (this.selectedChannelId !== record.channel_id) {
+      this.openChannel(record.channel_id);
+    }
+  }
+
+  @action stopScheduledEdit() {
+    this.scheduledEditing = null;
   }
 
   // The guild the profile was opened in (so roles resolve against the right
@@ -2778,6 +2876,7 @@ export const session = new SessionStore();
 export const guilds = new GuildsStore();
 export const messages = new MessagesStore();
 export const saved = new SavedMessagesStore();
+export const scheduled = new ScheduledMessagesStore();
 export const dms = new DmsStore();
 export const relationships = new RelationshipsStore();
 export const presence = new PresenceStore();
@@ -2868,6 +2967,7 @@ export function clearStores() {
   toasts.clear();
   readState.clear();
   saved.reset();
+  scheduled.reset();
   guilds.guilds = [];
   guilds.channelsByGuild.clear();
   guilds.membersByGuild.clear();
@@ -2913,10 +3013,11 @@ export async function startGatewayListener() {
         | "reconnecting"
         | "disconnected";
       runInAction(() => {
-        // A (re)connect invalidates the bookmark list — events during the
-        // outage were lost, so drop it and refetch on next open.
+        // A (re)connect invalidates the bookmark + scheduled lists — events
+        // during the outage were lost, so drop them and refetch on next open.
         if (status === "connected" && ui.gatewayStatus !== "connected") {
           saved.reset();
+          scheduled.reset();
         }
         ui.setGatewayStatus(status);
       });

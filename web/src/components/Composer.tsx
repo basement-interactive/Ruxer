@@ -8,10 +8,11 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { messages, ui, guilds, dms, relationships, session, resolveUserName, drafts } from "../stores";
+import { messages, ui, guilds, dms, relationships, session, resolveUserName, drafts, scheduled, toasts } from "../stores";
 import type { Emoji, Snowflake, User } from "../types";
 import { EmojiPicker } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
+import { ScheduleMessageModal } from "./ScheduleMessageModal";
 import { Avatar } from "./Avatar";
 import { searchShortcodes } from "../emoji-data";
 import { resolveShortcodesInText } from "../utils/emojiResolve";
@@ -103,6 +104,9 @@ export const Composer = observer(function Composer({
   const acCount = acType === "emoji" ? emojiMatches.length : acType === "mention" ? mentionMatches.length : acType === "channel" ? channelMatches.length : 0;
 
   const send = async () => {
+    // While rescheduling a message the plain send path is blocked (parity):
+    // submit goes through the schedule modal instead.
+    if (ui.scheduledEditing) return;
     // Resolve `:name:` tokens before sending so messages are stored in a form
     // every client can render (`<:name:id>` for custom, the unicode char for
     // known shortcodes). Unknown tokens are left intact.
@@ -196,6 +200,45 @@ export const Composer = observer(function Composer({
     if (e.target.value.trim() && now - lastTyping.current > 4000) {
       lastTyping.current = now;
       api.triggerTyping(channelId).catch(() => {});
+    }
+  };
+
+  /// Submit from the schedule modal: schedule a new message or update the
+  /// one being rescheduled. Throws on failure so the modal stays open.
+  const submitSchedule = async (scheduledLocalAt: string, timezone: string) => {
+    const content = resolveShortcodesInText(text.trim(), guilds.allCustomEmoji);
+    const label = `${scheduledLocalAt.replace("T", " ")} (${timezone})`;
+    try {
+      if (ui.scheduledEditing) {
+        const editing = ui.scheduledEditing;
+        const body = content || editing.content;
+        const res = await api.updateScheduledMessage(editing.id, body, scheduledLocalAt, timezone);
+        scheduled.upsert(res);
+        ui.stopScheduledEdit();
+        toasts.success(`Updated scheduled message for ${label}`);
+      } else {
+        if (!content && attachments.length === 0) return;
+        const inputs = attachments.map((a) => ({ path: a.path, spoiler: a.spoiler }));
+        const res = await api.scheduleMessage(
+          channelId,
+          content,
+          scheduledLocalAt,
+          timezone,
+          ui.replyTarget?.messageId,
+          inputs,
+          undefined,
+          crypto.randomUUID(),
+        );
+        scheduled.upsert(res);
+        toasts.success(`Scheduled message for ${label}`);
+      }
+      drafts.clear(channelId);
+      ui.clearReplyTarget();
+      setText("");
+      setAttachments([]);
+    } catch (e) {
+      toasts.error("Failed to schedule message", String(e));
+      throw e; // keep the modal open
     }
   };
 
@@ -331,7 +374,73 @@ export const Composer = observer(function Composer({
         </div>
       )}
 
-      <div className="composer-bar">
+      {/* Rescheduling bar: shown while editing a scheduled message. */}
+      {ui.scheduledEditing?.channelId === channelId && (
+        <div className="composer-schedule-edit">
+          <span className="composer-schedule-edit-label">
+            <ClockIcon /> Editing scheduled message
+            <span className="composer-schedule-edit-time muted small">
+              {formatScheduleLabel(ui.scheduledEditing.scheduledLocalAt, ui.scheduledEditing.timezone)}
+            </span>
+          </span>
+          <span className="composer-schedule-edit-actions">
+            <button
+              className="composer-reply-cancel"
+              title="Pick new time"
+              onClick={() => ui.openScheduleModal()}
+            >
+              Reschedule
+            </button>
+            <button
+              className="composer-reply-cancel"
+              title="Stop editing"
+              onClick={() => ui.stopScheduledEdit()}
+            >
+              ✕
+            </button>
+          </span>
+        </div>
+      )}
+
+      {/* Schedule modal (schedule new / reschedule). Keyed by edit target so
+          reopening pre-fills fresh initial values. */}
+      {ui.scheduleModalOpen && (
+        <ScheduleMessageModal
+          key={ui.scheduledEditing?.id ?? "new"}
+          open
+          onClose={() => ui.closeScheduleModal()}
+          onSubmit={submitSchedule}
+          initialScheduledLocalAt={ui.scheduledEditing?.scheduledLocalAt}
+          initialTimezone={ui.scheduledEditing?.timezone}
+          title={ui.scheduledEditing ? "Reschedule message" : "Schedule message"}
+          submitLabel={ui.scheduledEditing ? "Update" : "Schedule"}
+          helpText={
+            ui.scheduledEditing
+              ? "This will modify the existing scheduled message rather than sending immediately."
+              : "Scheduled messages can be at most 30 days in the future."
+          }
+        />
+      )}
+
+      <div
+        className="composer-bar"
+        onContextMenu={(e) => {
+          // Right-click the composer to schedule (reference: right-click the
+          // send button — this composer has no send button).
+          if (!text.trim() && attachments.length === 0 && !ui.scheduledEditing) return;
+          e.preventDefault();
+          ui.openContextMenu(
+            [
+              {
+                kind: "action",
+                label: ui.scheduledEditing ? "Reschedule message" : "Schedule message",
+                onClick: () => ui.openScheduleModal(),
+              },
+            ],
+            { x: e.clientX, y: e.clientY },
+          );
+        }}
+      >
         <button
           className="composer-attach"
           onClick={pickAttachment}
@@ -577,6 +686,30 @@ function PlusIcon() {
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+
+/// "Jun 28, 2026, 9:41 AM (Europe/Berlin)" — medium date + short time with
+/// the IANA zone appended; falls back to the raw local string.
+function formatScheduleLabel(scheduledLocalAt: string, timezone: string): string {
+  const d = new Date(scheduledLocalAt);
+  if (isNaN(d.getTime())) return `${scheduledLocalAt.replace("T", " ")} (${timezone})`;
+  try {
+    const label = new Intl.DateTimeFormat(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(d);
+    return `${label} (${timezone})`;
+  } catch {
+    return `${scheduledLocalAt.replace("T", " ")} (${timezone})`;
+  }
+}
+
+function ClockIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ verticalAlign: "middle" }}>
+      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.4 3.3 1.9-1 1.7-4.3-2.5V7h2v5.4z" />
     </svg>
   );
 }

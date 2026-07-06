@@ -189,4 +189,43 @@ impl Users {
             .delete::<()>(&format!("users/@me/saved-messages/{}", message_id))
             .await
     }
+
+    /// `GET /users/@me/scheduled-messages` — the user's pending scheduled
+    /// messages.
+    pub async fn scheduled_messages(&self) -> Result<Vec<crate::models::ScheduledMessage>> {
+        self.0.get("users/@me/scheduled-messages").await
+    }
+
+    /// `GET /users/@me/scheduled-messages/{id}` — one scheduled message.
+    pub async fn get_scheduled_message(
+        &self,
+        id: &Snowflake,
+    ) -> Result<crate::models::ScheduledMessage> {
+        self.0
+            .get(&format!("users/@me/scheduled-messages/{}", id))
+            .await
+    }
+
+    /// `PATCH /users/@me/scheduled-messages/{id}` — replace a scheduled
+    /// message's content and/or delivery time.
+    pub async fn update_scheduled_message(
+        &self,
+        id: &Snowflake,
+        req: &crate::api::messages::ScheduleMessage,
+    ) -> Result<crate::models::ScheduledMessage> {
+        self.0
+            .send_json(
+                reqwest::Method::PATCH,
+                &format!("users/@me/scheduled-messages/{}", id),
+                req,
+            )
+            .await
+    }
+
+    /// `DELETE /users/@me/scheduled-messages/{id}` — cancel delivery.
+    pub async fn cancel_scheduled_message(&self, id: &Snowflake) -> Result<()> {
+        self.0
+            .delete::<()>(&format!("users/@me/scheduled-messages/{}", id))
+            .await
+    }
 }
