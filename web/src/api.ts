@@ -20,6 +20,7 @@ import type {
   Member,
   Message,
   PremiumState,
+  ReactionUsersPage,
   ReadState,
   Relationship,
   Role,
@@ -460,7 +461,7 @@ export const api = {
       customEmojiId,
     }),
   // Users who reacted with a specific emoji (for the reaction hover tooltip +
-  // reactions modal). Paginated via `after`.
+  // reactions modal). Paginated via `after`; returns the page envelope.
   reactionUsers: (
     channelId: Snowflake,
     messageId: Snowflake,
@@ -469,13 +470,41 @@ export const api = {
     limit?: number,
     after?: Snowflake,
   ) =>
-    call<User[]>("reaction_users", {
+    call<ReactionUsersPage>("reaction_users", {
       channelId,
       messageId,
       emoji,
       customEmojiId,
       limit,
       after,
+    }),
+  /// Remove another user's reaction (moderator — MANAGE_MESSAGES).
+  removeReactionFor: (
+    channelId: Snowflake,
+    messageId: Snowflake,
+    emoji: string,
+    customEmojiId: Snowflake | undefined,
+    targetId: Snowflake,
+  ) =>
+    call<void>("remove_reaction_for", {
+      channelId,
+      messageId,
+      emoji,
+      customEmojiId,
+      targetId,
+    }),
+  /// Remove every reaction of one emoji (moderator — MANAGE_MESSAGES).
+  removeReactionEmoji: (
+    channelId: Snowflake,
+    messageId: Snowflake,
+    emoji: string,
+    customEmojiId?: Snowflake,
+  ) =>
+    call<void>("remove_reaction_emoji", {
+      channelId,
+      messageId,
+      emoji,
+      customEmojiId,
     }),
   removeOwnReaction: (
     channelId: Snowflake,

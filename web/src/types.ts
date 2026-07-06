@@ -193,6 +193,13 @@ export interface Reaction {
   me?: boolean;
 }
 
+/// One page of "who reacted" users (GET .../reactions/{emoji}/users).
+export interface ReactionUsersPage {
+  items: User[];
+  has_more: boolean;
+  next_after: Snowflake | null;
+}
+
 /// A file attached to a message. Mirrors Discord/Fluxer's attachment object.
 export interface Attachment {
   id: Snowflake;

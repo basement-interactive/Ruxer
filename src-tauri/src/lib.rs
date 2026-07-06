@@ -620,6 +620,7 @@ pub fn run() {
             reaction_users,
             remove_own_reaction,
             remove_reaction_for,
+            remove_reaction_emoji,
             open_dm,
             create_group_dm,
             list_relationships,
@@ -2281,7 +2282,7 @@ async fn reaction_users(
     custom_emoji_id: Option<Snowflake>,
     limit: Option<i32>,
     after: Option<Snowflake>,
-) -> CmdResult<Vec<fluxer::models::User>> {
+) -> CmdResult<fluxer::api::reactions::ReactionUsersPage> {
     let c = client(&state).await?;
     let target = match custom_emoji_id {
         Some(id) => ReactionTarget::Custom {
@@ -2292,6 +2293,30 @@ async fn reaction_users(
     };
     c.reactions()
         .users(&channel_id, &message_id, &target, limit, after.as_ref())
+        .await
+        .map_err(Into::into)
+}
+
+/// Remove every reaction of one emoji from a message (moderator action —
+/// requires MANAGE_MESSAGES).
+#[tauri::command]
+async fn remove_reaction_emoji(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    message_id: Snowflake,
+    emoji: String,
+    custom_emoji_id: Option<Snowflake>,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    let target = match custom_emoji_id {
+        Some(id) => ReactionTarget::Custom {
+            name: emoji.clone(),
+            id,
+        },
+        None => ReactionTarget::Unicode(emoji),
+    };
+    c.reactions()
+        .remove_all_for_emoji(&channel_id, &message_id, &target)
         .await
         .map_err(Into::into)
 }

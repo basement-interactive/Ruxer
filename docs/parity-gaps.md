@@ -31,7 +31,7 @@ High priority:
 - [x] Inline message editing — EditingMessageInput replaces the row in place. DONE
 - [x] Per-channel drafts — DraftsStore (localStorage), restore on switch, clear on send. DONE
 - [x] Forward message — action + ForwardModal (picker, comment, multi-target), snapshot render + "Forwarded from" pill. DONE (media-selection forwards + slowmode gating not tracked client-side; server enforces)
-- [ ] Reaction users list — hover tooltip + reactions modal (per-emoji tabs). ref: features/messaging/components/popouts/ReactionTooltip.tsx
+- [x] Reaction users list — hover tooltip + reactions modal (per-emoji tabs, pagination, remove controls, live gateway sync). DONE (also fixed the page-envelope deserialization bug that silently broke the tooltip)
 
 Medium:
 - [ ] Timestamp styles — 9 `<t:epoch:style>` formats + relative + tooltip. ref: markdown/renderers/TimestampRenderer.tsx

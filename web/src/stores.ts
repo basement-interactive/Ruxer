@@ -1083,6 +1083,24 @@ export class MessagesStore {
     this.byChannel.set(channelId, [...list]);
   }
 
+  /// Drop every reaction of one emoji from a message. Mirrors the
+  /// MESSAGE_REACTION_REMOVE_EMOJI reducer; used optimistically for the
+  /// moderator "Remove Reaction" action in the reactions modal.
+  @action applyReactionEmojiRemoved(
+    channelId: Snowflake,
+    messageId: Snowflake,
+    emoji: { id: Snowflake | null; name: string },
+  ) {
+    const list = this.byChannel.get(channelId);
+    if (!list) return;
+    const m = list.find((m) => m.id === messageId);
+    if (!m) return;
+    m.reactions = m.reactions.filter(
+      (r) => !(emoji.id ? r.emoji.id === emoji.id : r.emoji.id == null && r.emoji.name === emoji.name),
+    );
+    this.byChannel.set(channelId, [...list]);
+  }
+
   @action applyPinsChanged(channelId: Snowflake) {
     this.pinsByChannel.delete(channelId);
   }
@@ -2300,6 +2318,153 @@ export class UiStore {
     this.forwardTarget = null;
   }
 
+  // Reactions modal: per-emoji tabs + paginated "who reacted" list. The tabs
+  // and counts derive live from the message's observable reactions; only the
+  // selected emoji's user list lives here. Null = closed.
+  reactionsModal: {
+    channelId: Snowflake;
+    messageId: Snowflake;
+    selected: { name: string; id: Snowflake | null };
+    users: User[];
+    loading: boolean;
+    hasMore: boolean;
+    nextAfter: Snowflake | null;
+  } | null = null;
+
+  @action openReactionsModal(
+    channelId: Snowflake,
+    messageId: Snowflake,
+    emoji?: { name: string; id: Snowflake | null },
+  ) {
+    const msg = messages.getMessages(channelId).find((m) => m.id === messageId);
+    const first = msg?.reactions[0];
+    const selected = emoji ?? (first ? { name: first.emoji.name, id: first.emoji.id ?? null } : null);
+    if (!selected) return; // nothing to show
+    this.reactionsModal = {
+      channelId,
+      messageId,
+      selected,
+      users: [],
+      loading: false,
+      hasMore: false,
+      nextAfter: null,
+    };
+    void this.fetchReactionUsers();
+  }
+
+  @action closeReactionsModal() {
+    this.reactionsModal = null;
+  }
+
+  /// Switch the selected emoji tab: reset the list and fetch its first page.
+  @action selectReactionTab(emoji: { name: string; id: Snowflake | null }) {
+    const rm = this.reactionsModal;
+    if (!rm) return;
+    if (rm.selected.name === emoji.name && rm.selected.id === (emoji.id ?? null)) return;
+    rm.selected = { name: emoji.name, id: emoji.id ?? null };
+    rm.users = [];
+    rm.hasMore = false;
+    rm.nextAfter = null;
+    void this.fetchReactionUsers();
+  }
+
+  /// First page (or refetch) of the selected emoji's reactors.
+  async fetchReactionUsers() {
+    const rm = this.reactionsModal;
+    if (!rm || rm.loading) return;
+    runInAction(() => (rm.loading = true));
+    const { channelId, messageId, selected } = rm;
+    try {
+      const page = await api.reactionUsers(
+        channelId,
+        messageId,
+        selected.name,
+        selected.id ?? undefined,
+        100,
+      );
+      runInAction(() => {
+        // Ignore stale responses after tab switch / close.
+        const cur = this.reactionsModal;
+        if (!cur || cur.selected.name !== selected.name || cur.selected.id !== selected.id) return;
+        cur.users = page.items;
+        cur.hasMore = page.has_more;
+        cur.nextAfter = page.next_after ?? page.items[page.items.length - 1]?.id ?? null;
+        cur.loading = false;
+        for (const u of page.items) this.knownUsers.set(u.id, u);
+      });
+    } catch {
+      runInAction(() => {
+        const cur = this.reactionsModal;
+        if (cur) cur.loading = false;
+      });
+    }
+  }
+
+  /// Append the next page when the list scrolls near the bottom.
+  async loadMoreReactionUsers() {
+    const rm = this.reactionsModal;
+    if (!rm || rm.loading || !rm.hasMore || !rm.nextAfter) return;
+    runInAction(() => (rm.loading = true));
+    const { channelId, messageId, selected, nextAfter } = rm;
+    try {
+      const page = await api.reactionUsers(
+        channelId,
+        messageId,
+        selected.name,
+        selected.id ?? undefined,
+        100,
+        nextAfter,
+      );
+      runInAction(() => {
+        const cur = this.reactionsModal;
+        if (!cur || cur.selected.name !== selected.name || cur.selected.id !== selected.id) return;
+        const seen = new Set(cur.users.map((u) => u.id));
+        cur.users = [...cur.users, ...page.items.filter((u) => !seen.has(u.id))];
+        cur.hasMore = page.has_more;
+        cur.nextAfter = page.next_after ?? page.items[page.items.length - 1]?.id ?? null;
+        cur.loading = false;
+        for (const u of page.items) this.knownUsers.set(u.id, u);
+      });
+    } catch {
+      runInAction(() => {
+        const cur = this.reactionsModal;
+        if (cur) cur.loading = false;
+      });
+    }
+  }
+
+  /// Gateway MESSAGE_REACTION_ADD while the modal shows that emoji: append the
+  /// user when locally resolvable (matches reference, which only appends
+  /// cache-known users).
+  @action reactionsModalApplyAdd(
+    channelId: Snowflake,
+    messageId: Snowflake,
+    emoji: { name: string; id: Snowflake | null },
+    userId: Snowflake,
+  ) {
+    const rm = this.reactionsModal;
+    if (!rm || rm.channelId !== channelId || rm.messageId !== messageId) return;
+    if (rm.selected.name !== emoji.name || rm.selected.id !== (emoji.id ?? null)) return;
+    if (rm.users.some((u) => u.id === userId)) return;
+    const known =
+      this.knownUsers.get(userId) ??
+      messages.getMessages(channelId).find((m) => m.author.id === userId)?.author;
+    if (known) rm.users = [...rm.users, known];
+  }
+
+  /// Gateway MESSAGE_REACTION_REMOVE while the modal shows that emoji.
+  @action reactionsModalApplyRemove(
+    channelId: Snowflake,
+    messageId: Snowflake,
+    emoji: { name: string; id: Snowflake | null },
+    userId: Snowflake,
+  ) {
+    const rm = this.reactionsModal;
+    if (!rm || rm.channelId !== channelId || rm.messageId !== messageId) return;
+    if (rm.selected.name !== emoji.name || rm.selected.id !== (emoji.id ?? null)) return;
+    rm.users = rm.users.filter((u) => u.id !== userId);
+  }
+
   // Accessibility prefs (client-local, persisted). Applied to <html> via a CSS
   // var (--saturation-factor, --font-scale) + a data attribute (reduced motion).
   saturation = 1; // 0..1
@@ -2646,7 +2811,9 @@ function handleGatewayEvent(name: string, data: any) {
       const uid = data?.user_id;
       const emoji = data?.emoji;
       if (cid && mid && uid && emoji) {
-        messages.applyReactionAdd(cid, mid, { id: emoji.id ?? null, name: emoji.name ?? "" }, uid);
+        const e = { id: emoji.id ?? null, name: emoji.name ?? "" };
+        messages.applyReactionAdd(cid, mid, e, uid);
+        ui.reactionsModalApplyAdd(cid, mid, e, uid);
       }
       break;
     }
@@ -2656,7 +2823,9 @@ function handleGatewayEvent(name: string, data: any) {
       const uid = data?.user_id;
       const emoji = data?.emoji;
       if (cid && mid && uid && emoji) {
-        messages.applyReactionRemove(cid, mid, { id: emoji.id ?? null, name: emoji.name ?? "" }, uid);
+        const e = { id: emoji.id ?? null, name: emoji.name ?? "" };
+        messages.applyReactionRemove(cid, mid, e, uid);
+        ui.reactionsModalApplyRemove(cid, mid, e, uid);
       }
       break;
     }

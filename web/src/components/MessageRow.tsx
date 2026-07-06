@@ -213,8 +213,8 @@ const ReactionChip = observer(function ReactionChip({
     let cancelled = false;
     api
       .reactionUsers(message.channel_id, message.id, emoji, customEmojiId, 8)
-      .then((list) => {
-        if (!cancelled) setUsers(list.map((u) => u.global_name ?? u.username));
+      .then((page) => {
+        if (!cancelled) setUsers(page.items.map((u) => u.global_name ?? u.username));
       })
       .catch(() => {
         if (!cancelled) setUsers([]);
@@ -236,12 +236,24 @@ const ReactionChip = observer(function ReactionChip({
       <EmojiDisplay emoji={emoji} customId={customEmojiId} animated={false} size={16} />
       <span>{count}</span>
       {hover && (
-        <span className="reaction-tooltip">
+        <span
+          className="reaction-tooltip interactive"
+          onClick={(e) => {
+            // The tooltip opens the full reactions modal (parity: the hover
+            // tooltip is clickable — "Click to view all reactions").
+            e.stopPropagation();
+            ui.openReactionsModal(message.channel_id, message.id, {
+              name: emoji,
+              id: customEmojiId ?? null,
+            });
+          }}
+        >
           {users === null
             ? "…"
             : users.length === 0
               ? "No one yet"
               : reactorSummary(users, count)}
+          <span className="reaction-tooltip-hint">Click to view all reactions</span>
         </span>
       )}
     </button>
@@ -383,6 +395,9 @@ function openContextMenu(message: Message, x: number, y: number) {
   const isMe = session.meId === message.author.id;
   const items: ContextMenuItem[] = [
     { kind: "action", label: "Add Reaction", onClick: () => ui.openReactionPicker(message.channel_id, message.id) },
+    ...(message.reactions.length > 0
+      ? [{ kind: "action", label: "View Reactions", onClick: () => ui.openReactionsModal(message.channel_id, message.id) } as ContextMenuItem]
+      : []),
     { kind: "action", label: "Reply", onClick: () => setReplyTarget(message) },
     { kind: "action", label: "Forward", onClick: () => ui.openForward(message) },
     { kind: "action", label: "Copy Text", onClick: () => navigator.clipboard?.writeText(message.content).catch(() => {}) },

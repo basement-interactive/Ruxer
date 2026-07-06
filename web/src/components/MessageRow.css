@@ -497,3 +497,16 @@
   z-index: 100;
   pointer-events: none;
 }
+/* Interactive tooltip: clicking opens the reactions modal. */
+.reaction-tooltip.interactive {
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.reaction-tooltip-hint {
+  color: var(--text-faint, #80848e);
+  font-size: 0.6875rem;
+}

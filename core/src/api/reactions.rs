@@ -10,6 +10,54 @@ use crate::error::Result;
 use crate::http::Http;
 use crate::models::{Snowflake, User};
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
+use serde::{Deserialize, Serialize};
+
+/// One page of users who reacted with a specific emoji — the response envelope
+/// of `GET .../reactions/{emoji}/users`. `next_after` is the cursor for the
+/// next page (pass as `after`); `has_more` signals whether one exists.
+#[derive(Debug, Clone, Serialize)]
+pub struct ReactionUsersPage {
+    pub items: Vec<User>,
+    pub has_more: bool,
+    pub next_after: Option<Snowflake>,
+}
+
+/// Tolerant deserialization: the documented shape is the page envelope, but a
+/// bare user array (the legacy `GET .../reactions/{emoji}` shape) is accepted
+/// too so an older server doesn't hard-fail the tooltip/modal.
+impl<'de> Deserialize<'de> for ReactionUsersPage {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        struct Envelope {
+            items: Vec<User>,
+            #[serde(default)]
+            has_more: bool,
+            #[serde(default)]
+            next_after: Option<Snowflake>,
+        }
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Shape {
+            Page(Envelope),
+            Bare(Vec<User>),
+        }
+        Ok(match Shape::deserialize(deserializer)? {
+            Shape::Page(p) => ReactionUsersPage {
+                items: p.items,
+                has_more: p.has_more,
+                next_after: p.next_after,
+            },
+            Shape::Bare(items) => ReactionUsersPage {
+                items,
+                has_more: false,
+                next_after: None,
+            },
+        })
+    }
+}
 
 /// A reaction emoji identifier, ready to be placed in a path segment.
 #[derive(Debug, Clone)]
@@ -114,7 +162,8 @@ impl Reactions {
     }
 
     /// `GET /channels/{channel_id}/messages/{message_id}/reactions/{emoji}/users`
-    /// — paginate users who reacted with a specific emoji.
+    /// — paginate users who reacted with a specific emoji. Returns the page
+    /// envelope `{items, has_more, next_after}` (v2 shape).
     pub async fn users(
         &self,
         channel_id: &Snowflake,
@@ -122,7 +171,7 @@ impl Reactions {
         emoji: &ReactionTarget,
         limit: Option<i32>,
         after: Option<&Snowflake>,
-    ) -> Result<Vec<User>> {
+    ) -> Result<ReactionUsersPage> {
         let path = format!(
             "channels/{}/messages/{}/reactions/{}/users",
             channel_id,
