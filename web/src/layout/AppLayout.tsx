@@ -21,6 +21,7 @@ import { SearchView } from "../components/SearchView";
 import { GuildSettingsModal } from "../components/GuildSettingsModal";
 import { ImageViewer } from "../components/ImageViewer";
 import { ReportModal } from "../components/ReportModal";
+import { ForwardModal } from "../components/ForwardModal";
 import { ThemeStudio, initCustomTheme } from "../components/ThemeStudio";
 import { UserProfileModal } from "../components/UserProfileModal";
 import { ui, messages, guilds, settings, voice, toasts } from "../stores";
@@ -138,6 +139,7 @@ export const AppLayout = observer(function AppLayout() {
       <GuildSettingsModal />
       <ImageViewer />
       <ReportModal />
+      <ForwardModal />
       <ThemeStudio />
       {ui.emojiPickerOpen && ui.reactionTarget && (
         <ReactionEmojiPicker

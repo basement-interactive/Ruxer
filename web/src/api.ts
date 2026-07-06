@@ -341,6 +341,21 @@ export const api = {
       stickerIds,
       nonce,
     }),
+  /// Forward a message to another channel (message_reference.type = 1). The
+  /// server snapshots the source into `message_snapshots`; a forward carries
+  /// no content of its own.
+  forwardMessage: (
+    channelId: Snowflake,
+    source: { channelId: Snowflake; messageId: Snowflake; guildId?: Snowflake },
+    nonce?: string,
+  ) =>
+    call<Message>("forward_message", {
+      channelId,
+      sourceChannelId: source.channelId,
+      messageId: source.messageId,
+      guildId: source.guildId,
+      nonce,
+    }),
   editMessage: (channelId: Snowflake, messageId: Snowflake, content: string) =>
     call<Message>("edit_message", { channelId, messageId, content }),
   deleteMessage: (channelId: Snowflake, messageId: Snowflake) =>

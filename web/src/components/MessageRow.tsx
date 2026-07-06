@@ -4,7 +4,7 @@
 
 import { observer } from "mobx-react-lite";
 import { useState, useEffect } from "react";
-import { messages, session, ui, relationships, guilds } from "../stores";
+import { messages, session, ui, relationships, guilds, dms, dmLabel } from "../stores";
 import type { ContextMenuItem } from "../stores";
 import type { Message, MessageSnapshot } from "../types";
 import { Avatar } from "./Avatar";
@@ -63,7 +63,10 @@ export const MessageRow = observer(function MessageRow({
           <ToolbarBtn title="Reply" onClick={() => setReplyTarget(message)}>
             <ReplyIcon />
           </ToolbarBtn>
-          {isMe && (
+          <ToolbarBtn title="Forward" onClick={() => ui.openForward(message)}>
+            <ForwardIcon size={20} />
+          </ToolbarBtn>
+          {isMe && isEditable(message) && (
             <ToolbarBtn title="Edit" onClick={() => startEdit(message)}>
               <EditIcon />
             </ToolbarBtn>
@@ -133,7 +136,7 @@ export const MessageRow = observer(function MessageRow({
 
       {/* Forwarded message snapshots */}
       {message.message_snapshots && message.message_snapshots.length > 0 && (
-        <ForwardedList snapshots={message.message_snapshots} />
+        <ForwardedList message={message} snapshots={message.message_snapshots} />
       )}
 
       {/* Reply reference indicator */}
@@ -350,6 +353,13 @@ function startEdit(message: Message) {
   ui.editingMessageId = message.id;
 }
 
+/// Forwarded messages (carrying snapshots) have no content of their own and
+/// cannot be edited — matching the reference client, which gates every edit
+/// entry point on the absence of message_snapshots.
+function isEditable(message: Message): boolean {
+  return !(message.message_snapshots && message.message_snapshots.length > 0);
+}
+
 // Set the reply target on the composer. The composer renders a preview and
 // sends with message_reference on the next send. Truncates the preview content
 // to a single line so the bar stays compact.
@@ -374,6 +384,7 @@ function openContextMenu(message: Message, x: number, y: number) {
   const items: ContextMenuItem[] = [
     { kind: "action", label: "Add Reaction", onClick: () => ui.openReactionPicker(message.channel_id, message.id) },
     { kind: "action", label: "Reply", onClick: () => setReplyTarget(message) },
+    { kind: "action", label: "Forward", onClick: () => ui.openForward(message) },
     { kind: "action", label: "Copy Text", onClick: () => navigator.clipboard?.writeText(message.content).catch(() => {}) },
     { kind: "action", label: "Copy Message Link", onClick: () => navigator.clipboard?.writeText(`${message.channel_id}/${message.id}`).catch(() => {}) },
     { kind: "separator" },
@@ -390,7 +401,10 @@ function openContextMenu(message: Message, x: number, y: number) {
     },
   ];
   if (isMe) {
-    items.push({ kind: "action", label: "Edit Message", onClick: () => startEdit(message) });
+    // Forwarded messages carry no editable content (parity: edit is hidden).
+    if (isEditable(message)) {
+      items.push({ kind: "action", label: "Edit Message", onClick: () => startEdit(message) });
+    }
     items.push({ kind: "action", label: "Delete Message", danger: true, onClick: () => messages.delete(message.channel_id, message.id) });
   }
   // User actions for the message author.
@@ -484,38 +498,96 @@ function MoreIcon() {
 import type { Snowflake, User, Attachment } from "../types";
 import { emojiUrl } from "../utils";
 
-/// Render forwarded-message snapshots. Each snapshot's content/embeds/
-/// attachments render through the same renderers as a normal message, wrapped
-/// in a "Forwarded" card. Snapshots carry no author (the carrier message's
-/// author is the forwarder).
-function ForwardedList({ snapshots }: { snapshots: MessageSnapshot[] }) {
+/// Render forwarded-message snapshots (reference anatomy: left vertical bar,
+/// italic "Forwarded" header, snapshot content/attachments/embeds, then a
+/// "Forwarded from" source pill when the source channel is locally known).
+/// Snapshots carry no author — the carrier message's author is the forwarder.
+/// Only snapshots[0] is rendered, matching the reference.
+const ForwardedList = observer(function ForwardedList({
+  message,
+  snapshots,
+}: {
+  message: Message;
+  snapshots: MessageSnapshot[];
+}) {
+  const s = snapshots[0];
+  if (!s) return null;
   return (
-    <div className="message-forwarded-list">
-      {snapshots.map((s, i) => (
-        <div key={i} className="message-forwarded">
-          <div className="message-forwarded-badge muted small">
-            <ForwardIcon /> Forwarded
-          </div>
-          {s.content && (
-            <div className="message-forwarded-body">
-              <ContentRenderer content={s.content} messageId={`fwd-${i}`} />
-            </div>
-          )}
-          {s.attachments && s.attachments.length > 0 && (
-            <AttachmentList attachments={s.attachments} />
-          )}
-          {s.embeds && s.embeds.length > 0 && <EmbedList embeds={s.embeds} />}
+    <div className="message-forwarded">
+      <span className="message-forwarded-bar" />
+      <div className="message-forwarded-content">
+        <div className="message-forwarded-header">
+          <ForwardIcon size={12} />
+          <span className="message-forwarded-label">Forwarded</span>
         </div>
-      ))}
+        {s.content && (
+          <div className="message-forwarded-body">
+            <ContentRenderer content={s.content} messageId={`fwd-${message.id}`} />
+            {s.edited_timestamp && <span className="message-edited muted small"> (edited)</span>}
+          </div>
+        )}
+        {s.attachments && s.attachments.length > 0 && (
+          <AttachmentList attachments={s.attachments} />
+        )}
+        {s.embeds && s.embeds.length > 0 && <EmbedList embeds={s.embeds} />}
+        <ForwardedSource message={message} />
+      </div>
     </div>
+  );
+});
+
+/// "Forwarded from" pill linking back to the source channel. Renders nothing
+/// when the source channel isn't locally known (lost access / unknown guild) —
+/// matching the reference's hasAccessToSource behavior.
+const ForwardedSource = observer(function ForwardedSource({ message }: { message: Message }) {
+  const srcChannelId = message.message_reference?.channel_id;
+  if (!srcChannelId) return null;
+
+  const dm = dms.getDm(srcChannelId);
+  const inGuild = !dm ? guilds.findChannel(srcChannelId) : undefined;
+  if (!dm && !inGuild) return null;
+
+  const jump = () => {
+    if (inGuild) {
+      const gi = guilds.guilds.findIndex((g) => g.id === inGuild.guildId);
+      if (gi >= 0) ui.selectGuild(gi);
+    }
+    ui.openChannel(srcChannelId);
+  };
+
+  const guild = inGuild ? guilds.getGuild(inGuild.guildId) : undefined;
+  return (
+    <button className="message-forwarded-source" onClick={jump}>
+      <span className="message-forwarded-source-label">Forwarded from</span>
+      {guild ? (
+        <span className="message-forwarded-source-info nowrap">
+          <span className="message-forwarded-source-name">{guild.name}</span>
+          <ChevronRightIcon />
+          <span className="message-forwarded-source-name">#{inGuild!.channel.name}</span>
+        </span>
+      ) : (
+        <span className="message-forwarded-source-info nowrap">
+          <span className="message-forwarded-source-name">{dmLabel(dm!)}</span>
+        </span>
+      )}
+    </button>
+  );
+});
+
+function ForwardIcon({ size = 14 }: { size?: number }) {
+  // Arrow-bend-up-right (matches the reference's forward glyph).
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="14 4 20 9.5 14 15" />
+      <path d="M4 20c0-6 3.5-10.5 16-10.5" />
+    </svg>
   );
 }
 
-function ForwardIcon() {
+function ChevronRightIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="15 17 20 12 15 7" />
-      <path d="M4 18v-2a4 4 0 0 1 4-4h12" />
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9 5 16 12 9 19" />
     </svg>
   );
 }

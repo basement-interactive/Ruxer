@@ -30,7 +30,7 @@ High priority:
 - [x] Full markdown — headings, lists, tables, alerts, fenced code + tokenizer, masked links, subtext (hand-written, no WASM). DONE
 - [x] Inline message editing — EditingMessageInput replaces the row in place. DONE
 - [x] Per-channel drafts — DraftsStore (localStorage), restore on switch, clear on send. DONE
-- [ ] Forward message — action + ForwardModal (picker, comment, multi-target). ref: features/messaging/components/modals/ForwardModal.tsx
+- [x] Forward message — action + ForwardModal (picker, comment, multi-target), snapshot render + "Forwarded from" pill. DONE (media-selection forwards + slowmode gating not tracked client-side; server enforces)
 - [ ] Reaction users list — hover tooltip + reactions modal (per-emoji tabs). ref: features/messaging/components/popouts/ReactionTooltip.tsx
 
 Medium:

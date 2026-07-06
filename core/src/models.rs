@@ -322,6 +322,12 @@ pub struct MessageReference {
     #[serde(default = "default_reference_type")]
     #[serde(rename = "type")]
     pub kind: i32,
+    /// When forwarding only selected media: attachment ids to include (max 10).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub attachment_ids: Option<Vec<Snowflake>>,
+    /// When forwarding only selected media: embed indices to include (max 10).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub embed_indices: Option<Vec<i32>>,
 }
 
 fn default_reference_type() -> i32 {

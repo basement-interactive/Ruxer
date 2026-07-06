@@ -1,0 +1,196 @@
+/* ForwardModal — destination picker + comment. Measurements traced to the
+   reference client's SelectorModalStyles.module.css + ForwardModal.module.css
+   (values re-stated here, code re-authored). */
+
+/* Search row under the header title. */
+.forward-search {
+  position: relative;
+  margin: var(--sp-2) 0 var(--sp-1);
+}
+.forward-search-input {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 var(--sp-3) 0 2.5rem;
+  border: none;
+  border-radius: var(--r-sm);
+  background: var(--bg-input);
+  color: var(--text-normal);
+  font-size: var(--font-size-md);
+  outline: none;
+}
+.forward-search-input::placeholder {
+  color: var(--text-faint);
+}
+.forward-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* Channel list: fixed height, scrolls. Ref: --selector-modal-content-height =
+   clamp(20rem, 48vh, 23.75rem). */
+.forward-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  height: clamp(16rem, 40vh, 20rem);
+  overflow-y: auto;
+  padding: var(--sp-2) 0;
+}
+.forward-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+}
+
+/* Destination row. Ref itemButton: min-height 2.75rem, radius 0.5rem,
+   padding sp-2 / 0.75rem, hover/selected modifier backgrounds. */
+.forward-item {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  padding: var(--sp-2) 0.75rem;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.forward-item:hover:not(.disabled):not(.selected) {
+  background: var(--bg-modifier-hover);
+}
+.forward-item.selected {
+  background: var(--bg-modifier-selected);
+}
+.forward-item.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.forward-item-content {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+  gap: var(--sp-3);
+}
+.forward-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+.forward-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.forward-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-normal);
+}
+.forward-item-secondary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-faint);
+  font-size: 0.75rem;
+}
+
+/* Right-aligned checkbox (visual only; the row is the button). */
+.forward-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border: 2px solid var(--text-faint);
+  border-radius: var(--r-sm);
+  color: #fff;
+  pointer-events: none;
+}
+.forward-check.on {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+/* Comment composer. Ref: min-height 2.75rem, max-height 5rem, radius 0.375rem,
+   textarea background. */
+.forward-comment {
+  position: relative;
+  padding: var(--sp-3) 0 0;
+}
+.forward-comment-input {
+  width: 100%;
+  min-height: 2.75rem;
+  max-height: 5rem;
+  resize: none;
+  border: none;
+  border-radius: 0.375rem;
+  background: var(--bg-input);
+  color: var(--text-normal);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  line-height: 1.375rem;
+  padding: 0.6875rem;
+  outline: none;
+  overflow-y: auto;
+}
+.forward-comment-input::placeholder {
+  color: var(--text-faint);
+}
+.forward-comment-count {
+  position: absolute;
+  right: var(--sp-2);
+  bottom: var(--sp-2);
+  pointer-events: none;
+}
+
+/* Footer buttons: house Button styles are component-local, so restate the two
+   variants used here. */
+.forward-btn-secondary,
+.forward-btn-primary {
+  min-width: 96px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  cursor: pointer;
+}
+.forward-btn-secondary {
+  background: transparent;
+  color: var(--text-normal);
+}
+.forward-btn-secondary:hover {
+  text-decoration: underline;
+}
+.forward-btn-primary {
+  background: var(--brand);
+  color: #fff;
+}
+.forward-btn-primary:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+.forward-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

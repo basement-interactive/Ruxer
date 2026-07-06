@@ -80,8 +80,33 @@ impl CreateMessage {
             channel_id: Some(channel_id.clone()),
             guild_id: None,
             kind: 0,
+            attachment_ids: None,
+            embed_indices: None,
         });
         self
+    }
+
+    /// A forward of an existing message (`message_reference.type = 1`). A
+    /// forward carries no content of its own — the server captures the source
+    /// message into `message_snapshots` on the created message. The server
+    /// rejects forwards that carry content/embeds/attachments/stickers, so
+    /// `content` stays `None` here.
+    pub fn forward_of(
+        source_channel_id: &Snowflake,
+        message_id: &Snowflake,
+        guild_id: Option<&Snowflake>,
+    ) -> Self {
+        Self {
+            message_reference: Some(MessageReference {
+                message_id: message_id.clone(),
+                channel_id: Some(source_channel_id.clone()),
+                guild_id: guild_id.cloned(),
+                kind: 1,
+                attachment_ids: None,
+                embed_indices: None,
+            }),
+            ..Self::default()
+        }
     }
 
     /// Suppress push/desktop notifications for this message.

@@ -594,6 +594,7 @@ pub fn run() {
             delete_webhook,
             list_messages,
             send_message,
+            forward_message,
             edit_message,
             delete_message,
             bulk_delete_messages,
@@ -1558,6 +1559,31 @@ async fn send_message(
             .await
             .map_err(Into::into)
     }
+}
+
+/// Forward a message to another channel (`message_reference.type = 1`). The
+/// destination is `channel_id`; the source message is identified by
+/// `source_channel_id` + `message_id` (+ optional `guild_id` of the source).
+/// Forwards carry no content — the server snapshots the source message into
+/// `message_snapshots` on the created message.
+#[tauri::command]
+async fn forward_message(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    source_channel_id: Snowflake,
+    message_id: Snowflake,
+    guild_id: Option<Snowflake>,
+    nonce: Option<String>,
+) -> CmdResult<fluxer::models::Message> {
+    let c = client(&state).await?;
+    let mut create = fluxer::api::messages::CreateMessage::forward_of(
+        &source_channel_id,
+        &message_id,
+        guild_id.as_ref(),
+    );
+    // Nonce for optimistic reconciliation, same as send_message.
+    create.nonce = nonce;
+    c.messages().send(&channel_id, &create).await.map_err(Into::into)
 }
 
 #[tauri::command]

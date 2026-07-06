@@ -774,6 +774,30 @@ export class MessagesStore {
     if (list) this.byChannel.set(channelId, list.filter((m) => m.nonce !== nonce));
   }
 
+  /// Forward a message to one or more destination channels, sequentially —
+  /// matching the reference client, which stops at the first failure (so a
+  /// mid-list slowmode/permission rejection doesn't duplicate earlier sends).
+  /// An optional comment is sent as a second, plain message after each
+  /// successful forward. Throws on the first failed send.
+  async forward(channelIds: Snowflake[], message: Message, comment?: string) {
+    // Source guild id (omitted for DM sources), resolved once.
+    const source = guilds.findChannel(message.channel_id);
+    for (const cid of channelIds) {
+      await api.forwardMessage(
+        cid,
+        {
+          channelId: message.channel_id,
+          messageId: message.id,
+          guildId: source?.guildId,
+        },
+        crypto.randomUUID(),
+      );
+      if (comment) {
+        await api.sendMessage(cid, comment, undefined, undefined, undefined, crypto.randomUUID());
+      }
+    }
+  }
+
   /// Acknowledge that the user has read up to `messageId` in `channelId`.
   /// Best-effort: failures are logged but do not surface to the user. Called
   /// on channel view and on each new MESSAGE_CREATE in the active channel.
@@ -2263,6 +2287,17 @@ export class UiStore {
 
   @action closeReport() {
     this.reportTarget = null;
+  }
+
+  // Forward-message modal target: the message being forwarded (null = closed).
+  forwardTarget: Message | null = null;
+
+  @action openForward(message: Message) {
+    this.forwardTarget = message;
+  }
+
+  @action closeForward() {
+    this.forwardTarget = null;
   }
 
   // Accessibility prefs (client-local, persisted). Applied to <html> via a CSS
