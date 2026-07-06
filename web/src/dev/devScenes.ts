@@ -44,6 +44,7 @@ export function applyDevScene(): void {
   else if (scene === "guild-audit") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openGuildSettings("100", "audit")), 1400); }
   else if (scene === "guild-webhooks") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openGuildSettings("100", "webhooks")), 1400); }
   else if (scene === "ban") { seedTextChannel(); setTimeout(() => runInAction(() => ui.openBanModal("100", "2")), 1400); }
+  else if (scene === "incoming-call") setTimeout(() => runInAction(() => voice.applyVoiceStateUpdate({ user_id: "2", channel_id: "300", session_id: "call1" })), 900);
   else if (scene === "onboarding") setTimeout(() => runInAction(() => ui.openOnboarding(true)), 700);
   else if (scene === "channel") seedTextChannel();
 }

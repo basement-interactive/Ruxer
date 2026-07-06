@@ -1720,6 +1720,10 @@ export class VoiceStore {
     return this.participants.find((p) => p.isLocal) ?? null;
   }
 
+  // Incoming DM call, derived from a VOICE_STATE_UPDATE where another user
+  // joins a DM voice channel we're a recipient of and we're not in it yet.
+  incomingCall: { channelId: Snowflake; fromUserId: Snowflake } | null = null;
+
   @action applyVoiceStateUpdate(data: VoiceState) {
     const key = data.guild_id ?? "__dm";
     const list = this.statesByGuild.get(key) ?? [];
@@ -1729,12 +1733,26 @@ export class VoiceStore {
       if (idx >= 0) {
         this.statesByGuild.set(key, list.filter((v) => v.user_id !== data.user_id));
       }
+      // If the caller hung up before we answered, dismiss the ring.
+      if (this.incomingCall?.fromUserId === data.user_id) this.incomingCall = null;
     } else if (idx >= 0) {
       const updated = [...list];
       updated[idx] = { ...updated[idx], ...data };
       this.statesByGuild.set(key, updated);
     } else {
       this.statesByGuild.set(key, [...list, data]);
+      // A new participant in a DM voice channel we belong to, that isn't us and
+      // that we haven't joined → surface an incoming-call ring.
+      if (
+        data.user_id !== session.meId &&
+        data.guild_id == null &&
+        data.channel_id &&
+        dms.getDm(data.channel_id) &&
+        this.pendingChannelId !== data.channel_id &&
+        this.connectionState !== "connected"
+      ) {
+        this.incomingCall = { channelId: data.channel_id, fromUserId: data.user_id };
+      }
     }
     // Track our own session id so we can pair with VOICE_SERVER_UPDATE.
     if (data.user_id === session.meId) {
@@ -1743,6 +1761,19 @@ export class VoiceStore {
       this.serverMuted = data.self_mute ?? this.serverMuted;
       this.serverDeafened = data.self_deaf ?? this.serverDeafened;
     }
+  }
+
+  /// Answer the incoming DM call — join its voice channel.
+  @action acceptCall() {
+    const c = this.incomingCall;
+    if (!c) return;
+    this.incomingCall = null;
+    this.joinChannel(null, c.channelId).catch(() => {});
+  }
+
+  /// Dismiss the incoming-call ring without joining.
+  @action declineCall() {
+    this.incomingCall = null;
   }
 
   @action applyVoiceServerUpdate(data: VoiceServerUpdate) {
