@@ -97,6 +97,23 @@ impl Guilds {
             .await
     }
 
+    /// `POST /guilds/{guild_id}/members-search` — server-side member search.
+    pub async fn search_members(
+        &self,
+        guild_id: &Snowflake,
+        query: &str,
+        limit: Option<u32>,
+    ) -> Result<serde_json::Value> {
+        let path = format!("guilds/{}/members-search", guild_id);
+        self.0
+            .send_json(
+                reqwest::Method::POST,
+                &path,
+                &serde_json::json!({ "query": query, "limit": limit }),
+            )
+            .await
+    }
+
     /// `PATCH /guilds/{guild_id}` — partial update of guild settings (e.g.
     /// `{"name": "...", "verification_level": 1}`). Loosely typed; returns the
     /// updated guild object as JSON.

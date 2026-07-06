@@ -1449,6 +1449,26 @@ export class RelationshipsStore {
     return rel;
   }
 
+  /// Send a friend request by username (`name` or `name#0000`).
+  async addByUsername(handle: string) {
+    const hash = handle.lastIndexOf("#");
+    const username = hash >= 0 ? handle.slice(0, hash) : handle;
+    const discriminator = hash >= 0 ? handle.slice(hash + 1) : undefined;
+    await api.addFriendByUsername(username, discriminator);
+  }
+
+  /// Block a user (updates the relationship to blocked).
+  async block(userId: Snowflake) {
+    await api.blockUser(userId);
+    // The gateway RELATIONSHIP_UPDATE reconciles the exact state; optimistically
+    // drop any existing friend/pending entry so they leave the friends list.
+    runInAction(() => {
+      const existing = this.relationships.find((r) => r.user.id === userId);
+      this.relationships = this.relationships.filter((r) => r.user.id !== userId);
+      if (existing) this.relationships.push({ ...existing, type: 2 });
+    });
+  }
+
   async remove(userId: Snowflake) {
     await api.removeRelationship(userId);
     runInAction(() => {
@@ -1773,7 +1793,10 @@ export class VoiceStore {
 
   /// Dismiss the incoming-call ring without joining.
   @action declineCall() {
+    const channelId = this.incomingCall?.channelId;
     this.incomingCall = null;
+    // Tell the server to stop ringing us for this call, not just clear local UI.
+    if (channelId) api.stopRinging(channelId).catch(() => {});
   }
 
   @action applyVoiceServerUpdate(data: VoiceServerUpdate) {

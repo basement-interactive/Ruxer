@@ -637,8 +637,46 @@ export const api = {
   listRelationships: () => call<Relationship[]>("list_relationships"),
   sendFriendRequest: (userId: string) =>
     call<Relationship>("send_friend_request", { userId }),
+  /// Send a friend request by username (optionally with a discriminator).
+  addFriendByUsername: (username: string, discriminator?: string) =>
+    call<unknown>("add_friend_by_username", { username, discriminator }),
+  /// Block a user.
+  blockUser: (userId: Snowflake) => call<unknown>("block_user", { userId }),
   removeRelationship: (userId: Snowflake) =>
     call<void>("remove_relationship", { userId }),
+  /// A user's rich profile (mutual guilds/friends, connections, badges, bio).
+  getUserProfile: (userId: Snowflake) =>
+    call<unknown>("get_user_profile", { userId }),
+  /// Private per-user note.
+  getUserNote: (userId: Snowflake) =>
+    call<{ note?: string | null }>("get_user_note", { userId }),
+  setUserNote: (userId: Snowflake, note: string) =>
+    call<void>("set_user_note", { userId, note }),
+  /// Mark multiple channels read at once (read_states = [{channel_id, message_id}]).
+  ackBulkRead: (readStates: { channel_id: Snowflake; message_id: Snowflake }[]) =>
+    call<void>("ack_bulk_read", { readStates }),
+  /// Fetch a single message (for reply/reference previews).
+  getMessage: (channelId: Snowflake, messageId: Snowflake) =>
+    call<Message>("get_message", { channelId, messageId }),
+  /// DM/group call: state, ring, stop ringing, end.
+  getCall: (channelId: Snowflake) => call<unknown>("get_call", { channelId }),
+  ringCall: (channelId: Snowflake, recipients?: Snowflake[]) =>
+    call<void>("ring_call", { channelId, recipients }),
+  stopRinging: (channelId: Snowflake, recipients?: Snowflake[]) =>
+    call<void>("stop_ringing", { channelId, recipients }),
+  endCall: (channelId: Snowflake) => call<void>("end_call", { channelId }),
+  /// Set a channel's slowmode (seconds) + NSFW flag.
+  setChannelOptions: (
+    channelId: Snowflake,
+    rateLimitPerUser?: number,
+    nsfw?: boolean,
+  ) => call<Channel>("set_channel_options", { channelId, rateLimitPerUser, nsfw }),
+  /// Server-side guild member search.
+  searchGuildMembers: (guildId: Snowflake, query: string, limit?: number) =>
+    call<unknown>("search_guild_members", { guildId, query, limit }),
+  /// List all invites for a guild.
+  listGuildInvites: (guildId: Snowflake) =>
+    call<Invite[]>("list_guild_invites", { guildId }),
 
   getUser: (userId: Snowflake) => call<User>("get_user", { userId }),
   getChannel: (channelId: Snowflake) =>

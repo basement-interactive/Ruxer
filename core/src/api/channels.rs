@@ -114,6 +114,66 @@ impl Channels {
             .await
     }
 
+    /// `GET /channels/{channel_id}/call` — the DM/group call state.
+    pub async fn get_call(&self, channel_id: &Snowflake) -> Result<serde_json::Value> {
+        let path = format!("channels/{}/call", channel_id);
+        self.0.get(&path).await
+    }
+
+    /// `POST /channels/{channel_id}/call/ring` — ring the given recipients (or
+    /// all if None). 204 No Content.
+    pub async fn ring_call(
+        &self,
+        channel_id: &Snowflake,
+        recipients: Option<&[Snowflake]>,
+    ) -> Result<()> {
+        let path = format!("channels/{}/call/ring", channel_id);
+        self.0
+            .send_json(reqwest::Method::POST, &path, &serde_json::json!({ "recipients": recipients }))
+            .await
+    }
+
+    /// `POST /channels/{channel_id}/call/stop-ringing` — stop ringing. 204.
+    pub async fn stop_ringing(
+        &self,
+        channel_id: &Snowflake,
+        recipients: Option<&[Snowflake]>,
+    ) -> Result<()> {
+        let path = format!("channels/{}/call/stop-ringing", channel_id);
+        self.0
+            .send_json(reqwest::Method::POST, &path, &serde_json::json!({ "recipients": recipients }))
+            .await
+    }
+
+    /// `POST /channels/{channel_id}/call/end` — end the call. 204.
+    pub async fn end_call(&self, channel_id: &Snowflake) -> Result<()> {
+        let path = format!("channels/{}/call/end", channel_id);
+        self.0
+            .send_json(reqwest::Method::POST, &path, &serde_json::json!({}))
+            .await
+    }
+
+    /// `PATCH /channels/{channel_id}` — set slowmode (`rate_limit_per_user`,
+    /// seconds) and/or the NSFW flag. Returns the updated channel.
+    pub async fn set_options(
+        &self,
+        channel_id: &Snowflake,
+        rate_limit_per_user: Option<i32>,
+        nsfw: Option<bool>,
+    ) -> Result<Channel> {
+        let path = format!("channels/{}", channel_id);
+        #[derive(serde::Serialize)]
+        struct Body {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            rate_limit_per_user: Option<i32>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            nsfw: Option<bool>,
+        }
+        self.0
+            .send_json(reqwest::Method::PATCH, &path, &Body { rate_limit_per_user, nsfw })
+            .await
+    }
+
     /// `POST /channels/{channel_id}/typing` — broadcast a typing indicator (lasts ~10s).
     pub async fn trigger_typing(&self, channel_id: &Snowflake) -> Result<()> {
         let path = format!("channels/{}/typing", channel_id);

@@ -232,7 +232,7 @@ function buildUserContextMenu(
     } else if (rel.type === 2) {
       items.push({ kind: "action", label: "Unblock User", onClick: () => relationships.remove(userId).catch(() => {}) });
     } else {
-      items.push({ kind: "action", label: "Block User", danger: true, onClick: () => relationships.remove(userId).catch(() => {}) });
+      items.push({ kind: "action", label: "Block User", danger: true, onClick: () => relationships.block(userId).catch(() => {}) });
     }
   }
   items.push({ kind: "separator" });
@@ -302,7 +302,13 @@ const AddFriendForm = observer(function AddFriendForm() {
     const target = input.trim();
     if (!target) return;
     try {
-      await relationships.sendFriendRequest(target);
+      // A bare snowflake is a user ID; anything else is treated as a username
+      // (optionally `name#0000`) via the by-username endpoint.
+      if (/^\d{15,}$/.test(target)) {
+        await relationships.sendFriendRequest(target);
+      } else {
+        await relationships.addByUsername(target);
+      }
       setMsg({ ok: true, text: "Friend request sent!" });
       setInput("");
     } catch (e: any) {

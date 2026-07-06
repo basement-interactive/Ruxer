@@ -75,6 +75,63 @@ impl Users {
         self.0.delete::<()>(&path).await
     }
 
+    /// `PUT /users/@me/relationships/{user_id}` with `{type: 2}` — block a user.
+    pub async fn block_user(&self, user_id: &Snowflake) -> Result<serde_json::Value> {
+        let path = format!("users/@me/relationships/{}", user_id);
+        self.0
+            .send_json(reqwest::Method::PUT, &path, &serde_json::json!({ "type": 2 }))
+            .await
+    }
+
+    /// `POST /users/@me/relationships` — send a friend request by username
+    /// (optionally with a discriminator).
+    pub async fn add_friend_by_username(
+        &self,
+        username: &str,
+        discriminator: Option<&str>,
+    ) -> Result<serde_json::Value> {
+        self.0
+            .send_json(
+                reqwest::Method::POST,
+                "users/@me/relationships",
+                &serde_json::json!({ "username": username, "discriminator": discriminator }),
+            )
+            .await
+    }
+
+    /// `GET /users/{user_id}/profile` — a user's rich profile (mutual guilds/
+    /// friends, connections, badges, bio).
+    pub async fn profile(&self, user_id: &Snowflake) -> Result<serde_json::Value> {
+        let path = format!("users/{}/profile", user_id);
+        self.0.get(&path).await
+    }
+
+    /// `GET /users/@me/notes/{user_id}` — the private note on a user.
+    pub async fn get_note(&self, user_id: &Snowflake) -> Result<serde_json::Value> {
+        let path = format!("users/@me/notes/{}", user_id);
+        self.0.get(&path).await
+    }
+
+    /// `PUT /users/@me/notes/{user_id}` — set the private note on a user. 204.
+    pub async fn set_note(&self, user_id: &Snowflake, note: &str) -> Result<()> {
+        let path = format!("users/@me/notes/{}", user_id);
+        self.0
+            .send_json(reqwest::Method::PUT, &path, &serde_json::json!({ "note": note }))
+            .await
+    }
+
+    /// `POST /read-states/ack-bulk` — mark multiple channels read at once
+    /// (`read_states` = `[{channel_id, message_id}]`). 204.
+    pub async fn ack_bulk(&self, read_states: &serde_json::Value) -> Result<()> {
+        self.0
+            .send_json(
+                reqwest::Method::POST,
+                "read-states/ack-bulk",
+                &serde_json::json!({ "read_states": read_states }),
+            )
+            .await
+    }
+
     /// `POST /users/@me/guilds/{guild_id}` — leave the given guild.
     pub async fn leave_guild(&self, guild_id: &Snowflake) -> Result<()> {
         let path = format!("users/@me/guilds/{}", guild_id);

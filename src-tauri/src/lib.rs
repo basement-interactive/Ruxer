@@ -588,6 +588,20 @@ pub fn run() {
             save_theme,
             update_user_settings,
             update_current_user,
+            block_user,
+            add_friend_by_username,
+            get_user_profile,
+            get_user_note,
+            set_user_note,
+            ack_bulk_read,
+            get_message,
+            get_call,
+            ring_call,
+            stop_ringing,
+            end_call,
+            set_channel_options,
+            search_guild_members,
+            list_guild_invites,
             list_auth_sessions,
             logout_auth_sessions,
             list_mobile_devices,
@@ -2198,6 +2212,148 @@ async fn update_current_user(
 ) -> CmdResult<serde_json::Value> {
     let c = client(&state).await?;
     c.users().update_current(&patch).await.map_err(Into::into)
+}
+
+/// Block a user (PUT /users/@me/relationships/{id} {type:2}).
+#[tauri::command]
+async fn block_user(state: State<'_, AppState>, user_id: Snowflake) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users().block_user(&user_id).await.map_err(Into::into)
+}
+
+/// Send a friend request by username (POST /users/@me/relationships).
+#[tauri::command]
+async fn add_friend_by_username(
+    state: State<'_, AppState>,
+    username: String,
+    discriminator: Option<String>,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users()
+        .add_friend_by_username(&username, discriminator.as_deref())
+        .await
+        .map_err(Into::into)
+}
+
+/// A user's rich profile (GET /users/{id}/profile).
+#[tauri::command]
+async fn get_user_profile(state: State<'_, AppState>, user_id: Snowflake) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users().profile(&user_id).await.map_err(Into::into)
+}
+
+/// The private note on a user (GET /users/@me/notes/{id}).
+#[tauri::command]
+async fn get_user_note(state: State<'_, AppState>, user_id: Snowflake) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.users().get_note(&user_id).await.map_err(Into::into)
+}
+
+/// Set the private note on a user (PUT /users/@me/notes/{id}).
+#[tauri::command]
+async fn set_user_note(state: State<'_, AppState>, user_id: Snowflake, note: String) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.users().set_note(&user_id, &note).await.map_err(Into::into)
+}
+
+/// Mark multiple channels read at once (POST /read-states/ack-bulk).
+#[tauri::command]
+async fn ack_bulk_read(state: State<'_, AppState>, read_states: serde_json::Value) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.users().ack_bulk(&read_states).await.map_err(Into::into)
+}
+
+/// Fetch a single message (GET /channels/{cid}/messages/{mid}).
+#[tauri::command]
+async fn get_message(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    message_id: Snowflake,
+) -> CmdResult<fluxer::models::Message> {
+    let c = client(&state).await?;
+    c.messages().get(&channel_id, &message_id).await.map_err(Into::into)
+}
+
+/// The DM/group call state (GET /channels/{id}/call).
+#[tauri::command]
+async fn get_call(state: State<'_, AppState>, channel_id: Snowflake) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.channels().get_call(&channel_id).await.map_err(Into::into)
+}
+
+/// Ring DM/group call recipients (POST /channels/{id}/call/ring).
+#[tauri::command]
+async fn ring_call(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    recipients: Option<Vec<Snowflake>>,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.channels()
+        .ring_call(&channel_id, recipients.as_deref())
+        .await
+        .map_err(Into::into)
+}
+
+/// Stop ringing a DM/group call (POST /channels/{id}/call/stop-ringing).
+#[tauri::command]
+async fn stop_ringing(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    recipients: Option<Vec<Snowflake>>,
+) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.channels()
+        .stop_ringing(&channel_id, recipients.as_deref())
+        .await
+        .map_err(Into::into)
+}
+
+/// End a DM/group call (POST /channels/{id}/call/end).
+#[tauri::command]
+async fn end_call(state: State<'_, AppState>, channel_id: Snowflake) -> CmdResult<()> {
+    let c = client(&state).await?;
+    c.channels().end_call(&channel_id).await.map_err(Into::into)
+}
+
+/// Set a channel's slowmode + NSFW flag (PATCH /channels/{id}).
+#[tauri::command]
+async fn set_channel_options(
+    state: State<'_, AppState>,
+    channel_id: Snowflake,
+    rate_limit_per_user: Option<i32>,
+    nsfw: Option<bool>,
+) -> CmdResult<fluxer::models::Channel> {
+    let c = client(&state).await?;
+    c.channels()
+        .set_options(&channel_id, rate_limit_per_user, nsfw)
+        .await
+        .map_err(Into::into)
+}
+
+/// Server-side guild member search (POST /guilds/{id}/members-search).
+#[tauri::command]
+async fn search_guild_members(
+    state: State<'_, AppState>,
+    guild_id: Snowflake,
+    query: String,
+    limit: Option<u32>,
+) -> CmdResult<serde_json::Value> {
+    let c = client(&state).await?;
+    c.guilds()
+        .search_members(&guild_id, &query, limit)
+        .await
+        .map_err(Into::into)
+}
+
+/// List all invites for a guild (GET /guilds/{id}/invites).
+#[tauri::command]
+async fn list_guild_invites(
+    state: State<'_, AppState>,
+    guild_id: Snowflake,
+) -> CmdResult<Vec<fluxer::models::Invite>> {
+    let c = client(&state).await?;
+    c.invites().list_for_guild(&guild_id).await.map_err(Into::into)
 }
 
 /// The account's active login sessions (GET /auth/sessions).
