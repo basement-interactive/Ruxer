@@ -23,7 +23,23 @@ function inRealTauri(): boolean {
 export function applyDevScene(): void {
   if (!import.meta.env.DEV || inRealTauri()) return;
   const scene = new URLSearchParams(location.search).get("devscene");
+  // Suppress the first-launch onboarding overlay so it doesn't cover other
+  // scenes (the onboarding scene forces it explicitly).
+  if (scene && scene !== "onboarding") {
+    try {
+      localStorage.setItem("ui.onboarded", "1");
+    } catch {
+      /* ignore */
+    }
+  }
   if (scene === "voice") seedVoiceCall(false);
+  else if (scene === "voice-stats") {
+    seedVoiceCall(false);
+    setTimeout(() => {
+      const b = document.querySelector<HTMLElement>('[title="Stats for nerds"]');
+      b?.click();
+    }, 1000);
+  }
   else if (scene === "voice-screen") seedVoiceCall(true);
   else if (scene === "voice-focus") {
     seedVoiceCall(false);

@@ -9,7 +9,7 @@
 // muted/deafened state is badged.
 
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { voice, resolveUser, ui } from "../stores";
 import type { VoiceParticipant } from "../voice/LiveKitRoom";
 import { Avatar } from "./Avatar";
@@ -84,7 +84,13 @@ function SignalIcon({
 
 // In-call control bar at the bottom of the call view. Mirrors the reference's
 // VoiceControlBar; wired to the same VoiceStore actions the UserArea strip uses.
-const CallControlBar = observer(function CallControlBar() {
+const CallControlBar = observer(function CallControlBar({
+  statsOpen,
+  onToggleStats,
+}: {
+  statsOpen: boolean;
+  onToggleStats: () => void;
+}) {
   const micOn = voice.localParticipant?.micEnabled !== false;
   const deafened = voice.serverDeafened;
   const cameraOn = voice.localParticipant?.cameraEnabled ?? false;
@@ -126,6 +132,14 @@ const CallControlBar = observer(function CallControlBar() {
       </button>
       <button
         type="button"
+        className={`vc-btn ${statsOpen ? "on" : ""}`}
+        title="Stats for nerds"
+        onClick={onToggleStats}
+      >
+        <StatsIcon />
+      </button>
+      <button
+        type="button"
         className={`vc-btn ${ui.callExpanded ? "on" : ""}`}
         title={ui.callExpanded ? "Exit focus" : "Focus call"}
         onClick={() => ui.toggleCallExpanded()}
@@ -144,6 +158,13 @@ const CallControlBar = observer(function CallControlBar() {
   );
 });
 
+function StatsIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M4 13h3v7H4v-7zm6.5-6h3v13h-3V7zM17 10h3v10h-3V10z" />
+    </svg>
+  );
+}
 function ExpandIcon({ expanded }: { expanded: boolean }) {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -185,12 +206,43 @@ function HangupIcon() {
   );
 }
 
+// "Stats for nerds" panel — connection state + per-participant quality. Driven
+// by the state the store already tracks (LiveKit ConnectionQuality); a live
+// RTCStatsReport view would layer on top when connected.
+const StatsPanel = observer(function StatsPanel() {
+  const parts = voice.participants;
+  return (
+    <div className="voice-stats">
+      <div className="voice-stats-title">Connection stats</div>
+      <div className="voice-stats-row">
+        <span>State</span>
+        <span>{voice.connectionState}</span>
+      </div>
+      <div className="voice-stats-row">
+        <span>Participants</span>
+        <span>{parts.length}</span>
+      </div>
+      {parts.map((p) => (
+        <div className="voice-stats-row" key={p.identity}>
+          <span className="voice-stats-name">{p.name}</span>
+          <span className={`voice-stats-q q-${p.connectionQuality}`}>
+            {p.connectionQuality}
+            {p.speaking ? " · speaking" : ""}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+});
+
 export const VoiceCallView = observer(function VoiceCallView() {
   const parts = voice.participants;
   const screensharer = parts.find((p) => p.screenShareEnabled);
+  const [statsOpen, setStatsOpen] = useState(false);
 
   return (
     <div className="voice-call-view">
+      {statsOpen && <StatsPanel />}
       {screensharer && (
         <div className="voice-screen-stage">
           <ParticipantVideo
@@ -240,7 +292,7 @@ export const VoiceCallView = observer(function VoiceCallView() {
         ))}
       </div>
 
-      <CallControlBar />
+      <CallControlBar statsOpen={statsOpen} onToggleStats={() => setStatsOpen(!statsOpen)} />
     </div>
   );
 });

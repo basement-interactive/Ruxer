@@ -48,6 +48,14 @@ function shouldInstall(): boolean {
 
 if (shouldInstall()) {
   installMockTauri();
+  // Suppress the first-launch onboarding overlay for non-onboarding scenes so
+  // it doesn't cover them (runs synchronously, before login/App logic).
+  try {
+    const scene = new URLSearchParams(location.search).get("devscene");
+    if (scene && scene !== "onboarding") localStorage.setItem("ui.onboarded", "1");
+  } catch {
+    /* ignore */
+  }
 }
 
 function installMockTauri(): void {

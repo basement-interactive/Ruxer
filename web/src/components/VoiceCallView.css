@@ -160,3 +160,28 @@
 .vc-btn.danger-active { background: var(--red, #f23f43); color: #fff; }
 .vc-btn.hangup { background: var(--red, #f23f43); color: #fff; }
 .vc-btn.hangup:hover { background: #d83c3e; }
+
+/* Stats-for-nerds panel */
+.voice-stats {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  min-width: 200px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.voice-stats-title { font-weight: 700; margin-bottom: 3px; }
+.voice-stats-row { display: flex; justify-content: space-between; gap: 12px; }
+.voice-stats-name { color: rgba(255,255,255,0.8); }
+.voice-stats-q { text-transform: capitalize; }
+.voice-stats-q.q-excellent { color: var(--green, #23a55a); }
+.voice-stats-q.q-good { color: #86d17a; }
+.voice-stats-q.q-poor { color: var(--yellow, #f0b232); }
+.voice-stats-q.q-lost, .voice-stats-q.q-unknown { color: var(--red, #f23f43); }
