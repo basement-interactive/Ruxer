@@ -41,7 +41,7 @@ base64 = "0.22"
 md-5 = "0.10"
 dirs = "5"
 keyring = { version = "3", optional = true }
-axum = { version = "0.7", features = ["ws"] }
+axum = { version = "0.8", features = ["ws"] }
 tokio-tungstenite = { version = "0.24", features = ["rustls-tls-webpki-roots"] }
 futures-util = "0.3"
 http = "1"
