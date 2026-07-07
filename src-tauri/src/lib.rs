@@ -254,16 +254,30 @@ pub fn run() {
     // modern GStreamer `va` plugins: NVIDIA via NVENC, AMD/Intel via VA-API —
     // these are enabled by default, so we do NOT force the deprecated
     // WEBKIT_GST_ENABLE_VAAPI legacy path (it causes rendering glitches).
-    //
-    // We only nudge WebKit to use the DMA-BUF renderer (zero-copy GPU frames,
-    // lower CPU/memory) when the user hasn't overridden it.
     #[cfg(target_os = "linux")]
     {
-        // Ensure the DMA-BUF renderer is not force-disabled by the environment
-        // (some distros export this): keeping it enabled gives zero-copy GPU
-        // frames for lower CPU/memory during screen share and video.
-        if std::env::var_os("WEBKIT_DISABLE_DMABUF_RENDERER").is_some() {
+        // WebKitGTK 2.42+ defaults to a DMA-BUF renderer (zero-copy GPU frames,
+        // lower CPU/memory during screen share/video). It's a nice optimization
+        // — but its EGL initialization ABORTS the whole process on a large slice
+        // of real Linux setups (AMD + Wayland, NVIDIA proprietary, VMs, nested
+        // compositors) with "Could not create default EGL display:
+        // EGL_BAD_PARAMETER. Aborting..." — so the window never opens at all.
+        //
+        // Correctness beats the optimization: an app that won't launch is far
+        // worse than one with slightly higher screen-share CPU. Disable the
+        // DMA-BUF renderer BY DEFAULT so the window reliably opens everywhere;
+        // WebKit still falls back to an accelerated path where possible.
+        //
+        // Opt back in (for a known-good GPU/driver) with RUXER_ENABLE_DMABUF=1.
+        // An explicit WEBKIT_DISABLE_DMABUF_RENDERER in the environment always
+        // wins (we never clobber a user's deliberate override).
+        let opted_in = std::env::var_os("RUXER_ENABLE_DMABUF").is_some();
+        let user_set = std::env::var_os("WEBKIT_DISABLE_DMABUF_RENDERER").is_some();
+        if opted_in {
+            // User asked for the zero-copy path — clear any stale disable.
             std::env::remove_var("WEBKIT_DISABLE_DMABUF_RENDERER");
+        } else if !user_set {
+            std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
         }
     }
 
