@@ -262,6 +262,16 @@ jobs:
       # ---------------------------------------------------------------------
       - name: Build Tauri app (release + signed)
         shell: bash
+        # Run from src-tauri/ (NOT the repo root). This is a cargo workspace with
+        # TWO tauri.conf.json files — ours (src-tauri/) and build-gui/src-tauri/.
+        # `cargo tauri build` from the root resolves the app ambiguously and, on
+        # Windows, ran our beforeBuildCommand from a native-vendor/* member dir,
+        # so `npm --prefix ../web` looked for native-vendor/web and failed
+        # (Linux happened to resolve correctly). Running from src-tauri/ pins the
+        # config AND the beforeBuildCommand CWD (../web -> web) on every platform.
+        # cargo still uses the workspace target/ at the repo root, so the bundle
+        # globs above are unchanged.
+        working-directory: src-tauri
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
