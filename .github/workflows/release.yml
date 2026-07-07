@@ -125,7 +125,7 @@ jobs:
         # only pay that cost when the pinned version changes. Keyed on the OS +
         # the version string below.
         id: cache-tauri-cli
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/bin/cargo-tauri
@@ -238,7 +238,7 @@ jobs:
       # (in Cargo.toml [patch] section) so it invalidates when we move revs.
       # ---------------------------------------------------------------------
       - name: Cache libwebrtc download
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/webrtc
