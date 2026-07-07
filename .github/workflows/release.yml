@@ -93,6 +93,18 @@ jobs:
         working-directory: web
         run: npm ci
 
+      # Build the frontend EXPLICITLY here rather than via tauri's
+      # beforeBuildCommand. In this multi-app cargo workspace, tauri's
+      # beforeBuildCommand CWD is unstable across platforms/invocation dirs
+      # (it resolved `../web` to native-vendor/web on Windows and to the
+      # repo's PARENT when invoked from src-tauri), so the relative `../web`
+      # path is unreliable. We build web/dist here and disable
+      # beforeBuildCommand in the tauri build step; frontendDist (config-
+      # relative) then picks up the already-built dist deterministically.
+      - name: Build frontend (custom UI)
+        working-directory: web
+        run: npm run build
+
       # The frontend is the CUSTOM UI in web/ (Vite). `cargo tauri build` runs
       # `beforeBuildCommand` (npm --prefix ../web run build) to produce web/dist,
       # so we only need deps installed here. (The old reference-client rspack
@@ -265,17 +277,19 @@ jobs:
         # Run from src-tauri/ (NOT the repo root). This is a cargo workspace with
         # TWO tauri.conf.json files — ours (src-tauri/) and build-gui/src-tauri/.
         # `cargo tauri build` from the root resolves the app ambiguously and, on
-        # Windows, ran our beforeBuildCommand from a native-vendor/* member dir,
-        # so `npm --prefix ../web` looked for native-vendor/web and failed
-        # (Linux happened to resolve correctly). Running from src-tauri/ pins the
-        # config AND the beforeBuildCommand CWD (../web -> web) on every platform.
-        # cargo still uses the workspace target/ at the repo root, so the bundle
-        # globs above are unchanged.
+        # Windows, picked a native-vendor/* member (wrong app). Running from
+        # src-tauri/ pins OUR app config deterministically on every platform.
+        # We ALSO override beforeBuildCommand to empty: the frontend is already
+        # built by the explicit "Build frontend" step above, and tauri's
+        # beforeBuildCommand CWD is unstable (see that step). frontendDist in
+        # tauri.conf.json is config-relative, so ../web/dist resolves correctly
+        # regardless of the invocation CWD. cargo still writes the bundle to the
+        # workspace target/ at the repo root, so the globs above are unchanged.
         working-directory: src-tauri
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        run: cargo tauri build
+        run: cargo tauri build --config '{"build":{"beforeBuildCommand":""}}'
 
       # ---------------------------------------------------------------------
       # Upload everything in the bundle dir matching the platform's glob.
