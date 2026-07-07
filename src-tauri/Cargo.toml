@@ -61,7 +61,7 @@ rodio = { version = "0.19", default-features = false, features = ["symphonia-vor
 # table that records presentation ops (set token / move region / etc). The
 # script never touches the process; it returns a batch of ops the webview
 # applies. `vendored` builds Luau from source so there's no system Lua dep.
-mlua = { version = "0.10", features = ["luau", "vendored"] }
+mlua = { version = "0.12", features = ["luau", "vendored"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 # Same exact version wry pins (see Cargo.lock) so the `with_webview` inner
