@@ -373,7 +373,7 @@ jobs:
           ls -la release-artifacts/
 
       - name: Create / update GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           # Tag name without the refs/tags/ prefix.
           name: ${{ github.ref_name }}
